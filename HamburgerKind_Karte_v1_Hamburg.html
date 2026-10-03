@@ -813,7 +813,7 @@ if (targetLayer) {
 } else if (geojson.features.length) {
   map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] });
 }
-setTimeout(function() { map.invalidateSize(); if (targetLayer) map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] }); }, 50);
+setTimeout(function() { map.invalidateSize(); if (targetLayer) map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] }); else map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] }); }, 50);
 
 document.getElementById('layerToggle').addEventListener('change', function(e) {
   if (e.target.checked) { map.addLayer(geoLayer); } else { map.removeLayer(geoLayer); }
