@@ -31,6 +31,9 @@ Zusatzoptionen:
 URL-Parameter der fertigen Karte:
     ?shot=1          Sidebar + Zoom-Buttons ausblenden (Screenshot-Modus)
     ?shot=1&plz=XXX  zusaetzlich PLZ hervorheben
+Ortsteile einer PLZ (mehrere Gebiete mit gleicher PLZ): je Gebiet optional
+    "id": "eutingen"     eindeutiger Schluessel fuer --highlight-plz / ?plz= (Standard: plz)
+    "label": "Eutingen"  Beschriftung auf der Karte (Standard: "PLZ <plz>")
 
 Aufruf:
     python3 build_karte.py --input areas.json --output IGA2027_Karte.html \
@@ -44,7 +47,9 @@ import json
 
 
 def fmt_eur(n):
-    return f"{n:,.0f}".replace(",", ".") + " €"
+    if abs(n - round(n)) > 0.001:  # Cent-Betraege (z. B. 310,50 €) nicht verschlucken
+        return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + " €"
+    return f"{round(n):,.0f}".replace(",", ".") + " €"
 
 
 def fmt_hh(n):
@@ -177,7 +182,7 @@ const STYLE_DIM    = { color: '#7A1010', weight: 1, opacity: 0.35, fillColor: '#
 
 function baseStyle(p) {
   if (!HIGHLIGHT_PLZ) return STYLE_NORMAL;
-  return p.plz === HIGHLIGHT_PLZ ? STYLE_TARGET : STYLE_DIM;
+  return p.key === HIGHLIGHT_PLZ ? STYLE_TARGET : STYLE_DIM;
 }
 
 let targetLayer = null;
@@ -185,13 +190,13 @@ const geoLayer = L.geoJSON(geojson, {
   style: function(f) { return baseStyle(f.properties); },
   onEachFeature: function(feature, layer) {
     const p = feature.properties;
-    const dim = HIGHLIGHT_PLZ && p.plz !== HIGHLIGHT_PLZ;
+    const dim = HIGHLIGHT_PLZ && p.key !== HIGHLIGHT_PLZ;
     layer.bindPopup(popupHtml(p));
-    layer.bindTooltip(`PLZ ${p.plz}`, { permanent: true, direction: 'center', className: dim ? 'plz-label plz-label-dim' : 'plz-label' });
+    layer.bindTooltip(p.label, { permanent: true, direction: 'center', className: dim ? 'plz-label plz-label-dim' : 'plz-label' });
     const s = baseStyle(p);
     layer.on('mouseover', function() { this.setStyle({ fillOpacity: Math.min(s.fillOpacity + 0.2, 0.6) }); });
     layer.on('mouseout', function() { this.setStyle({ fillOpacity: s.fillOpacity }); });
-    if (HIGHLIGHT_PLZ && p.plz === HIGHLIGHT_PLZ) targetLayer = layer;
+    if (HIGHLIGHT_PLZ && p.key === HIGHLIGHT_PLZ) targetLayer = layer;
   }
 }).addTo(map);
 
@@ -239,6 +244,8 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
             "type": "Feature",
             "properties": {
                 "plz": str(a["plz"]),
+                "key": str(a.get("id") or a["plz"]),
+                "label": a.get("label") or f'PLZ {a["plz"]}',
                 "gebiet": a["gebiet"],
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
                 "hh_gesamt": fmt_hh(a["hh_gesamt"]),
@@ -294,14 +301,14 @@ if __name__ == "__main__":
     ap.add_argument("--cta-url", default="https://handzettelverteiler.de/kontakt/")
     ap.add_argument("--update-note", default="")
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
-    ap.add_argument("--highlight-plz", default="", help="Ziel-PLZ blau hervorheben, Rest abdimmen, Zoom darauf")
+    ap.add_argument("--highlight-plz", default="", help="Ziel-PLZ (bzw. Gebiets-id bei Ortsteilen) blau hervorheben, Rest abdimmen, Zoom darauf")
     ap.add_argument("--hide-sidebar", action="store_true", help="Sidebar ausblenden")
     args = ap.parse_args()
 
     with open(args.input, encoding="utf-8") as f:
         areas = json.load(f)
 
-    if args.highlight_plz and args.highlight_plz not in [str(a["plz"]) for a in areas]:
+    if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
     build(areas, args.title, args.lede, args.cta_url, args.update_note, args.leaflet_dir, args.output,
           highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar)
