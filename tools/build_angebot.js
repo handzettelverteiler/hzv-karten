@@ -1,5 +1,5 @@
 /**
- * HZV Angebot Generator (v3 – 8 Seiten, Config-basiert, wiederverwendbar)
+ * HZV Angebot Generator (v4 – 8 Seiten, Stadtbild + Lupen-Variante automatisch, Config-basiert)
  * Baut das Angebots-docx nach den festen HZV-Standards für einen beliebigen Kunden.
  *
  * Aufruf:
@@ -89,10 +89,48 @@ if (!beispielPath || !fs.existsSync(beispielPath)) {
 }
 const beispielImage = img(beispielPath);
 
-const stadtIllustrationPath = resolvePath(config.stadt_illustration);
-const stadtIllustration = stadtIllustrationPath && fs.existsSync(stadtIllustrationPath)
-  ? img(stadtIllustrationPath)
-  : null;
+// ---- Stadtbilder (v4): Seite 3 = Stadtbild, Seite 4 = Lupen-Variante ----
+// Reihenfolge (Stefan, 04.10.2026: neue Zeichnung zuerst): config.stadt_illustration > staedte/index.json (neue Zeichnungen) >
+// staedte/eigene/Stadt_<Stadt>.jpg (Stefans Bilder im Repo) > Skill-Assets staedte_logos/Stadt_<Stadt>.jpg >
+// staedte/Stadt_Allgemein.jpg > Stadt_Ormesheim_Mandelbachtal.jpg
+const STAEDTE = process.env.HZV_STAEDTE || path.join(__dirname, "..", "staedte");
+function normName(s) {
+  return String(s || "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]/g, "");
+}
+function asciiFile(s) {
+  return String(s || "").replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue").replace(/ß/g, "ss").replace(/[^A-Za-z0-9]+/g, "_");
+}
+function findStadtbild(name) {
+  const idxPath = path.join(STAEDTE, "index.json");
+  if (fs.existsSync(idxPath)) {
+    const idx = JSON.parse(fs.readFileSync(idxPath, "utf8"));
+    const n = normName(name);
+    const slug = idx.staedte[n] || idx.staedte[normName(String(name).split(/ am | an der | im | \(|-/)[0])];
+    if (slug && fs.existsSync(path.join(STAEDTE, `Stadt_${slug}.jpg`))) return path.join(STAEDTE, `Stadt_${slug}.jpg`);
+  }
+  // Stefans eigene Bilder: zuerst im Repo (staedte/eigene/, dauerhaft nachgeliefert), dann in den Skill-Assets
+  for (const dir of [path.join(STAEDTE, "eigene"), path.join(ASSETS, "staedte_logos")]) {
+    for (const ext of ["jpg", "png"]) {
+      const cand = path.join(dir, `Stadt_${asciiFile(name)}.${ext}`);
+      if (fs.existsSync(cand)) return cand;
+    }
+  }
+  const allg = path.join(STAEDTE, "Stadt_Allgemein.jpg");
+  if (fs.existsSync(allg)) return allg;
+  const orm = path.join(ASSETS, "staedte_logos", "Stadt_Ormesheim_Mandelbachtal.jpg");
+  return fs.existsSync(orm) ? orm : null;
+}
+let stadtIllustrationPath = resolvePath(config.stadt_illustration);
+if (!stadtIllustrationPath || !fs.existsSync(stadtIllustrationPath)) stadtIllustrationPath = findStadtbild(config.stadt);
+const stadtIllustration = stadtIllustrationPath ? img(stadtIllustrationPath) : null;
+// Lupen-Variante für die Beispiel-PLZ-Seite: explizit, sonst <Stadtbild>_Lupe.<ext>, sonst dasselbe Bild
+let stadtLupePath = resolvePath(config.stadt_illustration_lupe);
+if ((!stadtLupePath || !fs.existsSync(stadtLupePath)) && stadtIllustrationPath) {
+  const cand = stadtIllustrationPath.replace(/(\.[a-z]+)$/i, "_Lupe$1");
+  stadtLupePath = fs.existsSync(cand) ? cand : stadtIllustrationPath;
+}
+const stadtLupe = stadtLupePath ? img(stadtLupePath) : null;
+console.log(`Stadtbild Seite 3: ${stadtIllustrationPath || "-"}\nStadtbild Seite 4: ${stadtLupePath || "-"}`);
 
 // ---- Kundendaten ----
 const kunde = config.kunde; // { name, strasse, ort }
@@ -244,11 +282,14 @@ const page2Children = [
 
 // ==================== SEITE 3: ÜBERSICHTSKARTE (Hochformat) ====================
 // Dauerregel: Stadtbild IMMER über der Karte – Seite 3 UND Seite 4
-function stadtIllustrationPara() {
-  if (!stadtIllustration) return new Paragraph({ pageBreakBefore: true, children: [] });
+// Altbilder (ca. quadratisch) bleiben wie bisher max. 240x200; neue Breitbilder (1600x873) werden 440x240.
+function stadtIllustrationPara(lupe = false) {
+  const data = lupe ? stadtLupe : stadtIllustration;
+  const p_ = lupe ? stadtLupePath : stadtIllustrationPath;
+  if (!data) return new Paragraph({ pageBreakBefore: true, children: [] });
   return new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 200 }, pageBreakBefore: true,
-    children: [new ImageRun({ data: stadtIllustration, type: imgType(stadtIllustrationPath), transformation: fit(stadtIllustration, 240, 200) })],
+    children: [new ImageRun({ data, type: imgType(p_), transformation: (() => { const d = imgSize(data); return d.w / d.h > 1.4 ? fit(data, 440, 240) : fit(data, 240, 200); })() })],
   });
 }
 const page3Children = [
@@ -269,7 +310,7 @@ const bKey = String(config.beispiel_area || areas[0].plz);
 const bArea = areas.find((a) => a.id === bKey || a.gebiet === bKey) || areas.find((a) => String(a.plz) === bKey) || areas[0];
 const bDiff = bArea.hh_gesamt - bArea.hh_bewerbbar;
 const page3bChildren = [
-  stadtIllustrationPara(),
+  stadtIllustrationPara(true),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
     children: [new TextRun({ text: `Beispiel: PLZ-Region ${bArea.plz} – ${bArea.gebiet}`, bold: true, color: RED, size: 32, font: FONT })],
