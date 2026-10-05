@@ -173,7 +173,7 @@ function popupHtml(p) {
     <tr><td>An-/Abfahrt</td><td class="val">${p.anfahrt}</td></tr>
     <tr><td>Preis f&uuml;r Verteilung</td><td class="val">${p.preis_verteilung}</td></tr>
   </table>
-  <div class="totals">Gesamtpreis: <b>${p.gesamtpreis}</b></div>`;
+  <div class="totals">${p.anfahrt.indexOf('einmalig') > -1 ? 'Preis Ortsteil' : 'Gesamtpreis'}: <b>${p.gesamtpreis}</b></div>`;
 }
 
 const STYLE_NORMAL = { color: '#7A1010', weight: 1.5, opacity: 1, fillColor: '#C81E1E', fillOpacity: 0.25 };
@@ -232,6 +232,12 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     with open(f"{leaflet_dir}/leaflet.css") as f:
         leaflet_css = f.read()
 
+    # Ortsteile einer PLZ: An-/Abfahrt nur einmal je PLZ zaehlen (wie build_angebot.js)
+    plz_count = {}
+    for a in areas:
+        plz_count[str(a["plz"])] = plz_count.get(str(a["plz"]), 0) + 1
+    multi = any(c > 1 for c in plz_count.values())
+
     features = []
     for a in areas:
         polys = a.get("polygons") or [a["coords"]]
@@ -250,20 +256,29 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
                 "hh_gesamt": fmt_hh(a["hh_gesamt"]),
                 "quote": f'{a["quote"]} %',
-                "anfahrt": fmt_eur(a["anfahrt"]),
+                "anfahrt": fmt_eur(a["anfahrt"]) + (f' einmalig f&uuml;r PLZ {a["plz"]}' if plz_count[str(a["plz"])] > 1 else ""),
                 "preis_verteilung": fmt_eur(a["preis_verteilung"]),
-                "gesamtpreis": fmt_eur(a["gesamtpreis"]),
+                "gesamtpreis": fmt_eur(a["preis_verteilung"] if plz_count[str(a["plz"])] > 1 else a["gesamtpreis"]),
             },
             "geometry": geometry
         })
     geojson = {"type": "FeatureCollection", "features": features}
 
+    if multi:
+        anfahrt_je_plz = {}
+        for a in areas:
+            anfahrt_je_plz[str(a["plz"])] = max(anfahrt_je_plz.get(str(a["plz"]), 0), a["anfahrt"])
+        anfahrt_sum = sum(anfahrt_je_plz.values())
+        gesamt_sum = sum(a["preis_verteilung"] for a in areas) + anfahrt_sum
+    else:
+        anfahrt_sum = sum(a["anfahrt"] for a in areas)
+        gesamt_sum = sum(a["gesamtpreis"] for a in areas)
     totals = {
         "bewerbbar": fmt_hh(sum(a["hh_bewerbbar"] for a in areas)),
         "gesamt": fmt_hh(sum(a["hh_gesamt"] for a in areas)),
-        "anfahrt": fmt_eur(sum(a["anfahrt"] for a in areas)),
+        "anfahrt": fmt_eur(anfahrt_sum),
         "verteilung": fmt_eur(sum(a["preis_verteilung"] for a in areas)),
-        "gesamtpreis": fmt_eur(sum(a["gesamtpreis"] for a in areas)),
+        "gesamtpreis": fmt_eur(gesamt_sum),
     }
 
     html = TEMPLATE
