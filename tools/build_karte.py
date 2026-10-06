@@ -158,7 +158,8 @@ let HIGHLIGHT_PLZ = QS.get('plz') || '__HIGHLIGHT_PLZ__';
 if (HIGHLIGHT_PLZ.indexOf('__') === 0) HIGHLIGHT_PLZ = '';
 if (SHOT) document.body.classList.add('shot');
 
-const map = L.map('map', { zoomControl: true }).setView([51.0, 10.0], 6);
+// Screenshot-Modus: Bruchteil-Zoom, damit die Gebiete den Ausschnitt fuellen (z. B. Rostock, hohe Nord-Sued-Ausdehnung)
+const map = L.map('map', { zoomControl: true, zoomSnap: SHOT ? 0.1 : 1 }).setView([51.0, 10.0], 6);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
