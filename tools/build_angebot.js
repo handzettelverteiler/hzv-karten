@@ -224,6 +224,8 @@ const page1Children = [
         children: [
           p("Angebot für", { color: GREY, size: 18, after: 60 }),
           p(kunde.name, { bold: true, size: 26, after: 30 }),
+          // optionale Zusatzzeilen (z. B. Behörde/Eigenbetrieb) zwischen Name und Straße
+          ...(kunde.zusatz || []).map((z) => p(z, { after: 10 })),
           p(kunde.strasse, { after: 10 }),
           p(kunde.ort, { after: 0 }),
         ],
@@ -239,11 +241,11 @@ const page1Children = [
   ),
   heading("Ihr Verteilgebiet"),
   p(
-    einePLZ
+    config.gebiet_text || (einePLZ
       ? `Das Verteilgebiet umfasst ${areas.length} Ortsteile in PLZ ${plzListe} mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in: ${ortsteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`
       : einStadt
       ? `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche in ${stadt} (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`
-      : `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in: ${ortsteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`,
+      : `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in: ${ortsteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`),
     { after: 280 }
   ),
   heading("Materialien"),
@@ -441,7 +443,10 @@ FD.optionen.forEach((o, i) => {
   optionBlocks.push(specLine(o.titel, { bold: true }));
   (o.specs || []).forEach(sp => optionBlocks.push(specLine(sp)));
   optionBlocks.push(p(o.druckverfahren || "", { before: 120, after: 120 }));
-  const preisTxt = o.preis_text || `Gesamtauflage ${fmtHH(o.auflage || fdAuflage)} Stück: ${o.preis ?? (FD.preise || [])[i]}.- Euro zzgl. MwSt.`;
+  const fdPreis = o.preis ?? (FD.preise || [])[i];
+  // Tausenderpunkt + ",- Euro" wie bei der Anfahrt (sonst "1066.- Euro")
+  const fdPreisTxt = typeof fdPreis === "number" ? `${fmtHH(fdPreis)},- Euro` : `${fdPreis}.- Euro`;
+  const preisTxt = o.preis_text || `Gesamtauflage ${fmtHH(o.auflage || fdAuflage)} Stück: ${fdPreisTxt} zzgl. MwSt.`;
   optionBlocks.push(p(preisTxt, { bold: true, after: 0 }));
 });
 const page5Children = [
