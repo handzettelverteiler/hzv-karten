@@ -330,8 +330,12 @@ const page3bChildren = [
 
 // ==================== SEITE 4: PREISÜBERSICHT ====================
 function priceTable() {
-  const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", "Preis"];
-  const colWidths = [1200, 2600, 1700, 1500, 1100, 2000];
+  // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
+  const hasAuflage = areas.some((a) => a.auflage);
+  const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Auflage"] : []), "Preis"];
+  const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
+  const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
+  const ROW_PAD = areas.length > 15 ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
   const LIGHT_ROW = "F7F7F7";
   const BORDER_LIGHT = { style: BorderStyle.SINGLE, size: 2, color: "E0E0E0" };
 
@@ -350,18 +354,18 @@ function priceTable() {
   });
 
   const dataRows = areas.map((a, rowIdx) => {
-    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), fmtHH(a.hh_gesamt), `${a.quote} %`, fmtEur(a.preis_verteilung)];
+    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), fmtHH(a.hh_gesamt), `${a.quote} %`, ...(hasAuflage ? [fmtHH(a.auflage || a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
     const zebra = rowIdx % 2 === 1;
     return new TableRow({
       children: vals.map((v, i) => {
-        const isKeyCol = i === 2 || i === 5; // HH bewerbbar & Preis: hellgrün (Kunde soll NICHT HH gesamt mit dem Preis verwechseln)
+        const isKeyCol = keyCols.includes(i); // HH bewerbbar & Preis: hellgrün (Kunde soll NICHT HH gesamt mit dem Preis verwechseln)
         let fill;
         if (isKeyCol) fill = GREEN_BG; else if (zebra) fill = LIGHT_ROW;
         return new TableCell({
           width: { size: colWidths[i], type: WidthType.DXA },
           shading: fill ? { type: ShadingType.CLEAR, fill } : undefined,
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 },
           borders: { bottom: BORDER_LIGHT },
           children: [new Paragraph({
             alignment: i >= 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
@@ -372,10 +376,11 @@ function priceTable() {
     });
   });
 
-  const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", fmtEur(gesamt.preis)];
+  const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage || a.hh_bewerbbar), 0);
+  const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
-      const isKeyCol = i === 2 || i === 5;
+      const isKeyCol = keyCols.includes(i);
       return new TableCell({
         width: { size: colWidths[i], type: WidthType.DXA },
         shading: isKeyCol ? { type: ShadingType.CLEAR, fill: GREEN_BG } : undefined,
@@ -405,7 +410,7 @@ const page4Children = [
   p(`Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise:`, { after: 200 }),
   priceTable(),
   p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
-  p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro.`, { after: 200 }),
+  p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
   p(`Möchten Sie weniger Flyer verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
 ];
 
@@ -438,8 +443,10 @@ function specLine(text, opts = {}) {
 const optionBlocks = [];
 FD.optionen.forEach((o, i) => {
   const label = "Option " + String.fromCharCode(65 + i);
-  optionBlocks.push(new Paragraph({ spacing: { before: i === 0 ? 120 : 280, after: 60 },
+  // Nur eine Druckvariante (Kundenwunsch) -> kein "Option A"-Label
+  if (FD.optionen.length > 1) optionBlocks.push(new Paragraph({ spacing: { before: i === 0 ? 120 : 280, after: 60 },
     children: [new TextRun({ text: label, bold: true, color: RED, size: SIZE + 4, font: FONT })] }));
+  else optionBlocks.push(new Paragraph({ spacing: { before: 200, after: 0 }, children: [] }));
   optionBlocks.push(specLine(o.titel, { bold: true }));
   (o.specs || []).forEach(sp => optionBlocks.push(specLine(sp)));
   optionBlocks.push(p(o.druckverfahren || "", { before: 120, after: 120 }));
