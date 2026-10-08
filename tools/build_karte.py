@@ -31,6 +31,7 @@ Zusatzoptionen:
 URL-Parameter der fertigen Karte:
     ?shot=1          Sidebar + Zoom-Buttons ausblenden (Screenshot-Modus)
     ?shot=1&plz=XXX  zusaetzlich PLZ hervorheben
+    --anfahrt-einmalig 35  An-/Abfahrt nur einmal fuer das ganze Gebiet (mehrere PLZ = ein Gebiet)
 Ortsteile einer PLZ (mehrere Gebiete mit gleicher PLZ): je Gebiet optional
     "id": "eutingen"     eindeutiger Schluessel fuer --highlight-plz / ?plz= (Standard: plz)
     "label": "Eutingen"  Beschriftung auf der Karte (Standard: "PLZ <plz>")
@@ -129,7 +130,7 @@ __LEAFLET_CSS__
     <div class="cap">Ihr Angebot &ndash; Gesamt</div>
     <div class="row"><span>Haushalte bewerbbar</span><span class="val">__BEWERBBAR__</span></div>
     <div class="row"><span>Haushalte gesamt</span><span class="val">__GESAMT__</span></div>
-    <div class="row"><span>Anfahrt je PLZ-Region</span><span class="val">__ANFAHRT__</span></div>
+    <div class="row"><span>__ANFAHRT_LABEL__</span><span class="val">__ANFAHRT__</span></div>
     <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">__VERTEILUNG__</span></div>
     <div class="row total"><span>Gesamtsumme</span><span class="val">__GESAMTPREIS__</span></div>
     <div class="note">Alle Preise zzgl. gesetzl. MwSt.</div>
@@ -174,7 +175,7 @@ function popupHtml(p) {
     <tr><td>An-/Abfahrt</td><td class="val">${p.anfahrt}</td></tr>
     <tr><td>Preis f&uuml;r Verteilung</td><td class="val">${p.preis_verteilung}</td></tr>
   </table>
-  <div class="totals">${p.anfahrt.indexOf('einmalig') > -1 ? 'Preis Ortsteil' : 'Gesamtpreis'}: <b>${p.gesamtpreis}</b></div>`;
+  <div class="totals">${p.anfahrt.indexOf('gesamte Gebiet') > -1 ? 'Preis Teilgebiet' : p.anfahrt.indexOf('einmalig') > -1 ? 'Preis Ortsteil' : 'Gesamtpreis'}: <b>${p.gesamtpreis}</b></div>`;
 }
 
 const STYLE_NORMAL = { color: '#7A1010', weight: 1.5, opacity: 1, fillColor: '#C81E1E', fillOpacity: 0.25 };
@@ -227,7 +228,7 @@ geojson.features.forEach(function(f) {
 
 
 def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
-          highlight_plz="", hide_sidebar=False):
+          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None):
     with open(f"{leaflet_dir}/leaflet.js") as f:
         leaflet_js = f.read()
     with open(f"{leaflet_dir}/leaflet.css") as f:
@@ -257,15 +258,20 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
                 "hh_gesamt": fmt_hh(a["hh_gesamt"]),
                 "quote": f'{a["quote"]} %',
-                "anfahrt": fmt_eur(a["anfahrt"]) + (f' einmalig f&uuml;r PLZ {a["plz"]}' if plz_count[str(a["plz"])] > 1 else ""),
+                "anfahrt": (fmt_eur(anfahrt_einmalig) + " einmalig f&uuml;r das gesamte Gebiet") if anfahrt_einmalig is not None
+                           else fmt_eur(a["anfahrt"]) + (f' einmalig f&uuml;r PLZ {a["plz"]}' if plz_count[str(a["plz"])] > 1 else ""),
                 "preis_verteilung": fmt_eur(a["preis_verteilung"]),
-                "gesamtpreis": fmt_eur(a["preis_verteilung"] if plz_count[str(a["plz"])] > 1 else a["gesamtpreis"]),
+                "gesamtpreis": fmt_eur(a["preis_verteilung"] if (anfahrt_einmalig is not None or plz_count[str(a["plz"])] > 1) else a["gesamtpreis"]),
             },
             "geometry": geometry
         })
     geojson = {"type": "FeatureCollection", "features": features}
 
-    if multi:
+    if anfahrt_einmalig is not None:
+        # Ganzes Verteilgebiet = ein Gebiet: An-/Abfahrt nur einmal, egal wie viele PLZ
+        anfahrt_sum = anfahrt_einmalig
+        gesamt_sum = sum(a["preis_verteilung"] for a in areas) + anfahrt_sum
+    elif multi:
         anfahrt_je_plz = {}
         for a in areas:
             anfahrt_je_plz[str(a["plz"])] = max(anfahrt_je_plz.get(str(a["plz"]), 0), a["anfahrt"])
@@ -293,6 +299,7 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     html = html.replace("__UPDATE_NOTE__", f" {update_note}" if update_note else "")
     html = html.replace("__BEWERBBAR__", totals["bewerbbar"])
     html = html.replace("__GESAMT__", totals["gesamt"])
+    html = html.replace("__ANFAHRT_LABEL__", "Anfahrt (einmalig)" if anfahrt_einmalig is not None else "Anfahrt je PLZ-Region")
     html = html.replace("__ANFAHRT__", totals["anfahrt"])
     html = html.replace("__VERTEILUNG__", totals["verteilung"])
     html = html.replace("__GESAMTPREIS__", totals["gesamtpreis"])
@@ -319,6 +326,7 @@ if __name__ == "__main__":
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
     ap.add_argument("--highlight-plz", default="", help="Ziel-PLZ (bzw. Gebiets-id bei Ortsteilen) blau hervorheben, Rest abdimmen, Zoom darauf")
     ap.add_argument("--hide-sidebar", action="store_true", help="Sidebar ausblenden")
+    ap.add_argument("--anfahrt-einmalig", type=float, default=None, help="An-/Abfahrt nur einmal fuer das ganze Verteilgebiet (z. B. 35), unabhaengig von der Zahl der PLZ")
     args = ap.parse_args()
 
     with open(args.input, encoding="utf-8") as f:
@@ -327,4 +335,4 @@ if __name__ == "__main__":
     if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
     build(areas, args.title, args.lede, args.cta_url, args.update_note, args.leaflet_dir, args.output,
-          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar)
+          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig)
