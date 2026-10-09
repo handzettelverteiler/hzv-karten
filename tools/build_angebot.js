@@ -135,6 +135,8 @@ console.log(`Stadtbild Seite 3: ${stadtIllustrationPath || "-"}\nStadtbild Seite
 // ---- Kundendaten ----
 const kunde = config.kunde; // { name, strasse, ort }
 const stadt = config.stadt; // z.B. "Neuötting" - für Textbausteine
+// "flyerdruck": false -> Kunde liefert die Flyer selbst: keine Flyerdruck-Seite, Materialien-Text ohne Druck-Hinweis (Stefan, 09.10.2026)
+const ohneDruck = config.flyerdruck === false;
 const areas = config.areas; // Array wie in references/config-beispiel.json
 const email = config.absender?.email || "info@handzettelverteiler.de";
 const absenderName = config.absender?.name || "HZV handzettelverteiler GmbH";
@@ -250,7 +252,8 @@ const page1Children = [
   ),
   heading("Materialien"),
   p(
-    `Ihre Flyer können im Format DIN A6 bis DIN A4 sein, einlagig oder gefaltet. Am einfachsten senden Sie uns die Materialien direkt zu – die Lieferanschrift teilen wir Ihnen nach Auftragsbestätigung mit. Möchten Sie die Flyer bequem über uns drucken, sehen Sie weiter unten ein Angebotsbeispiel, das wir gerne individuell anpassen können.`,
+    `Ihre Flyer können im Format DIN A6 bis DIN A4 sein, einlagig oder gefaltet. Am einfachsten senden Sie uns die Materialien direkt zu – die Lieferanschrift teilen wir Ihnen nach Auftragsbestätigung mit.` +
+      (ohneDruck ? "" : ` Möchten Sie die Flyer bequem über uns drucken, sehen Sie weiter unten ein Angebotsbeispiel, das wir gerne individuell anpassen können.`),
     { after: 0 }
   ),
 ];
@@ -535,7 +538,7 @@ const doc = new Document({
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page2Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3bChildren },
-    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...page5Children, ...page6Children] },
+    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...(ohneDruck ? [] : page5Children), ...page6Children] },
     { properties: { page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbChildren },
   ],
 });
