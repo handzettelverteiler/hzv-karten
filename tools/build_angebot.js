@@ -152,7 +152,9 @@ const ortsteile = [...new Set(areas.map((a) => a.gebiet))].join(", ");
 const plzSet = [...new Set(areas.map((a) => a.plz))];
 const plzListe = plzSet.join(", ");
 const einePLZ = plzSet.length === 1 && areas.length > 1;          // Ortsteile einer PLZ
-const einStadt = !einePLZ && new Set(areas.map((a) => a.gebiet)).size === 1 && areas.length > 1;
+const einStadt = !einePLZ && (config.ein_stadt ?? (new Set(areas.map((a) => a.gebiet)).size === 1 && areas.length > 1)); // config.ein_stadt: alle PLZ in einer Stadt, gebiet = Stadtteil
+function listeUnd(arr) { return arr.length <= 1 ? arr.join("") : arr.slice(0, -1).join(", ") + " und " + arr[arr.length - 1]; }
+const stadtteile = listeUnd([...new Set(areas.map((a) => a.gebiet))]);
 const anfahrtGesamt = config.anfahrt_gesamt ?? (35 * plzSet.length);
 const kundeName = kunde.name.replace(/\.$/, "");                   // kein doppelter Punkt ("e. V..")
 const hatCent = areas.some((a) => Math.abs(a.preis_verteilung - Math.round(a.preis_verteilung)) > 0.001);
@@ -238,6 +240,8 @@ const page1Children = [
   p(
     config.intro || (einePLZ
       ? `vielen Dank für Ihr Interesse an einer Handzettelverteilung für ${kundeName}. Wir haben für Sie ein Verteilgebiet in ${stadt} (PLZ ${plzListe}) zusammengestellt, das gezielt die Haushalte in den einzelnen Ortsteilen erreicht. Auf den folgenden Seiten finden Sie alle Details zu Gebieten, Ablauf und Preisen.`
+      : einStadt
+      ? `vielen Dank für Ihr Interesse an einer Handzettelverteilung für ${kundeName}. Wir haben für Sie ein Verteilgebiet in ${stadt} zusammengestellt, das gezielt Haushalte in den Stadtteilen ${stadtteile} erreicht. Auf den folgenden Seiten finden Sie alle Details zu Gebieten, Ablauf und Preisen.`
       : `vielen Dank für Ihr Interesse an einer Handzettelverteilung für ${kundeName}. Wir haben für Sie ein Verteilgebiet rund um ${stadt} zusammengestellt, das gezielt Haushalte in den angrenzenden Ortschaften erreicht. Auf den folgenden Seiten finden Sie alle Details zu Gebieten, Ablauf und Preisen.`),
     { after: 280 }
   ),
@@ -246,7 +250,7 @@ const page1Children = [
     config.gebiet_text || (einePLZ
       ? `Das Verteilgebiet umfasst ${areas.length} Ortsteile in PLZ ${plzListe} mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in: ${ortsteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`
       : einStadt
-      ? `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche in ${stadt} (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`
+      ? `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche in ${stadt} (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in den Stadtteilen ${stadtteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`
       : `Das Verteilgebiet umfasst ${areas.length} PLZ-Bereiche (${plzListe}) mit insgesamt ${fmtHH(gesamt.hh_bewerbbar)} bewerbbaren Haushalten. Verteilt wird in: ${ortsteile}. Den genauen Zeitraum stimmen wir gerne direkt mit Ihnen ab.`),
     { after: 280 }
   ),
