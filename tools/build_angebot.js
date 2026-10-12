@@ -460,8 +460,13 @@ FD.optionen.forEach((o, i) => {
   const fdPreis = o.preis ?? (FD.preise || [])[i];
   // Tausenderpunkt + ",- Euro" wie bei der Anfahrt (sonst "1066.- Euro")
   const fdPreisTxt = typeof fdPreis === "number" ? `${fmtHH(fdPreis)},- Euro` : `${fdPreis}.- Euro`;
-  const preisTxt = o.preis_text || `Gesamtauflage ${fmtHH(o.auflage || fdAuflage)} Stück: ${fdPreisTxt} zzgl. MwSt.`;
-  optionBlocks.push(p(preisTxt, { bold: true, after: 0 }));
+  // Mehrere Preiszeilen je Option (z. B. 135g und 170g): o.preis_zeilen = ["...", "..."]
+  if (Array.isArray(o.preis_zeilen) && o.preis_zeilen.length) {
+    o.preis_zeilen.forEach((z, zi) => optionBlocks.push(p(z, { bold: true, after: zi === o.preis_zeilen.length - 1 ? 0 : 40 })));
+  } else {
+    const preisTxt = o.preis_text || `Gesamtauflage ${fmtHH(o.auflage || fdAuflage)} Stück: ${fdPreisTxt} zzgl. MwSt.`;
+    optionBlocks.push(p(preisTxt, { bold: true, after: 0 }));
+  }
 });
 const page5Children = [
   new Paragraph({
