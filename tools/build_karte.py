@@ -130,7 +130,7 @@ __LEAFLET_CSS__
     <div class="cap">Ihr Angebot &ndash; Gesamt</div>
     <div class="row"><span>Haushalte bewerbbar</span><span class="val">__BEWERBBAR__</span></div>
     <div class="row"><span>Haushalte gesamt</span><span class="val">__GESAMT__</span></div>
-    <div class="row"><span>__ANFAHRT_LABEL__</span><span class="val">__ANFAHRT__</span></div>
+__AUFLAGE_ROW__    <div class="row"><span>__ANFAHRT_LABEL__</span><span class="val">__ANFAHRT__</span></div>
     <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">__VERTEILUNG__</span></div>
     <div class="row total"><span>Gesamtsumme</span><span class="val">__GESAMTPREIS__</span></div>
     <div class="note">Alle Preise zzgl. gesetzl. MwSt.</div>
@@ -172,6 +172,7 @@ function popupHtml(p) {
     <tr><td>Haushalte bewerbbar</td><td class="val">${p.hh_bewerbbar}</td></tr>
     <tr><td>Haushalte gesamt</td><td class="val">${p.hh_gesamt}</td></tr>
     <tr><td>Bewerbungsquote</td><td class="val">${p.quote}</td></tr>
+    ${p.auflage ? `<tr><td><b>Verteilmenge (Auflage)</b></td><td class="val"><b>${p.auflage}</b></td></tr>` : ''}
     <tr><td>An-/Abfahrt</td><td class="val">${p.anfahrt}</td></tr>
     <tr><td>Preis f&uuml;r Verteilung</td><td class="val">${p.preis_verteilung}</td></tr>
   </table>
@@ -258,6 +259,7 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
                 "hh_gesamt": fmt_hh(a["hh_gesamt"]),
                 "quote": f'{a["quote"]} %',
+                "auflage": fmt_hh(a["auflage"]) if a.get("auflage") else "",
                 "anfahrt": (fmt_eur(anfahrt_einmalig) + " einmalig f&uuml;r das gesamte Gebiet") if anfahrt_einmalig is not None
                            else fmt_eur(a["anfahrt"]) + (f' einmalig f&uuml;r PLZ {a["plz"]}' if plz_count[str(a["plz"])] > 1 else ""),
                 "preis_verteilung": fmt_eur(a["preis_verteilung"]),
@@ -298,6 +300,12 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     html = html.replace("__AREA_COUNT__", str(len(areas)))
     html = html.replace("__UPDATE_NOTE__", f" {update_note}" if update_note else "")
     html = html.replace("__BEWERBBAR__", totals["bewerbbar"])
+    # Teilauflage: Verteilmenge in der Kennzahlenbox zeigen, sobald ein Gebiet ein auflage-Feld hat
+    auflage_row = ""
+    if any(a.get("auflage") for a in areas):
+        auflage_sum = sum(a.get("auflage") or a["hh_bewerbbar"] for a in areas)
+        auflage_row = f'    <div class="row"><span><b>Verteilmenge (Auflage)</b></span><span class="val"><b>{fmt_hh(auflage_sum)}</b></span></div>\n'
+    html = html.replace("__AUFLAGE_ROW__", auflage_row)
     html = html.replace("__GESAMT__", totals["gesamt"])
     html = html.replace("__ANFAHRT_LABEL__", "Anfahrt (einmalig)" if anfahrt_einmalig is not None else "Anfahrt je PLZ-Region")
     html = html.replace("__ANFAHRT__", totals["anfahrt"])
