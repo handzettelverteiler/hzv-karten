@@ -735,7 +735,7 @@ const map=L.map('map',{zoomSnap:SHOT?0.1:1});
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 const inFocus=s=>!FOCUS||(GROUPS[FOCUS]&&GROUPS[FOCUS].ids.includes(s.id));
 // Kreise
-STOPS.forEach(s=>{const f=inFocus(s);L.circle([s.lat,s.lon],{radius:R,color:'#C81E1E',weight:f?1.2:0.6,opacity:f?0.9:0.3,fillColor:'#C81E1E',fillOpacity:f?0.18:0.05,interactive:false}).addTo(map);});
+STOPS.forEach(s=>{const f=inFocus(s);L.circle([s.lat,s.lon],{radius:R,color:'#C81E1E',weight:f?1.2:0.6,opacity:f?0.9:0.3,fillColor:'#C81E1E',fillOpacity:f?0.11:0.05,interactive:false}).addTo(map);});
 // Linienverlauf (Strassenverlauf, X22 Schnellbus-Abschnitt ohne Halt gestrichelt)
 Object.entries(ROUTES).forEach(([k,seg])=>{const l=k.startsWith('R9')?'R9':'X22';
   L.polyline(seg,{color:COL[l],weight:k.endsWith('v')?3:5,opacity:k.endsWith('v')?0.6:0.85,dashArray:k.endsWith('v')?'8 8':null}).addTo(map);});
@@ -746,7 +746,7 @@ STOPS.forEach(s=>{const f=inFocus(s);
   if(f&&(FOCUS||!SHOT))m.bindTooltip(s.name,{permanent:true,direction:'right',offset:[6,0],className:'stoplabel'});
 });
 function fit(key){const ids=key?GROUPS[key].ids:STOPS.map(s=>s.id);const pts=STOPS.filter(s=>ids.includes(s.id));
-  const b=L.latLngBounds(pts.map(s=>[s.lat,s.lon]));map.fitBounds(b.pad(key?0.12:0.06));}
+  const b=L.latLngBounds([]);pts.forEach(s=>{b.extend([s.lat-0.0047,s.lon-0.0072]);b.extend([s.lat+0.0047,s.lon+0.0072]);});map.fitBounds(b.pad(0.02));}
 fit(FOCUS);
 const bt=document.getElementById('btns');
 [['','Alle Abschnitte']].concat(Object.entries(GROUPS).map(([k,g])=>[k,g.label])).forEach(([k,t])=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>fit(k);bt.appendChild(b);});
