@@ -137,6 +137,8 @@ const kunde = config.kunde; // { name, strasse, ort }
 const stadt = config.stadt; // z.B. "Neuötting" - für Textbausteine
 // "flyerdruck": false -> Kunde liefert die Flyer selbst: keine Flyerdruck-Seite, Materialien-Text ohne Druck-Hinweis (Stefan, 09.10.2026)
 const ohneDruck = config.flyerdruck === false;
+// "werbemittel": z. B. "Briefe" statt "Flyer" in Verteilungsdetails/Teilmengen-Hinweis; "materialien_text": eigener Materialien-Absatz (z. B. kuvertierte Briefe)
+const werbemittel = config.werbemittel || "Flyer";
 const areas = config.areas; // Array wie in references/config-beispiel.json
 const email = config.absender?.email || "info@handzettelverteiler.de";
 const absenderName = config.absender?.name || "HZV handzettelverteiler GmbH";
@@ -256,7 +258,7 @@ const page1Children = [
   ),
   heading("Materialien"),
   p(
-    `Ihre Flyer können im Format DIN A6 bis DIN A4 sein, einlagig oder gefaltet. Am einfachsten senden Sie uns die Materialien direkt zu – die Lieferanschrift teilen wir Ihnen nach Auftragsbestätigung mit.` +
+    config.materialien_text || `Ihre Flyer können im Format DIN A6 bis DIN A4 sein, einlagig oder gefaltet. Am einfachsten senden Sie uns die Materialien direkt zu – die Lieferanschrift teilen wir Ihnen nach Auftragsbestätigung mit.` +
       (ohneDruck ? "" : ` Möchten Sie die Flyer bequem über uns drucken, sehen Sie weiter unten ein Angebotsbeispiel, das wir gerne individuell anpassen können.`),
     { after: 0 }
   ),
@@ -269,7 +271,7 @@ const page2Children = [
     children: [new ImageRun({ data: logo, type: "png", transformation: { width: 460, height: 92 } })],
   }),
   heading("Verteilungsdetails", { before: 0 }),
-  bullet("In Mehrfamilienhäusern werden die Flyer in die Briefkästen eingeworfen, nicht in das Treppenhaus, außer es sind spezielle Werbekörbe vorhanden."),
+  bullet(`In Mehrfamilienhäusern werden die ${werbemittel} in die Briefkästen eingeworfen, nicht in das Treppenhaus, außer es sind spezielle Werbekörbe vorhanden.`),
   bullet("Bei Briefkästen mit dem Hinweis „Keine Werbung“ erfolgt kein Einwurf."),
   bullet("Bei verschlossenen Türen in Mehrparteienhäusern versuchen wir zu klingeln. Wenn niemand öffnet, erfolgt keine Verteilung."),
   bullet("Bei Einfamilienhäusern ohne zugängliche Briefkästen kann kein Einwurf erfolgen."),
@@ -418,7 +420,7 @@ const page4Children = [
   priceTable(),
   p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
   p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
-  p(`Möchten Sie weniger Flyer verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
+  p(`Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
 ];
 
 // ==================== SEITE 6: FLYERDRUCK (optional) – Option A / Option B ====================
