@@ -1,5 +1,5 @@
 /**
- * HZV Angebot Generator (v4 – 8 Seiten, Stadtbild + Lupen-Variante automatisch, Config-basiert)
+ * HZV Angebot Generator (v5 – 9 Seiten: AGB Stand Okt 2026 auf 2 Seiten zweispaltig; Stadtbild + Lupen-Variante automatisch, Config-basiert)
  * Baut das Angebots-docx nach den festen HZV-Standards für einen beliebigen Kunden.
  *
  * Aufruf:
@@ -12,7 +12,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell,
   WidthType, ShadingType, BorderStyle, AlignmentType, PageOrientation,
-  Header, Footer, VerticalAlign, UnderlineType,
+  Header, Footer, VerticalAlign, UnderlineType, SectionType,
 } = require("docx");
 const { execFileSync } = require("child_process");
 
@@ -511,34 +511,139 @@ const page6Children = [
   p("Preise haben Gültigkeit von 3 Monaten.", { align: AlignmentType.CENTER, size: 20, after: 0 }),
 ];
 
-// ==================== SEITE 7: AGB (komprimiert auf 1 Seite) ====================
+// ==================== AGB (Stand Oktober 2026, 18 Paragraphen, 2 Seiten zweispaltig) ====================
+// Quelle: Doc "HZV AGB – Prüfung & Neuentwurf 2026" (Stefan, 21.10.2026). Text nur hier ändern.
+const AGB_STAND = "Oktober 2026";
 const agbParas = [
-  ["1. Leistungen und Abweichungen", "Unsere Leistungen richten sich ausschließlich nach unseren schriftlich bestätigten Leistungs- und Zahlungsbedingungen. Abweichende Bedingungen des Auftraggebers gelten nur, wenn diese ausdrücklich und schriftlich anerkannt werden. Diese Bedingungen gelten auch für künftige Verträge mit dem Auftraggeber. Änderungen und Ergänzungen bedürfen der Schriftform."],
-  ["2. Angebote", "Unsere Angebote sind freibleibend. Verbindlich werden Preise und Leistungen erst mit unserer schriftlichen Auftragsbestätigung. Sämtliche Preise verstehen sich in EUR zuzüglich der jeweils gültigen gesetzlichen Mehrwertsteuer. Besondere Anforderungen (z. B. für Proben, sperrige Sendungen, besondere Verteilgebiete) können gesondert berechnet werden."],
-  ["3. Vertragliche Änderungen", "Ergeben sich gesetzlich bedingte Kostenänderungen, verhandeln die Parteien neu. Kommt keine Einigung zustande, steht beiden Seiten ein Sonderkündigungsrecht zu."],
-  ["4. Anlieferung", "Das Verteilgut ist, sofern nicht anders vereinbart, spätestens drei Werktage vor Verteiltermin frei Haus an die vereinbarte Lieferadresse anzuliefern. Eine Haftung für Beschädigungen oder Verlust beim Transport durch Dritte übernehmen wir nicht. Verzögerungen, die durch den Auftraggeber verursacht werden, gehen zu dessen Lasten."],
-  ["5. Durchführung", "Die Verteilung erfolgt standardmäßig durch Einwurf in Briefkästen von Privathaushalten. Kein Anspruch besteht auf Belieferung von Gewerbebetrieben, Büros, öffentlichen Einrichtungen, Heimen oder ähnlichen Adressen. Bei Hochhäusern mit verschlossenen Briefkästen erfolgt die Abgabe am vorgesehenen Sammelplatz. Nicht verteilbare Mengen werden nach Wahl entweder makuliert oder gegen Kostenübernahme zur Abholung bereitgestellt. Wir behalten uns vor, Aufträge mit gesetzes- oder sittenwidrigen Inhalten abzulehnen."],
-  ["6. Unternehmerische Pflichten", "Die Verantwortung für die Einhaltung des Mindestlohngesetzes durch eingesetzte Subunternehmer liegt ausschließlich bei uns. Eine Haftung des Auftraggebers hierfür ist ausgeschlossen."],
-  ["7. Gewährleistung, Nachweise und Haftung", "Es wird ausdrücklich kein bestimmter Werbeerfolg geschuldet. Der Auftraggeber haftet allein für Inhalt, Rechtmäßigkeit und Gestaltung der Werbemittel. Eine ordnungsgemäße Leistung liegt vor, wenn mindestens 90 % der vorgesehenen Haushalte beliefert wurden. Minder- oder Restmengen stellen keinen Mangel dar, sofern nichts Abweichendes schriftlich vereinbart ist. Nach jeder Verteilung werden stichprobenartige Nachweise in Form von Kontrolllisten und/oder Fotos erstellt und dem Auftraggeber zur Verfügung gestellt. Der Auftraggeber erhält den genauen Verteilzeitraum vor Beginn der Verteilung schriftlich mitgeteilt. Diese Nachweise gelten als verbindlicher Leistungsnachweis. Beanstandungen müssen innerhalb von 3 Werktagen nach Verteilerende schriftlich und konkretisiert erfolgen. Nach Ablauf dieser Frist gilt die Leistung als mängelfrei angenommen. Eine Haftung unsererseits besteht ausschließlich bei vorsätzlichem oder grob fahrlässigem Verhalten."],
-  ["8. Beanstandungen (DSGVO)", "Beanstandungen sind ausschließlich anonymisiert und ohne personenbezogene Daten einzureichen. Nur konkrete, nachvollziehbare Angaben (Straße/Hausnummer) können berücksichtigt werden. Eine pauschale Reklamation berechtigt nicht zur Kürzung oder Verweigerung der Zahlung."],
-  ["9. Haftungsausschluss", "Jegliche Schadensersatzansprüche sind ausgeschlossen, soweit sie nicht auf Vorsatz, grober Fahrlässigkeit oder der Verletzung wesentlicher Vertragspflichten beruhen. Eine Haftung für entgangenen Gewinn, mittelbare Schäden oder Mangelfolgeschäden ist ausgeschlossen. Unberührt bleibt die gesetzliche Haftung für Schäden an Leben, Körper oder Gesundheit."],
-  ["10. Zahlung", "Die Zahlung erfolgt grundsätzlich im Voraus und ohne Abzug. Bei Zahlungsverzug sind wir berechtigt, Verzugszinsen in Höhe von 8 % über dem jeweiligen Basiszinssatz zu verlangen. Weitergehende Schadensersatzansprüche bleiben unberührt."],
-  ["11. Erfüllungsort und Gerichtsstand", "Erfüllungsort und Gerichtsstand ist der Sitz der HZV handzettelverteiler GmbH."],
-  ["12. Kündigungsfristen", "Verträge über regelmäßig wiederkehrende Leistungen können von beiden Parteien mit einer Frist von drei Monaten zum Monatsende gekündigt werden."],
-  ["13. Schlussbestimmungen", "Sollten einzelne Bestimmungen dieser AGB unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. Unwirksame Regelungen werden durch solche ersetzt, die dem wirtschaftlichen Zweck am nächsten kommen."],
+  ["§ 1 Geltungsbereich", [
+    "(1) Diese AGB gelten für alle Verträge der HZV handzettelverteiler GmbH (nachfolgend „HZV“) über die Verteilung von Werbemitteln und damit verbundene Leistungen wie Gestaltung, Druck und Lagerung.",
+    "(2) HZV schließt Verträge ausschließlich mit Unternehmern im Sinne von § 14 BGB, juristischen Personen des öffentlichen Rechts und öffentlich-rechtlichen Sondervermögen. Der Auftraggeber erteilt den Auftrag in Ausübung seiner gewerblichen oder selbständigen beruflichen Tätigkeit.",
+    "(3) Abweichende Bedingungen des Auftraggebers gelten nicht, auch wenn HZV ihnen nicht ausdrücklich widerspricht. Diese AGB gelten auch für Folgeaufträge.",
+    "(4) Individuelle Vereinbarungen haben Vorrang vor diesen AGB. Sie sind zu Beweiszwecken in Textform (z. B. E-Mail) festzuhalten.",
+  ]],
+  ["§ 2 Angebot und Vertragsschluss", [
+    "(1) Angebote von HZV sind freibleibend und 3 Monate gültig. Der Vertrag kommt mit der Auftragsbestätigung von HZV in Textform zustande. Den Leistungsumfang bestimmen Auftragsbestätigung, Verteilplan bzw. Gebietskarte und diese AGB.",
+    "(2) Alle Preise verstehen sich in Euro zuzüglich der gesetzlichen Umsatzsteuer. Sie gelten je Verteilgebiet für die im Angebot genannte Stückzahl sowie das genannte Format und Gewicht der Werbemittel. Weichen die angelieferten Werbemittel davon ab, teilt HZV den Mehrpreis vor Beginn der Verteilung in Textform mit.",
+  ]],
+  ["§ 3 Leistungsumfang", [
+    "(1) HZV verteilt die Werbemittel durch Einwurf in die Briefkästen von Privathaushalten im vereinbarten Verteilgebiet und Verteilzeitraum. Geschuldet ist die Verteilung an die erreichbaren Haushalte nach Absatz 3, nicht ein bestimmter Werbeerfolg, Umsatz oder Rücklauf.",
+    "(2) Die im Angebot genannten Haushaltszahlen sind Planzahlen. Sie umfassen auch Haushalte, die nach Absatz 3 nicht beliefert werden dürfen oder können. Abweichungen der tatsächlich erreichbaren Haushalte von den Planzahlen sind kein Mangel.",
+    "(3) Nicht erreichbar sind und nicht beliefert werden insbesondere:",
+    "a) Briefkästen mit einem Hinweis, dass keine Werbung gewünscht ist (§ 4);",
+    "b) Häuser mit verschlossenen Innenbriefkästen oder Briefkästen an Wohnungstüren, wenn nach einmaligem Klingeln kein Zugang gewährt wird;",
+    "c) Gewerbe- und Industriegebiete, Kleingartenanlagen, Einzelgehöfte sowie Häuser außerhalb zusammenhängender Wohngebiete;",
+    "d) Grundstücke, deren Betreten verboten oder unzumutbar ist (z. B. wegen frei laufender Hunde oder fehlender sicherer Zuwegung).",
+    "Briefkästen von Büros, Praxen und Geschäften innerhalb von Wohngebieten werden mitbeliefert. Sieht eine Hausverwaltung eine Ablagestelle für Werbemittel vor, kann die Abgabe dort erfolgen.",
+    "(4) Die Leistung ist ordnungsgemäß erbracht, wenn in jedem Verteilbezirk mindestens 90 % der erreichbaren Haushalte beliefert wurden. Verteilbezirk ist die kleinste in Auftragsbestätigung oder Verteilplan ausgewiesene Gebietseinheit (z. B. Postleitzahl oder Teilgebiet).",
+    "(5) Einzelne nicht belieferte Adressen, die sich nicht in einem zusammenhängenden Straßenabschnitt häufen, sind übliche Streuverluste und kein Mangel.",
+    "(6) Ist die bestellte oder angelieferte Stückzahl geringer als die Zahl der erreichbaren Haushalte, bestimmt HZV die ausgelassenen Teilflächen; dies ist kein Mangel.",
+    "(7) HZV darf Subunternehmer einsetzen und haftet für sie wie für eigene Mitarbeiter. In der Regel verteilt HZV jeden Auftrag einzeln. In einzelnen Teilgebieten darf HZV Werbemittel mehrerer Auftraggeber gemeinsam verteilen; ein Ausschluss von Wettbewerbern derselben Branche gilt nur, wenn er in Textform vereinbart ist.",
+  ]],
+  ["§ 4 Werbeverbote", [
+    "(1) HZV beachtet Hinweise an Briefkästen, die den Einwurf von Werbung untersagen (z. B. „Keine Werbung“). Ein Einwurf trotz solcher Hinweise ist rechtswidrig; für Verstöße kann auch das werbende Unternehmen in Anspruch genommen werden.",
+    "(2) Haushalte mit Werbeverbot zählen nicht zu den erreichbaren Haushalten. Weisungen, Werbeverbote zu missachten, führt HZV nicht aus.",
+  ]],
+  ["§ 5 Verteilnachweis", [
+    "(1) HZV dokumentiert jede Verteilung stichprobenartig durch Kontrolllisten und/oder Fotos von bestückten Briefkästen oder Briefkastenanlagen.",
+    "(2) Nach Abschluss der Verteilung erhält der Auftraggeber eine Auswahl dieser Nachweise in Textform.",
+    "(3) Die Nachweise sind Stichproben. Sie zeigen weder jeden Briefkasten noch jede Straße. Ein lückenloser Einzelnachweis ist bei der Haushaltsverteilung weder technisch noch wirtschaftlich möglich und branchenüblich nicht geschuldet. Fehlt für eine Straße ein Nachweis, belegt das keine Nichtverteilung.",
+  ]],
+  ["§ 6 Werbemittel, Anlieferung und Mengen", [
+    "(1) Werbemittel müssen briefkastengerecht sein, gebündelt angeliefert werden und mit einem Lieferschein versehen sein, der Auftraggeber, Auftragsnummer und Stückzahl nennt. Maximales Format und Gewicht ergeben sich aus dem Angebot.",
+    "(2) Die Anlieferung erfolgt frei Haus an die vereinbarte Lieferadresse, spätestens 3 Werktage vor Beginn des Verteilzeitraums. Verspätete oder unvollständige Anlieferung verschiebt den Verteilzeitraum; dadurch entstehende Mehrkosten trägt der Auftraggeber.",
+    "(3) HZV stellt die angelieferte Menge durch Zählen oder Wiegen fest und teilt Abweichungen vom Lieferschein unverzüglich in Textform mit. Für Verlust oder Beschädigung beim Transport durch Dritte haftet HZV nicht.",
+    "(4) Liefert der Auftraggeber mehr Werbemittel an als beauftragt, ist HZV zur Verteilung dieser Mehrmengen nicht verpflichtet. Mehrmengen und nach der Verteilung verbliebene Restmengen überlässt der Auftraggeber HZV nach deren Wahl zur Verteilung im Verteilgebiet oder zur Entsorgung. Ein Anspruch auf Rückgabe, Abrechnung oder Auskunft über ihren Verbleib besteht nicht. Eine Rücknahme ist nur möglich, wenn sie vor der Anlieferung in Textform vereinbart wurde; der Auftraggeber holt die Werbemittel dann binnen 7 Tagen nach Ende des Verteilzeitraums auf eigene Kosten ab.",
+    "(5) Werbemittel können durch Feuchtigkeit, statische Aufladung oder ihre Papier- und Druckqualität aneinanderhaften. Dadurch können vereinzelt mehrere Exemplare in einen Briefkasten gelangen. Der daraus entstehende Mehrverbrauch und daraus folgende Fehlmengen sind kein Mangel. Haften die Werbemittel in erheblichem Umfang aneinander, informiert HZV den Auftraggeber.",
+  ]],
+  ["§ 7 Inhalt der Werbemittel", [
+    "(1) Der Auftraggeber ist allein verantwortlich für Inhalt, Gestaltung und Rechtmäßigkeit der Werbemittel, insbesondere nach Wettbewerbs-, Marken-, Urheber- und Datenschutzrecht. Er stellt HZV von Ansprüchen Dritter frei, die auf dem Inhalt der Werbemittel beruhen, einschließlich angemessener Kosten der Rechtsverteidigung.",
+    "(2) Übernimmt HZV Gestaltung oder Druck, ist die Druckfreigabe des Auftraggebers maßgeblich. Für Fehler, die in der freigegebenen Vorlage enthalten sind, haftet HZV nicht.",
+    "(3) HZV darf die Verteilung von Werbemitteln ablehnen, die gegen Gesetze oder die guten Sitten verstoßen, politische oder religiöse Inhalte haben oder von Format und Gewicht laut Angebot abweichen. Der Auftraggeber holt sie dann binnen 5 Werktagen auf eigene Kosten ab; für die Vergütung gilt § 13 entsprechend.",
+  ]],
+  ["§ 8 Verteilzeitraum, Verschiebungen, höhere Gewalt", [
+    "(1) HZV verteilt innerhalb des vereinbarten Verteilzeitraums. Ein fester Verteiltag gilt nur, wenn er in der Auftragsbestätigung ausdrücklich als Fixtermin bezeichnet ist.",
+    "(2) Unwetter, Streik, behördliche Maßnahmen, Verkehrssperren und vergleichbare Ereignisse, die HZV nicht zu vertreten hat, verlängern den Verteilzeitraum um die Dauer der Behinderung. HZV informiert den Auftraggeber unverzüglich. Ist ihm die spätere Verteilung nicht mehr zumutbar, kann er insoweit vom Vertrag zurücktreten; bereits erbrachte Leistungen werden vergütet.",
+    "(3) Eine Nachverteilung in einzelnen Verteilbezirken innerhalb von 3 Werktagen nach Ende des Verteilzeitraums gilt als fristgerecht, soweit der Werbezweck (z. B. ein Veranstaltungsdatum) nicht entgegensteht.",
+  ]],
+  ["§ 9 Beanstandungen", [
+    "(1) Beanstandungen sind in Textform an info@handzettelverteiler.de innerhalb von 2 Werktagen nach Ende des Verteilzeitraums zu erheben. Den Verteilzeitraum teilt HZV vor Beginn der Verteilung in Textform mit. Mängel, die der Auftraggeber schon während des Verteilzeitraums feststellt, meldet er unverzüglich. Die kurze Frist ist notwendig, weil Briefkästen in der Regel täglich geleert werden und eine spätere Überprüfung nicht mehr zuverlässig möglich ist.",
+    "(2) Die Beanstandung muss enthalten:",
+    "a) Verteilbezirk (Postleitzahl und Ort);",
+    "b) betroffene Straße(n) mit Hausnummernbereich;",
+    "c) Datum, Uhrzeit und Art der eigenen Kontrolle;",
+    "d) vorhandene Belege, etwa eigene Fotos.",
+    "Namen von Bewohnern werden nicht benötigt und sollen nicht übermittelt werden.",
+    "(3) Eine Beanstandung ohne die Angaben nach Absatz 2 kann HZV nicht prüfen; sie wahrt die Frist nach Absatz 1 nicht.",
+    "(4) Befragungen von Haushaltsmitgliedern, Telefonkontrollen und die Aussage, kein Werbemittel gesehen zu haben, belegen für sich genommen keine Nichtverteilung. Werbemittel werden häufig von einem Haushaltsmitglied zusammen mit anderer Werbung entnommen und ungelesen entsorgt, ohne dass andere Haushaltsmitglieder sie sehen. Bei geschlossenen Briefkästen ist ein eingeworfenes Werbemittel von außen nicht erkennbar; auch ein leer wirkender Briefkasten belegt daher keine Nichtverteilung.",
+    "(5) HZV prüft jede fristgerechte Beanstandung anhand der Nachweise nach § 5 und einer Stellungnahme des eingesetzten Verteilers. Das Ergebnis teilt HZV dem Auftraggeber in der Regel innerhalb von 5 Werktagen in Textform mit.",
+    "(6) Nicht fristgerecht oder nicht nach Absatz 2 erhobene Beanstandungen begründen keine Mängelrechte. Das gilt nicht, wenn HZV einen Mangel kannte und dem Auftraggeber verschwiegen hat, und nicht für Ansprüche nach § 11 Abs. 1.",
+  ]],
+  ["§ 10 Rechte bei berechtigter Beanstandung", [
+    "(1) Ergibt die Prüfung nach § 9 Abs. 5, dass in den beanstandeten Straßenabschnitten nicht verteilt wurde und die Quote nach § 3 Abs. 4 dadurch unterschritten ist, verteilt HZV dort nach, soweit der Werbezweck dies zulässt und Werbemittel vorhanden sind.",
+    "(2) Ist eine Nachverteilung nicht möglich, für den Auftraggeber nicht zumutbar oder schlägt sie fehl, erhält er eine Gutschrift für genau diese Straßenabschnitte: die Zahl der dortigen Haushalte multipliziert mit dem Preis je Haushalt. Der Preis je Haushalt ist der Preis des Verteilgebiets geteilt durch die im Angebot genannte Haushaltszahl dieses Gebiets.",
+    "(3) Mängel in einzelnen Verteilbezirken lassen die Vergütung für die übrigen Bezirke unberührt. Ein Rücktritt vom gesamten Vertrag ist nur möglich, wenn der Auftraggeber an den mangelfreien Teilleistungen kein Interesse hat.",
+    "(4) Schadensersatz richtet sich nach § 11.",
+  ]],
+  ["§ 11 Haftung", [
+    "(1) HZV haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit, für Schäden aus der Verletzung von Leben, Körper oder Gesundheit, nach dem Produkthaftungsgesetz und im Umfang einer übernommenen Garantie.",
+    "(2) Bei leicht fahrlässiger Verletzung einer wesentlichen Vertragspflicht ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Wesentlich sind Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags erst ermöglicht und auf deren Einhaltung der Auftraggeber regelmäßig vertrauen darf.",
+    "(3) Im Übrigen ist die Haftung für leichte Fahrlässigkeit ausgeschlossen.",
+    "(4) Diese Regeln gelten auch für die persönliche Haftung von Mitarbeitern, Verteilern und Subunternehmern von HZV.",
+  ]],
+  ["§ 12 Zahlung", [
+    "(1) Rechnungen sind, soweit nicht anders vereinbart, vor Beginn des Verteilzeitraums ohne Abzug zu zahlen (Vorkasse). HZV beginnt die Verteilung nach Zahlungseingang; verzögert sich die Zahlung, verschiebt sich der Verteilzeitraum.",
+    "(2) Bei Zahlungsverzug schuldet der Auftraggeber Verzugszinsen in gesetzlicher Höhe von 9 Prozentpunkten über dem Basiszinssatz sowie die Pauschale von 40 € nach § 288 Abs. 5 BGB. Solange der Auftraggeber in Verzug ist, darf HZV weitere Aufträge zurückstellen.",
+    "(3) Der Auftraggeber kann nur mit unbestrittenen, rechtskräftig festgestellten oder entscheidungsreifen Gegenforderungen aufrechnen oder ein Zurückbehaltungsrecht ausüben. Gegenansprüche wegen Mängeln aus demselben Auftrag bleiben hiervon unberührt. Eine Beanstandung berechtigt nicht zur Kürzung von Rechnungen anderer Aufträge.",
+  ]],
+  ["§ 13 Stornierung durch den Auftraggeber", [
+    "(1) Kündigt der Auftraggeber den Auftrag vor Abschluss der Verteilung, kann HZV statt einer konkreten Abrechnung nach § 648 BGB eine Pauschale auf die Netto-Verteilvergütung der nicht erbrachten Leistung verlangen: bis 10 Werktage vor Beginn des Verteilzeitraums 10 %, bis 3 Werktage vorher 25 %, danach 40 %. Bereits erbrachte Leistungen und bei Dritten beauftragte Leistungen, etwa der Druck, sind voll zu vergüten.",
+    "(2) Der Auftraggeber kann nachweisen, dass HZV kein oder ein geringerer Schaden entstanden ist; dann schuldet er nur diesen. HZV kann umgekehrt einen höheren Anspruch nachweisen.",
+  ]],
+  ["§ 14 Mindestlohn", [
+    "HZV beauftragt nur Subunternehmer, die sich zur Zahlung des gesetzlichen Mindestlohns verpflichtet haben, und überprüft dies. HZV stellt den Auftraggeber von Ansprüchen nach dem Mindestlohngesetz frei, die auf Pflichtverletzungen von HZV oder seinen Subunternehmern beruhen.",
+  ]],
+  ["§ 15 Verjährung", [
+    "Mängel, die nicht fristgerecht nach § 9 beanstandet wurden, begründen von vornherein keine Ansprüche (§ 9 Abs. 6). Ansprüche aus fristgerecht beanstandeten Mängeln verjähren in 12 Monaten ab Ende des Verteilzeitraums. Das gilt nicht, wenn HZV einen Mangel kannte und verschwiegen hat, und nicht für Ansprüche nach § 11 Abs. 1.",
+  ]],
+  ["§ 16 Datenschutz", [
+    "HZV verarbeitet personenbezogene Daten zur Vertragsdurchführung (Art. 6 Abs. 1 lit. b DSGVO) sowie zur Dokumentation der Verteilung und zur Abwehr von Ansprüchen (Art. 6 Abs. 1 lit. f DSGVO). Einzelheiten enthält die Datenschutzerklärung unter www.handzettelverteiler.de.",
+  ]],
+  ["§ 17 Rahmenverträge", [
+    "Verträge über regelmäßig wiederkehrende Verteilungen können beide Seiten mit einer Frist von drei Monaten zum Monatsende kündigen.",
+  ]],
+  ["§ 18 Schlussbestimmungen", [
+    "(1) Es gilt deutsches Recht.",
+    "(2) Erfüllungsort und ausschließlicher Gerichtsstand ist Saarbrücken. HZV darf den Auftraggeber auch an dessen allgemeinem Gerichtsstand verklagen.",
+    "(3) Ist eine Bestimmung dieser AGB unwirksam, bleiben die übrigen Bestimmungen wirksam.",
+  ]],
 ];
-const agbChildren = [
+const AGB_SIZE = 14, AGB_TITLE_SIZE = 15;
+const agbTitleChildren = [
   new Paragraph({
-    alignment: AlignmentType.CENTER, spacing: { after: 200 }, pageBreakBefore: true,
+    alignment: AlignmentType.CENTER, spacing: { after: 40 },
     children: [new TextRun({ text: "Allgemeine Geschäftsbedingungen – HZV handzettelverteiler GmbH", bold: true, size: 22, font: FONT })],
   }),
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 160 },
+    children: [new TextRun({ text: `Stand: ${AGB_STAND}`, size: AGB_SIZE, font: FONT, color: "555555" })],
+  }),
 ];
-agbParas.forEach(([t, body], idx) => {
+const agbChildren = [];
+agbParas.forEach(([t, absaetze], idx) => {
   agbChildren.push(new Paragraph({
-    spacing: { before: idx === 0 ? 0 : 110, after: 40 },
-    children: [new TextRun({ text: t, bold: true, size: 16, font: FONT })],
+    keepNext: true,
+    spacing: { before: idx === 0 ? 0 : 100, after: 30 },
+    children: [new TextRun({ text: t, bold: true, size: AGB_TITLE_SIZE, font: FONT })],
   }));
-  agbChildren.push(p(body, { size: 14, after: 0 }));
+  absaetze.forEach((txt) => {
+    const sub = /^[a-d]\) /.test(txt);
+    agbChildren.push(new Paragraph({
+      alignment: AlignmentType.LEFT,
+      indent: sub ? { left: 220 } : undefined,
+      spacing: { after: 30, line: 228 },
+      children: [new TextRun({ text: txt, size: AGB_SIZE, font: FONT })],
+    }));
+  });
 });
 
 // ==================== DOCUMENT ASSEMBLY ====================
@@ -550,7 +655,8 @@ const doc = new Document({
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3bChildren },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...(ohneDruck ? [] : page5Children), ...page6Children] },
-    { properties: { page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbChildren },
+    { properties: { page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbTitleChildren },
+    { properties: { type: SectionType.CONTINUOUS, column: { count: 2, space: 360 }, page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbChildren },
   ],
 });
 
