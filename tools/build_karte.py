@@ -183,7 +183,7 @@ const STYLE_NORMAL = { color: '#7A1010', weight: 1.5, opacity: 1, fillColor: '#C
 const STYLE_TARGET = { color: '#0B3D91', weight: 3, opacity: 1, fillColor: '#1E6FD9', fillOpacity: 0.28 };
 const STYLE_DIM    = { color: '#7A1010', weight: 1, opacity: 0.35, fillColor: '#C81E1E', fillOpacity: 0.08 };
 // Feste Auflage: PLZ mit 0 Flyern grau gestrichelt (optional)
-const STYLE_OPT    = { color: '#666666', weight: 1.5, opacity: 0.9, dashArray: '6 5', fillColor: '#9E9E9E', fillOpacity: 0.15 };
+const STYLE_OPT    = { color: '#444444', weight: 2, opacity: 0.9, dashArray: '7 5', fillColor: '#777777', fillOpacity: 0.3 };
 
 function baseStyle(p) {
   if (!HIGHLIGHT_PLZ) return p.optional ? STYLE_OPT : STYLE_NORMAL;
