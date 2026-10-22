@@ -309,7 +309,7 @@ const page3Children = [
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
     children: [new TextRun({ text: `Verteilgebiete ${stadt}`, bold: true, color: RED, size: 32, font: FONT })],
   }),
-  p(einePLZ ? `Sie sehen hier die einzelnen Ortsteile der PLZ ${plzListe}. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.` : `Sie sehen hier die einzelnen Verteilbereiche. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.`, { align: AlignmentType.CENTER, after: 240 }),
+  p(config.karten_text || (einePLZ ? `Sie sehen hier die einzelnen Ortsteile der PLZ ${plzListe}. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.` : `Sie sehen hier die einzelnen Verteilbereiche. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.`), { align: AlignmentType.CENTER, after: 240 }),
   new Paragraph({
     alignment: AlignmentType.CENTER,
     children: [new ImageRun({ data: mapImage, type: imgType(mapImagePath), transformation: fit(mapImage, 600, 470) })],
@@ -340,7 +340,7 @@ const page3bChildren = [
 // ==================== SEITE 4: PREISÜBERSICHT ====================
 function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
-  const hasAuflage = areas.some((a) => a.auflage);
+  const hasAuflage = areas.some((a) => a.auflage != null);
   const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), "Preis"];
   const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
   const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
@@ -363,13 +363,14 @@ function priceTable() {
   });
 
   const dataRows = areas.map((a, rowIdx) => {
-    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), fmtHH(a.hh_gesamt), `${a.quote} %`, ...(hasAuflage ? [fmtHH(a.auflage || a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
+    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), fmtHH(a.hh_gesamt), `${a.quote} %`, ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
+    const leer = a.auflage === 0; // feste Auflage: PLZ mit 0 Flyern grau (optional)
     const zebra = rowIdx % 2 === 1;
     return new TableRow({
       children: vals.map((v, i) => {
         const isKeyCol = keyCols.includes(i); // HH bewerbbar & Preis: hellgrün (Kunde soll NICHT HH gesamt mit dem Preis verwechseln)
         let fill;
-        if (isKeyCol) fill = GREEN_BG; else if (zebra) fill = LIGHT_ROW;
+        if (isKeyCol && !leer) fill = GREEN_BG; else if (zebra || leer) fill = LIGHT_ROW;
         return new TableCell({
           width: { size: colWidths[i], type: WidthType.DXA },
           shading: fill ? { type: ShadingType.CLEAR, fill } : undefined,
@@ -378,14 +379,14 @@ function priceTable() {
           borders: { bottom: BORDER_LIGHT },
           children: [new Paragraph({
             alignment: i >= 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
-            children: [new TextRun({ text: String(v), size: 19, font: FONT, bold: isKeyCol, color: "222222" })],
+            children: [new TextRun({ text: String(v), size: 19, font: FONT, bold: isKeyCol && !leer, color: leer ? "999999" : "222222" })],
           })],
         });
       }),
     });
   });
 
-  const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage || a.hh_bewerbbar), 0);
+  const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
   const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
@@ -416,12 +417,12 @@ const page4Children = [
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
     children: [new TextRun({ text: "Preisübersicht", bold: true, color: RED, size: 32, font: FONT })],
   }),
-  p(`Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise:`, { after: 200 }),
+  p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise:`, { after: 200 }),
   priceTable(),
   p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
-  p(`Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
+  p(config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
 ];
 
 // ==================== SEITE 6: FLYERDRUCK (optional) – Option A / Option B ====================
@@ -445,7 +446,7 @@ const FD_DEFAULT = {
   hinweis: "Auflage, Flyerformat und Papierstärke passen wir selbstverständlich individuell an Ihre Wünsche an – sprechen Sie uns gerne an.",
 };
 const FD = Object.assign({}, FD_DEFAULT, config.flyerdruck || {});
-const fdAuflage = FD.auflage || areas.reduce((s, a) => s + (a.auflage || a.hh_bewerbbar || 0), 0);
+const fdAuflage = FD.auflage || areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar ?? 0), 0);
 function specLine(text, opts = {}) {
   return new Paragraph({ spacing: { after: 0, before: 0 },
     children: [new TextRun({ text, bold: !!opts.bold, size: SIZE, font: FONT, color: opts.color })] });
