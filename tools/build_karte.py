@@ -182,9 +182,11 @@ function popupHtml(p) {
 const STYLE_NORMAL = { color: '#7A1010', weight: 1.5, opacity: 1, fillColor: '#C81E1E', fillOpacity: 0.25 };
 const STYLE_TARGET = { color: '#0B3D91', weight: 3, opacity: 1, fillColor: '#1E6FD9', fillOpacity: 0.28 };
 const STYLE_DIM    = { color: '#7A1010', weight: 1, opacity: 0.35, fillColor: '#C81E1E', fillOpacity: 0.08 };
+// Feste Auflage: PLZ mit 0 Flyern grau gestrichelt (optional)
+const STYLE_OPT    = { color: '#666666', weight: 1.5, opacity: 0.9, dashArray: '6 5', fillColor: '#9E9E9E', fillOpacity: 0.15 };
 
 function baseStyle(p) {
-  if (!HIGHLIGHT_PLZ) return STYLE_NORMAL;
+  if (!HIGHLIGHT_PLZ) return p.optional ? STYLE_OPT : STYLE_NORMAL;
   return p.key === HIGHLIGHT_PLZ ? STYLE_TARGET : STYLE_DIM;
 }
 
@@ -195,7 +197,7 @@ const geoLayer = L.geoJSON(geojson, {
     const p = feature.properties;
     const dim = HIGHLIGHT_PLZ && p.key !== HIGHLIGHT_PLZ;
     layer.bindPopup(popupHtml(p));
-    layer.bindTooltip(p.label, { permanent: true, direction: 'center', className: dim ? 'plz-label plz-label-dim' : 'plz-label' });
+    layer.bindTooltip(p.optional && !HIGHLIGHT_PLZ ? p.label + ' (optional)' : p.label, { permanent: true, direction: 'center', className: dim ? 'plz-label plz-label-dim' : 'plz-label' });
     const s = baseStyle(p);
     layer.on('mouseover', function() { this.setStyle({ fillOpacity: Math.min(s.fillOpacity + 0.2, 0.6) }); });
     layer.on('mouseout', function() { this.setStyle({ fillOpacity: s.fillOpacity }); });
@@ -210,6 +212,12 @@ if (targetLayer) {
 }
 setTimeout(function() { map.invalidateSize(); if (targetLayer) map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] }); else map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] }); }, 50);
 
+if (!HIGHLIGHT_PLZ && geojson.features.some(function(f){ return f.properties.optional; })) {
+  const lg = L.control({ position: 'bottomleft' });
+  lg.onAdd = function() { const d = L.DomUtil.create('div'); d.style.cssText = 'background:#fff;padding:6px 10px;border-radius:6px;font:12px Arial;box-shadow:0 1px 4px rgba(0,0,0,.3);line-height:1.6'; d.innerHTML = '<span style="display:inline-block;width:14px;height:10px;background:rgba(200,30,30,.25);border:1.5px solid #7A1010;vertical-align:middle"></span> beliefert<br><span style="display:inline-block;width:14px;height:10px;background:rgba(158,158,158,.15);border:1.5px dashed #666;vertical-align:middle"></span> optional (0 Flyer)'; return d; };
+  lg.addTo(map);
+}
+
 document.getElementById('layerToggle').addEventListener('change', function(e) {
   if (e.target.checked) { map.addLayer(geoLayer); } else { map.removeLayer(geoLayer); }
 });
@@ -219,7 +227,7 @@ geojson.features.forEach(function(f) {
   const p = f.properties;
   const div = document.createElement('div');
   div.className = 'item';
-  div.innerHTML = `<span><b>PLZ ${p.plz}</b> &middot; ${p.gebiet}</span><span>${p.gesamtpreis}</span>`;
+  div.innerHTML = `<span><b>PLZ ${p.plz}</b> &middot; ${p.gebiet}</span><span>${p.optional ? 'optional (0 Flyer)' : p.gesamtpreis}</span>`;
   listEl.appendChild(div);
 });
 </script>
@@ -259,7 +267,8 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
                 "hh_gesamt": fmt_hh(a["hh_gesamt"]),
                 "quote": f'{a["quote"]} %',
-                "auflage": fmt_hh(a["auflage"]) if a.get("auflage") else "",
+                "auflage": fmt_hh(a["auflage"]) if a.get("auflage") is not None else "",
+                "optional": a.get("auflage") == 0,
                 "anfahrt": (fmt_eur(anfahrt_einmalig) + " einmalig f&uuml;r das gesamte Gebiet") if anfahrt_einmalig is not None
                            else fmt_eur(a["anfahrt"]) + (f' einmalig f&uuml;r PLZ {a["plz"]}' if plz_count[str(a["plz"])] > 1 else ""),
                 "preis_verteilung": fmt_eur(a["preis_verteilung"]),
@@ -302,8 +311,8 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     html = html.replace("__BEWERBBAR__", totals["bewerbbar"])
     # Teilauflage: Verteilmenge in der Kennzahlenbox zeigen, sobald ein Gebiet ein auflage-Feld hat
     auflage_row = ""
-    if any(a.get("auflage") for a in areas):
-        auflage_sum = sum(a.get("auflage") or a["hh_bewerbbar"] for a in areas)
+    if any(a.get("auflage") is not None for a in areas):
+        auflage_sum = sum(a["auflage"] if a.get("auflage") is not None else a["hh_bewerbbar"] for a in areas)
         auflage_row = f'    <div class="row"><span><b>Verteilmenge (Auflage)</b></span><span class="val"><b>{fmt_hh(auflage_sum)}</b></span></div>\n'
     html = html.replace("__AUFLAGE_ROW__", auflage_row)
     html = html.replace("__GESAMT__", totals["gesamt"])
