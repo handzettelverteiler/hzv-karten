@@ -7,7 +7,7 @@
  *                   Bewusst NICHT: WhatsApp als Beauftragungsweg, "fester Ansprechpartner", Preis pro Stück/Flyer.
  *   alt:            exakt das Layout v5 (bis 26.10.2026).
  *   Umschalten je Angebot: "layout": "alt" in der Config. Global: Umgebungsvariable HZV_LAYOUT=alt
- *   oder unten DEFAULT_LAYOUT auf "alt" setzen. Git-Tag angebot-layout-alt-v5 = Stand vor der Umstellung.
+ *   oder unten DEFAULT_LAYOUT auf "alt" setzen. Branch angebot-layout-alt-v5 = Stand vor der Umstellung.
  * Baut das Angebots-docx nach den festen HZV-Standards für einen beliebigen Kunden.
  *
  * Aufruf:
