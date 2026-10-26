@@ -1,5 +1,13 @@
 /**
- * HZV Angebot Generator (v5 – 9 Seiten: AGB Stand Okt 2026 auf 2 Seiten zweispaltig; Stadtbild + Lupen-Variante automatisch, Config-basiert)
+ * HZV Angebot Generator (v6 – Layout „neu“ ab 26.10.2026 mit Rückfall auf „alt“; AGB Stand Okt 2026 auf 2 Seiten zweispaltig; Stadtbild + Lupen-Variante automatisch, Config-basiert)
+ *
+ * LAYOUT-SCHALTER (Stefan, 26.10.2026):
+ *   neu (Standard): Seite 1 "Ihr Angebot auf einen Blick", Seite 2 "So läuft Ihre Verteilung", Anfahrt als Tabellenzeile + Gesamtpreis,
+ *                   Option (Rest-PLZ komplett), Komplettpaket Druck + Verteilung, Beauftragung per E-Mail, gültig-bis-Datum.
+ *                   Bewusst NICHT: WhatsApp als Beauftragungsweg, "fester Ansprechpartner", Preis pro Stück/Flyer.
+ *   alt:            exakt das Layout v5 (bis 26.10.2026).
+ *   Umschalten je Angebot: "layout": "alt" in der Config. Global: Umgebungsvariable HZV_LAYOUT=alt
+ *   oder unten DEFAULT_LAYOUT auf "alt" setzen. Git-Tag angebot-layout-alt-v5 = Stand vor der Umstellung.
  * Baut das Angebots-docx nach den festen HZV-Standards für einen beliebigen Kunden.
  *
  * Aufruf:
@@ -12,7 +20,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell,
   WidthType, ShadingType, BorderStyle, AlignmentType, PageOrientation,
-  Header, Footer, VerticalAlign, UnderlineType, SectionType,
+  Header, Footer, VerticalAlign, UnderlineType, SectionType, ExternalHyperlink,
 } = require("docx");
 const { execFileSync } = require("child_process");
 
@@ -205,8 +213,52 @@ function footerWithFigures() {
   });
 }
 
-// ==================== SEITE 1: DECKBLATT + KUNDENDATEN/INTRO/MATERIALIEN ====================
-const page1Children = [
+// ==================== LAYOUT-SCHALTER (v6) ====================
+const DEFAULT_LAYOUT = "neu"; // Rückfall für ALLE Angebote: hier "alt" eintragen
+const LAYOUT = String(config.layout || process.env.HZV_LAYOUT || DEFAULT_LAYOUT).toLowerCase() === "alt" ? "alt" : "neu";
+console.log(`Layout: ${LAYOUT}`);
+
+// ---- gemeinsame Werte für Layout "neu" ----
+const telefon = config.absender?.telefon || config.kontakt?.telefon || "0681 41098133";
+const kartenLink = config.karten_link || "";
+function datumDE(d) { return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }); }
+const angebotsDatum = config.angebotsdatum || datumDE(new Date());
+const gueltigBis = config.gueltig_bis || (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return datumDE(d); })();
+const anfahrtSumme = einePLZ ? anfahrtGesamt : (config.anfahrt_gesamt ?? areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0));
+const endpreis = Math.round((gesamt.preis + anfahrtSumme) * 100) / 100;
+const flyerGesamt = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
+function euroText(n) { return Number.isInteger(n) ? `${fmtHH(n)},- Euro` : `${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Euro`; }
+// Option: explizit per config.option, abschaltbar mit "option": false; sonst automatisch, wenn genau EINE PLZ nur teilweise beliefert wird (Auffüllen)
+const opt = (() => {
+  if (config.option === false) return null;
+  if (config.option) return config.option;
+  const teil = areas.filter((a) => a.auflage != null && a.auflage > 0 && a.auflage < a.hh_bewerbbar);
+  if (teil.length !== 1) return null;
+  const a = teil[0], diff = a.hh_bewerbbar - a.auflage;
+  const plus = Math.round(diff * a.preis_verteilung / a.auflage * 100) / 100;
+  return {
+    titel: `Option: PLZ ${a.plz} komplett beliefern`,
+    text: `Die PLZ ${a.plz} (${a.gebiet}) vollständig abdecken: ${fmtHH(a.hh_bewerbbar)} statt ${fmtHH(a.auflage)} ${werbemittel} – also ${fmtHH(diff)} ${werbemittel} mehr für nur ${euroText(plus)} netto zusätzlich.`,
+    plus_preis: plus, plus_flyer: diff,
+  };
+})();
+const LIGHT = "F7F7F7";
+const NOB = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+const NO_BORDERS = { top: NOB, bottom: NOB, left: NOB, right: NOB };
+function run(text, o = {}) { return new TextRun({ text, bold: !!o.bold, italics: !!o.italics, color: o.color, size: o.size || SIZE, font: FONT }); }
+function para(runs, o = {}) {
+  return new Paragraph({ alignment: o.align || AlignmentType.LEFT, spacing: { after: o.after ?? 0, before: o.before ?? 0 }, children: runs });
+}
+function linkPara(url, o = {}) {
+  return new Paragraph({ spacing: { after: o.after ?? 0, before: o.before ?? 0 }, alignment: o.align || AlignmentType.LEFT,
+    children: [new ExternalHyperlink({ link: url, children: [new TextRun({ text: o.text || url, style: "Hyperlink", color: "1F4E9E", underline: { type: UnderlineType.SINGLE }, size: o.size || 20, font: FONT })] })] });
+}
+function smallBullet(text, o = {}) {
+  return new Paragraph({ spacing: { after: 80 }, bullet: { level: 0 }, children: [run(text, { size: o.size || 21, color: o.color || "333333" })] });
+}
+
+// ==================== SEITE 1 (Layout alt, v5): DECKBLATT + KUNDENDATEN/INTRO/MATERIALIEN ====================
+const page1Alt = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 220 },
     children: [new ImageRun({ data: headerBanner, type: "png", transformation: { width: 647, height: 132 } })],
@@ -264,8 +316,8 @@ const page1Children = [
   ),
 ];
 
-// ==================== SEITE 2: VERTEILUNGSDETAILS ====================
-const page2Children = [
+// ==================== SEITE 2 (Layout alt, v5): VERTEILUNGSDETAILS ====================
+const page2Alt = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 560 }, pageBreakBefore: true,
     children: [new ImageRun({ data: logo, type: "png", transformation: { width: 460, height: 92 } })],
@@ -290,6 +342,121 @@ const page2Children = [
     { after: 0 }
   ),
 ];
+
+// ==================== SEITE 1 (Layout neu): DECKBLATT mit "Ihr Angebot auf einen Blick" ====================
+const gebietKurz = einePLZ ? `${stadt}, PLZ ${plzListe} (${areas.length} Ortsteile)` : einStadt ? `${stadtteile} (${plzSet.length} PLZ-Bereiche: ${plzListe})` : `${ortsteile} (${plzListe})`;
+const blickRows = [
+  ["Verteilgebiet", [run(gebietKurz, { size: 21 })]],
+  [`Verteilte ${werbemittel}`, [run(`${fmtHH(flyerGesamt)} Stück an Privathaushalte`, { size: 21 })]],
+  ["Gesamtpreis", [run(`${fmtEur(endpreis)} netto`, { bold: true, color: RED, size: 30 }), run("  inkl. An-/Abfahrt", { size: 20, color: "555555" })]],
+  ["Zeitraum", [run("nach Ihrem Wunschtermin – wir stimmen ihn direkt mit Ihnen ab", { size: 21 })]],
+  ["Nachweis", [run("Stichprobendokumentation und/oder Fotos nach der Verteilung", { size: 21 })]],
+  ["Beauftragung", [run("Kurze Antwort per E-Mail genügt", { size: 21, bold: true })]],
+];
+function blickTable() {
+  const W1 = 2300, W2 = 7800;
+  const head = new TableRow({ children: [new TableCell({
+    columnSpan: 2, width: { size: W1 + W2, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: RED },
+    margins: { top: 90, bottom: 90, left: 180, right: 180 }, borders: NO_BORDERS,
+    children: [para([run("Ihr Angebot auf einen Blick", { bold: true, color: "FFFFFF", size: 24 })])],
+  })] });
+  const rows = blickRows.map(([l, runs], i) => new TableRow({ children: [
+    new TableCell({ width: { size: W1, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: i === 2 ? "FDECEC" : LIGHT }, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 70, bottom: 70, left: 180, right: 100 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 2, color: "E3E3E3" } },
+      children: [para([run(l, { size: 20, color: "555555" })])] }),
+    new TableCell({ width: { size: W2, type: WidthType.DXA }, shading: i === 2 ? { type: ShadingType.CLEAR, fill: "FDECEC" } : undefined, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 70, bottom: 70, left: 140, right: 140 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 2, color: "E3E3E3" } },
+      children: [para(runs)] }),
+  ] }));
+  return new Table({ width: { size: W1 + W2, type: WidthType.DXA }, columnWidths: [W1, W2], rows: [head, ...rows] });
+}
+const page1Neu = [
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 180 },
+    children: [new ImageRun({ data: headerBanner, type: "png", transformation: { width: 647, height: 132 } })],
+  }),
+  p(absenderName, { bold: true, after: 20 }),
+  p(`${absenderStrasse} · ${absenderOrt}`, { after: 20 }),
+  p(`Tel. ${telefon} · ${email}`, { after: 220 }),
+  new Paragraph({
+    spacing: { after: 0 },
+    border: { left: { color: RED, space: 8, style: BorderStyle.SINGLE, size: 36 } },
+    children: [new TextRun({ text: "Angebot", bold: true, color: RED, size: 56, font: FONT })],
+  }),
+  new Paragraph({
+    spacing: { after: 200 },
+    border: { left: { color: RED, space: 8, style: BorderStyle.SINGLE, size: 36 } },
+    children: [run(`vom ${angebotsDatum} · gültig bis ${gueltigBis}`, { size: 20, color: "555555" })],
+  }),
+  new Table({
+    width: { size: 10100, type: WidthType.DXA },
+    columnWidths: [10100],
+    rows: [new TableRow({
+      children: [new TableCell({
+        width: { size: 10100, type: WidthType.DXA },
+        shading: { type: ShadingType.CLEAR, fill: "F7F7F7" },
+        margins: { top: 150, bottom: 150, left: 220, right: 220 }, borders: NO_BORDERS,
+        children: [
+          p("Angebot für", { color: GREY, size: 18, after: 40 }),
+          p(kunde.name, { bold: true, size: 26, after: 20 }),
+          ...(kunde.zusatz || []).map((z) => p(z, { after: 10 })),
+          p([kunde.strasse, kunde.ort].filter(Boolean).join(" · "), { after: 0 }),
+        ],
+      })],
+    })],
+  }),
+  new Paragraph({ spacing: { before: 220, after: 0 }, children: [] }),
+  p(
+    config.intro || `vielen Dank für Ihr Interesse an einer Handzettelverteilung für ${kundeName}. Wir haben für Sie ein passendes Verteilgebiet ${einStadt || einePLZ ? "in" : "rund um"} ${stadt} zusammengestellt. Das Wichtigste sehen Sie hier, alle Details zu Gebiet, Ablauf und Preisen auf den folgenden Seiten.`,
+    { after: 220 }
+  ),
+  blickTable(),
+  heading("Materialien", { before: 260 }),
+  p(
+    config.materialien_text || `Ihre Flyer können im Format DIN A6 bis DIN A4 sein, einlagig oder gefaltet. Am einfachsten senden Sie uns die Materialien direkt zu – die Lieferanschrift teilen wir Ihnen nach Auftragsbestätigung mit.` +
+      (ohneDruck ? "" : ` Oder Sie lassen die Flyer bequem über uns drucken – das Angebot dazu finden Sie weiter hinten.`),
+    { after: 0 }
+  ),
+];
+
+// ==================== SEITE 2 (Layout neu): SO LÄUFT IHRE VERTEILUNG ====================
+const schritte = [
+  ["Beauftragen", "Eine kurze Antwort per E-Mail genügt. Wir bestätigen Ihnen Auftrag und Verteilzeitraum schriftlich."],
+  [`${werbemittel} anliefern`, ohneDruck ? `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – spätestens 3 Werktage vor Verteilbeginn.` : `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – oder wir drucken sie für Sie.`],
+  ["Verteilung", `Unsere Verteiler werfen Ihre ${werbemittel} im vereinbarten Zeitraum in die Briefkästen der Privathaushalte ein – in Mehrfamilienhäusern in jeden Briefkasten, nicht ins Treppenhaus.`],
+  ["Nachweis", "Nach Abschluss erhalten Sie eine Stichprobendokumentation und/oder Fotos Ihrer Verteilung."],
+];
+function schritteTable() {
+  const W1 = 900, W2 = 9200;
+  return new Table({ width: { size: W1 + W2, type: WidthType.DXA }, columnWidths: [W1, W2], rows: schritte.map(([t, txt], i) => new TableRow({ children: [
+    new TableCell({ width: { size: W1, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: RED }, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 80, bottom: 80, left: 60, right: 60 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 12, color: "FFFFFF" } },
+      children: [para([run(String(i + 1), { bold: true, color: "FFFFFF", size: 34 })], { align: AlignmentType.CENTER })] }),
+    new TableCell({ width: { size: W2, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: LIGHT }, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 100, bottom: 100, left: 200, right: 200 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 12, color: "FFFFFF" } },
+      children: [para([run(t, { bold: true, size: 23 })], { after: 30 }), para([run(txt, { size: 21, color: "333333" })])] }),
+  ] })) });
+}
+const page2Neu = [
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 320 }, pageBreakBefore: true,
+    children: [new ImageRun({ data: logo, type: "png", transformation: { width: 400, height: 80 } })],
+  }),
+  para([run("So läuft Ihre Verteilung", { bold: true, color: RED, size: 30 })], { after: 180 }),
+  schritteTable(),
+  para([run("Darauf können Sie sich verlassen", { bold: true, size: 24 })], { before: 300, after: 120 }),
+  bullet("Seit über 20 Jahren zuverlässig im Einsatz."),
+  bullet("Ausschließlich erwachsene Verteiler, bezahlt nach dem gesetzlichen Mindestlohn."),
+  bullet("Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
+  ...(kartenLink ? [bullet("Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
+  para([run("Gut zu wissen", { bold: true, size: 22, color: "555555" })], { before: 280, after: 100 }),
+  smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
+  smallBullet("Wo kein Zugang besteht, erfolgt kein Einwurf – etwa bei verschlossenen Häusern, wenn nach Klingeln niemand öffnet, bei unzugänglichen Briefkästen oder Grundstücken mit „Vorsicht Hund“."),
+  smallBullet("Gewerbe- und Industriegebiete, Kleingartenanlagen und Kleinstsiedlungen unter 150 Haushalten werden nicht beliefert; eine Auswahl nach Haustypen ist nicht möglich."),
+  smallBullet("Wir beliefern in jedem Verteilbezirk mindestens 90 % der erreichbaren Haushalte. Alle Einzelheiten regeln unsere AGB am Ende dieses Angebots."),
+];
+const page1Children = LAYOUT === "alt" ? page1Alt : page1Neu;
+const page2Children = LAYOUT === "alt" ? page2Alt : page2Neu;
 
 // ==================== SEITE 3: ÜBERSICHTSKARTE (Hochformat) ====================
 // Dauerregel: Stadtbild IMMER über der Karte – Seite 3 UND Seite 4
@@ -387,6 +554,7 @@ function priceTable() {
   });
 
   const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
+  if (LAYOUT === "neu") return priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage });
   const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
@@ -408,7 +576,47 @@ function priceTable() {
   return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows, totalRow] });
 }
 
-const page4Children = [
+// Layout neu: An-/Abfahrt als eigene Zeile, Summe = Gesamtpreis inkl. Anfahrt (Anfahrt bleibt separat ausgewiesen)
+function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
+  const anfahrtLabel = einePLZ ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`);
+  const nLast = colWidths.length - 1;
+  const spanW = colWidths.slice(0, nLast).reduce((s, w) => s + w, 0);
+  const anfahrtRow = new TableRow({
+    children: [
+      new TableCell({ columnSpan: nLast, width: { size: spanW, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+        margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT },
+        children: [new Paragraph({ children: [new TextRun({ text: anfahrtLabel, size: 19, font: FONT, italics: true, color: "222222" })] })] }),
+      new TableCell({ width: { size: colWidths[nLast], type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+        margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT },
+        shading: { type: ShadingType.CLEAR, fill: GREEN_BG },
+        children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(anfahrtSumme), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
+    ],
+  });
+  const totalVals = ["Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
+  const totalWidths = [colWidths[0] + colWidths[1], ...colWidths.slice(2)];
+  const totalKey = keyCols.map((k) => k - 1);
+  const totalRow = new TableRow({
+    children: totalVals.map((v, i) => {
+      const isKeyCol = totalKey.includes(i);
+      const isPreis = i === totalVals.length - 1;
+      return new TableCell({
+        columnSpan: i === 0 ? 2 : undefined,
+        width: { size: totalWidths[i], type: WidthType.DXA },
+        shading: isPreis ? { type: ShadingType.CLEAR, fill: RED } : isKeyCol ? { type: ShadingType.CLEAR, fill: GREEN_BG } : undefined,
+        verticalAlign: VerticalAlign.CENTER,
+        margins: { top: 120, bottom: 120, left: 100, right: 100 },
+        borders: { top: { style: BorderStyle.SINGLE, size: 14, color: "222222" } },
+        children: [new Paragraph({
+          alignment: i >= 1 ? AlignmentType.RIGHT : AlignmentType.LEFT,
+          children: [new TextRun({ text: String(v), bold: true, size: isPreis ? 22 : 20, font: FONT, color: isPreis ? "FFFFFF" : "222222" })],
+        })],
+      });
+    }),
+  });
+  return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows, anfahrtRow, totalRow] });
+}
+
+const page4Alt = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
     children: [new ImageRun({ data: iconPreis, type: "png", transformation: { width: 170, height: 170 } })],
@@ -425,13 +633,48 @@ const page4Children = [
   p(config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
 ];
 
+// ==================== SEITE 5 (Layout neu): PREISÜBERSICHT ====================
+function optionBox() {
+  if (!opt) return [];
+  const mitFlyer = flyerGesamt + (opt.plus_flyer || 0), mitPreis = Math.round((endpreis + (opt.plus_preis || 0)) * 100) / 100;
+  return [new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: [10100], rows: [new TableRow({ children: [new TableCell({
+    width: { size: 10100, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: LIGHT },
+    margins: { top: 140, bottom: 140, left: 220, right: 220 },
+    borders: { ...NO_BORDERS, left: { style: BorderStyle.SINGLE, size: 36, color: RED } },
+    children: [
+      para([run(opt.titel, { bold: true, color: RED, size: 23 })], { after: 60 }),
+      para([run(opt.text, { size: 21 })], { after: 60 }),
+      para([run(`Gesamt mit Option: ${fmtHH(mitFlyer)} ${werbemittel} für ${fmtEur(mitPreis)} netto.`, { size: 21, bold: true })]),
+    ],
+  })] })] })];
+}
+const page4Neu = [
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
+    children: [new ImageRun({ data: iconPreis, type: "png", transformation: { width: 150, height: 150 } })],
+  }),
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 240 },
+    children: [new TextRun({ text: "Preisübersicht", bold: true, color: RED, size: 32, font: FONT })],
+  }),
+  p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise – An-/Abfahrt bereits eingerechnet:`, { after: 200 }),
+  priceTable(),
+  p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 280, before: 120 }),
+  ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
+  ...optionBox(),
+  p(opt ? (config.teilmengen_text_neu || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)
+        : (config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`),
+    { before: opt ? 240 : 0, after: 0, size: 21, color: "444444" }),
+];
+const page4Children = LAYOUT === "alt" ? page4Alt : page4Neu;
+
 // ==================== SEITE 6: FLYERDRUCK (optional) – Option A / Option B ====================
 // Standard (Stefan, 02.10.2026): Option A = DIN A5, Option B = DIN A4, je beidseitig 4/4, 135g matt.
 // Preise: live von wir-machen-druck.de (netto) x 1,30, auf volle Euro aufgerundet. Auflage = Summe HH bewerbbar,
 // aufgerundet auf die nächste WMD-Auflagenstufe. Per config.flyerdruck komplett überschreibbar (Sonderwunsch Kunde).
 // Config: "flyerdruck": { "auflage": 20000, "preise": [260, 479] }
 const FD_DEFAULT = {
-  intro: "Auf Wunsch übernehmen wir auch den Druck Ihrer Flyer.",
+  intro: LAYOUT === "alt" ? "Auf Wunsch übernehmen wir auch den Druck Ihrer Flyer." : "Auf Wunsch übernehmen wir auch den Druck Ihrer Flyer – Sie bekommen dann alles aus einer Hand.",
   auflage: null,
   optionen: [
     { titel: "Flyer DIN A5 (14,8 cm x 21,0 cm), beidseitig bedruckt",
@@ -470,6 +713,8 @@ FD.optionen.forEach((o, i) => {
   } else {
     const preisTxt = o.preis_text || `Gesamtauflage ${fmtHH(o.auflage || fdAuflage)} Stück: ${fdPreisTxt} zzgl. MwSt.`;
     optionBlocks.push(p(preisTxt, { bold: true, after: 0 }));
+    // Layout neu: Komplettpaket Druck + Verteilung (Gesamtpreis inkl. Anfahrt)
+    if (LAYOUT === "neu" && typeof fdPreis === "number") optionBlocks.push(para([run("Komplettpaket Druck + Verteilung: ", { size: 22 }), run(`${euroText(fdPreis + endpreis)} zzgl. MwSt.`, { bold: true, color: RED, size: 22 })], { before: 40 }));
   }
 });
 const page5Children = [
@@ -486,7 +731,7 @@ const page5Children = [
 
 // ==================== SEITE 6: ABSCHLUSS ====================
 const heuteStr = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-const page6Children = [
+const page6Alt = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 260 }, pageBreakBefore: true,
     children: [new ImageRun({ data: iconBuchen, type: "png", transformation: { width: 180, height: 180 } })],
@@ -512,6 +757,51 @@ const page6Children = [
   p("Kurze Frage über WhatsApp? Einfach scannen.", { align: AlignmentType.CENTER, after: 60, size: 20 }),
   p("Preise haben Gültigkeit von 3 Monaten.", { align: AlignmentType.CENTER, size: 20, after: 0 }),
 ];
+
+// ==================== SEITE 7 (Layout neu): ABSCHLUSS – Beauftragung per E-Mail ====================
+function kontaktBox() {
+  const W1 = 6600, W2 = 3500;
+  return new Table({ width: { size: W1 + W2, type: WidthType.DXA }, columnWidths: [W1, W2], rows: [new TableRow({ children: [
+    new TableCell({ width: { size: W1, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: LIGHT }, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 180, bottom: 180, left: 260, right: 200 }, borders: { ...NO_BORDERS, left: { style: BorderStyle.SINGLE, size: 36, color: RED } },
+      children: [
+        para([run("So erreichen Sie uns", { size: 19, color: GREY })], { after: 40 }),
+        para([run(absenderName, { bold: true, size: 26 })], { after: 20 }),
+        para([run(`${absenderStrasse} · ${absenderOrt}`, { size: 20, color: "444444" })], { after: 120 }),
+        para([run(`Tel. ${telefon}`, { bold: true, size: 24 })], { after: 30 }),
+        para([run(email, { size: 22 })]),
+      ] }),
+    new TableCell({ width: { size: W2, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: LIGHT }, verticalAlign: VerticalAlign.CENTER,
+      margins: { top: 140, bottom: 140, left: 100, right: 100 }, borders: NO_BORDERS,
+      children: [
+        new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: whatsappQr, type: "png", transformation: { width: 105, height: 105 } })] }),
+        para([run("Kurze Frage über WhatsApp? Einfach scannen.", { size: 17, color: "444444" })], { align: AlignmentType.CENTER, before: 40 }),
+      ] }),
+  ] })] });
+}
+const page6Neu = [
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 180 }, pageBreakBefore: true,
+    children: [new ImageRun({ data: iconBuchen, type: "png", transformation: { width: 150, height: 150 } })],
+  }),
+  new Paragraph({
+    alignment: AlignmentType.CENTER, spacing: { after: 240 },
+    children: [new TextRun({ text: "So einfach beauftragen Sie uns", bold: true, color: RED, size: 32, font: FONT })],
+  }),
+  p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
+  p(`Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
+  kontaktBox(),
+  p(`Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }),
+  p(`Dieses Angebot ist gültig bis ${gueltigBis}.`, { bold: true, after: 380 }),
+  p("Lieber klassisch? Sie können diese Seite auch unterschrieben zurücksenden.", { size: 19, color: GREY, after: 420 }),
+  new Paragraph({
+    spacing: { after: 60 },
+    border: { top: { color: "BBBBBB", space: 4, style: BorderStyle.SINGLE, size: 6 } },
+    children: [new TextRun({ text: "" })],
+  }),
+  p("Datum, Kunde, Unterschrift, Stempel", { size: 19, color: GREY, after: 0 }),
+];
+const page6Children = LAYOUT === "alt" ? page6Alt : page6Neu;
 
 // ==================== AGB (Stand Oktober 2026, 18 Paragraphen, 2 Seiten zweispaltig) ====================
 // Quelle: Doc "HZV AGB – Prüfung & Neuentwurf 2026" (Stefan, 21.10.2026). Text nur hier ändern.

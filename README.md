@@ -24,3 +24,21 @@ Suchmaschinen sind per robots.txt und noindex ausgeschlossen. Die Karten sind nu
 ## Dateinamen
 
 `<Projekt>_Karte_v<Version>_<Info>.html`, ohne Umlaute und Leerzeichen.
+
+## Angebots-Layout neu / alt (v6, ab 26.10.2026)
+
+`tools/build_angebot.js` baut standardmäßig das **neue Layout** (von Stefan am 26.10.2026 freigegeben):
+Seite 1 „Ihr Angebot auf einen Blick“ (Gebiet, Stückzahl, Gesamtpreis inkl. Anfahrt, Zeitraum, Nachweis, Beauftragung per E-Mail, gültig bis),
+Seite 2 „So läuft Ihre Verteilung“ (4 Schritte, Vertrauenspunkte, Live-Kartenlink, „Gut zu wissen“),
+Preistabelle mit An-/Abfahrt als eigener Zeile und Gesamtpreis, automatische Option „PLZ komplett beliefern“ bei einer teilbelieferten PLZ (Auffüllen),
+Komplettpaket Druck + Verteilung, Abschlussseite „So einfach beauftragen Sie uns“ (E-Mail-Antwort genügt, Unterschrift optional).
+Bewusst **nicht** enthalten: WhatsApp als Beauftragungsweg, „fester Ansprechpartner“, Preis pro Stück/Flyer (WhatsApp-QR nur für Rückfragen).
+
+Neue Config-Felder (alle optional): `karten_link` (Live-Karte, erscheint auf Seite 2), `angebotsdatum`, `gueltig_bis` (Standard: heute + 3 Monate),
+`absender.telefon` (Standard 0681 41098133), `option` (eigene Option als Objekt `{titel, text, plus_preis, plus_flyer}`, `false` = keine Option),
+`teilmengen_text_neu`.
+
+**Rückfall auf das alte Layout (v5):**
+- nur für ein Angebot: `"layout": "alt"` in der Config
+- für alle Angebote: `DEFAULT_LAYOUT = "alt"` im Skript setzen (oder `HZV_LAYOUT=alt` beim Aufruf)
+- Git-Tag `angebot-layout-alt-v5` = Repo-Stand direkt vor der Umstellung
