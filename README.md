@@ -41,4 +41,4 @@ Neue Config-Felder (alle optional): `karten_link` (Live-Karte, erscheint auf Sei
 **Rückfall auf das alte Layout (v5):**
 - nur für ein Angebot: `"layout": "alt"` in der Config
 - für alle Angebote: `DEFAULT_LAYOUT = "alt"` im Skript setzen (oder `HZV_LAYOUT=alt` beim Aufruf)
-- Git-Tag `angebot-layout-alt-v5` = Repo-Stand direkt vor der Umstellung
+- Branch `angebot-layout-alt-v5` = Repo-Stand direkt vor der Umstellung (Sicherung)
