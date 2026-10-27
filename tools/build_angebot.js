@@ -344,7 +344,7 @@ const page2Alt = [
 ];
 
 // ==================== SEITE 1 (Layout neu): DECKBLATT mit "Ihr Angebot auf einen Blick" ====================
-const gebietKurz = einePLZ ? `${stadt}, PLZ ${plzListe} (${areas.length} Ortsteile)` : einStadt ? `${stadtteile} (${plzSet.length} PLZ-Bereiche: ${plzListe})` : `${ortsteile} (${plzListe})`;
+const gebietKurz = config.gebiet_kurz || (einePLZ ? `${stadt}, PLZ ${plzListe} (${areas.length} Ortsteile)` : einStadt ? `${stadtteile} (${plzSet.length} PLZ-Bereiche: ${plzListe})` : `${ortsteile} (${plzListe})`); // config.gebiet_kurz: eigener Text für "Verteilgebiet" auf Seite 1
 const blickRows = [
   ["Verteilgebiet", [run(gebietKurz, { size: 21 })]],
   [`Verteilte ${werbemittel}`, [run(`${fmtHH(flyerGesamt)} Stück an Privathaushalte`, { size: 21 })]],
