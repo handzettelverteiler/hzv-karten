@@ -726,15 +726,16 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div class="logo"><div class="mark"></div><div class="word">handzettelverteiler<b>.de</b></div></div>
   <div class="eyebrow">Ihre Verteilgebiete</div>
   <h1>ELFANTEN AG &ndash; Handzettelverteilung PLZ 78462 Konstanz (Altstadt/Paradies)</h1>
-  <div class="lede">Handzettelverteilung im PLZ-Gebiet 78462 (Konstanz-Altstadt und Paradies) &ndash; 4.200 bewerbbare Haushalte. An-/Abfahrt einmalig 35 &euro;.</div>
+  <div class="lede">Handzettelverteilung im PLZ-Gebiet 78462 (Konstanz-Altstadt und Paradies) &ndash; Mindestverteilmenge 5.000 Flyer: 4.200 bewerbbare Haushalte in 78462, die restlichen 800 Flyer in der angrenzenden Nachbar-PLZ. An-/Abfahrt einmalig 35 &euro;.</div>
 
   <div class="summary">
     <div class="cap">Ihr Angebot &ndash; Gesamt</div>
     <div class="row"><span>Haushalte bewerbbar</span><span class="val">4.200</span></div>
     <div class="row"><span>Haushalte gesamt</span><span class="val">13.800</span></div>
+    <div class="row"><span><b>Verteilmenge (Auflage)</b></span><span class="val"><b>5.000</b></span></div>
     <div class="row"><span>Anfahrt je PLZ-Region</span><span class="val">35 €</span></div>
-    <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">411,60 €</span></div>
-    <div class="row total"><span>Gesamtsumme</span><span class="val">446,60 €</span></div>
+    <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">625 €</span></div>
+    <div class="row total"><span>Gesamtsumme</span><span class="val">660 €</span></div>
     <div class="note">Alle Preise zzgl. gesetzl. MwSt.</div>
     <a class="cta" href="https://handzettelverteiler.de/kontakt/" target="_blank" rel="noopener">Jetzt anfragen</a>
   </div>
@@ -759,7 +760,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 //# sourceMappingURL=leaflet.js.map
 </script>
 <script>
-const geojson = {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"plz": "78462", "key": "78462", "label": "PLZ 78462", "gebiet": "Konstanz-Altstadt/Paradies", "hh_bewerbbar": "4.200", "hh_gesamt": "13.800", "quote": "30 %", "auflage": "", "optional": false, "anfahrt": "35 €", "preis_verteilung": "411,60 €", "gesamtpreis": "446,60 €"}, "geometry": {"type": "Polygon", "coordinates": [[[9.153158, 47.667008], [9.157839, 47.665763], [9.159424, 47.664267], [9.16005, 47.663481], [9.160009, 47.662843], [9.16066, 47.662252], [9.169738, 47.656023], [9.170638, 47.654851], [9.172005, 47.655434], [9.173373, 47.655379], [9.175492, 47.655773], [9.175971, 47.653984], [9.17715, 47.654544], [9.177315, 47.654919], [9.177881, 47.654843], [9.181818, 47.655957], [9.181267, 47.656976], [9.181213, 47.65793], [9.181988, 47.660501], [9.180234, 47.660917], [9.180427, 47.661008], [9.180361, 47.661563], [9.179915, 47.661679], [9.180029, 47.662425], [9.179433, 47.663114], [9.17928, 47.665196], [9.178458, 47.665491], [9.178755, 47.666207], [9.174285, 47.668032], [9.169915, 47.669524], [9.166779, 47.669883], [9.157941, 47.67006], [9.153158, 47.667008]]]}}]};
+const geojson = {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"plz": "78462", "key": "78462", "label": "PLZ 78462", "gebiet": "Konstanz-Altstadt/Paradies", "hh_bewerbbar": "4.200", "hh_gesamt": "13.800", "quote": "30 %", "auflage": "5.000", "optional": false, "anfahrt": "35 €", "preis_verteilung": "625 €", "gesamtpreis": "660 €"}, "geometry": {"type": "Polygon", "coordinates": [[[9.153158, 47.667008], [9.157839, 47.665763], [9.159424, 47.664267], [9.16005, 47.663481], [9.160009, 47.662843], [9.16066, 47.662252], [9.169738, 47.656023], [9.170638, 47.654851], [9.172005, 47.655434], [9.173373, 47.655379], [9.175492, 47.655773], [9.175971, 47.653984], [9.17715, 47.654544], [9.177315, 47.654919], [9.177881, 47.654843], [9.181818, 47.655957], [9.181267, 47.656976], [9.181213, 47.65793], [9.181988, 47.660501], [9.180234, 47.660917], [9.180427, 47.661008], [9.180361, 47.661563], [9.179915, 47.661679], [9.180029, 47.662425], [9.179433, 47.663114], [9.17928, 47.665196], [9.178458, 47.665491], [9.178755, 47.666207], [9.174285, 47.668032], [9.169915, 47.669524], [9.166779, 47.669883], [9.157941, 47.67006], [9.153158, 47.667008]]]}}]};
 const QS = new URLSearchParams(window.location.search);
 const SHOT = QS.get('shot') === '1';
 let HIGHLIGHT_PLZ = QS.get('plz') || '';
