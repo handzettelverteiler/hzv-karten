@@ -578,7 +578,7 @@ function priceTable() {
 
 // Layout neu: An-/Abfahrt als eigene Zeile, Summe = Gesamtpreis inkl. Anfahrt (Anfahrt bleibt separat ausgewiesen)
 function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
-  const anfahrtLabel = einePLZ ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`);
+  const anfahrtLabel = (einePLZ || plzSet.length === 1) ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`);
   const nLast = colWidths.length - 1;
   const spanW = colWidths.slice(0, nLast).reduce((s, w) => s + w, 0);
   const anfahrtRow = new TableRow({
