@@ -316,7 +316,11 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
         auflage_row = f'    <div class="row"><span><b>Verteilmenge (Auflage)</b></span><span class="val"><b>{fmt_hh(auflage_sum)}</b></span></div>\n'
     html = html.replace("__AUFLAGE_ROW__", auflage_row)
     html = html.replace("__GESAMT__", totals["gesamt"])
-    html = html.replace("__ANFAHRT_LABEL__", "Anfahrt (einmalig)" if anfahrt_einmalig is not None else "Anfahrt je PLZ-Region")
+    # Summe ueber mehrere PLZ nicht als "je PLZ-Region" beschriften (sonst liest der Kunde 70 € je PLZ)
+    n_plz_anf = len({str(a["plz"]) for a in areas if a.get("anfahrt")})
+    anf_label = ("Anfahrt (einmalig)" if anfahrt_einmalig is not None
+                 else f"An-/Abfahrt ({n_plz_anf} PLZ-Regionen)" if n_plz_anf > 1 else "Anfahrt je PLZ-Region")
+    html = html.replace("__ANFAHRT_LABEL__", anf_label)
     html = html.replace("__ANFAHRT__", totals["anfahrt"])
     html = html.replace("__VERTEILUNG__", totals["verteilung"])
     html = html.replace("__GESAMTPREIS__", totals["gesamtpreis"])
