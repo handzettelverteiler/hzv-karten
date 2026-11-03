@@ -530,7 +530,7 @@ function priceTable() {
   });
 
   const dataRows = areas.map((a, rowIdx) => {
-    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
+    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : (a.hh_gesamt_ca ? "ca. " : "") + fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
     const leer = a.auflage === 0; // feste Auflage: PLZ mit 0 Flyern grau (optional)
     const zebra = rowIdx % 2 === 1;
     return new TableRow({
