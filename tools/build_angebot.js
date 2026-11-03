@@ -155,7 +155,7 @@ const absenderOrt = config.absender?.ort || "66111 Saarbrücken";
 
 const gesamt = {
   hh_bewerbbar: areas.reduce((s, a) => s + a.hh_bewerbbar, 0),
-  hh_gesamt: areas.reduce((s, a) => s + a.hh_gesamt, 0),
+  hh_gesamt: config.hh_gesamt_total ?? areas.reduce((s, a) => s + (a.hh_gesamt ?? 0), 0), // config.hh_gesamt_total: HH gesamt nur je PLZ bekannt (Ortsteile ohne Einzelwert)
   preis: areas.reduce((s, a) => s + a.preis_verteilung, 0),
 };
 const ortsteile = [...new Set(areas.map((a) => a.gebiet))].join(", ");
@@ -530,7 +530,7 @@ function priceTable() {
   });
 
   const dataRows = areas.map((a, rowIdx) => {
-    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), fmtHH(a.hh_gesamt), `${a.quote} %`, ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
+    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
     const leer = a.auflage === 0; // feste Auflage: PLZ mit 0 Flyern grau (optional)
     const zebra = rowIdx % 2 === 1;
     return new TableRow({
@@ -627,7 +627,7 @@ const page4Alt = [
   }),
   p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise:`, { after: 200 }),
   priceTable(),
-  p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
+  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
   p(config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
@@ -659,7 +659,7 @@ const page4Neu = [
   }),
   p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise – An-/Abfahrt bereits eingerechnet:`, { after: 200 }),
   priceTable(),
-  p("Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 280, before: 120 }),
+  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 280, before: 120 }),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   ...optionBox(),
   p(opt ? (config.teilmengen_text_neu || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)

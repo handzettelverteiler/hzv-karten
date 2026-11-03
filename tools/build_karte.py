@@ -237,7 +237,7 @@ geojson.features.forEach(function(f) {
 
 
 def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
-          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None):
+          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None):
     with open(f"{leaflet_dir}/leaflet.js") as f:
         leaflet_js = f.read()
     with open(f"{leaflet_dir}/leaflet.css") as f:
@@ -265,8 +265,8 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
                 "label": a.get("label") or f'PLZ {a["plz"]}',
                 "gebiet": a["gebiet"],
                 "hh_bewerbbar": fmt_hh(a["hh_bewerbbar"]),
-                "hh_gesamt": fmt_hh(a["hh_gesamt"]),
-                "quote": f'{a["quote"]} %',
+                "hh_gesamt": fmt_hh(a["hh_gesamt"]) if a.get("hh_gesamt") is not None else "&ndash;",
+                "quote": f'{a["quote"]} %' if a.get("quote") is not None else "&ndash;",
                 "auflage": fmt_hh(a["auflage"]) if a.get("auflage") is not None else "",
                 "optional": a.get("auflage") == 0,
                 "anfahrt": (fmt_eur(anfahrt_einmalig) + " einmalig f&uuml;r das gesamte Gebiet") if anfahrt_einmalig is not None
@@ -293,7 +293,7 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
         gesamt_sum = sum(a["gesamtpreis"] for a in areas)
     totals = {
         "bewerbbar": fmt_hh(sum(a["hh_bewerbbar"] for a in areas)),
-        "gesamt": fmt_hh(sum(a["hh_gesamt"] for a in areas)),
+        "gesamt": fmt_hh(hh_gesamt_total) if hh_gesamt_total is not None else fmt_hh(sum(a.get("hh_gesamt") or 0 for a in areas)),
         "anfahrt": fmt_eur(anfahrt_sum),
         "verteilung": fmt_eur(sum(a["preis_verteilung"] for a in areas)),
         "gesamtpreis": fmt_eur(gesamt_sum),
@@ -347,6 +347,7 @@ if __name__ == "__main__":
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
     ap.add_argument("--highlight-plz", default="", help="Ziel-PLZ (bzw. Gebiets-id bei Ortsteilen) blau hervorheben, Rest abdimmen, Zoom darauf")
     ap.add_argument("--hide-sidebar", action="store_true", help="Sidebar ausblenden")
+    ap.add_argument("--hh-gesamt-total", type=float, default=None, help="HH gesamt fuer die Summenzeile, wenn je Ortsteil kein Wert bekannt ist (z. B. nur PLZ-Gesamtwert)")
     ap.add_argument("--anfahrt-einmalig", type=float, default=None, help="An-/Abfahrt nur einmal fuer das ganze Verteilgebiet (z. B. 35), unabhaengig von der Zahl der PLZ")
     args = ap.parse_args()
 
@@ -356,4 +357,4 @@ if __name__ == "__main__":
     if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
     build(areas, args.title, args.lede, args.cta_url, args.update_note, args.leaflet_dir, args.output,
-          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig)
+          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig, hh_gesamt_total=args.hh_gesamt_total)
