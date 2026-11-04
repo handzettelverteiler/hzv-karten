@@ -555,7 +555,7 @@ function priceTable() {
 
   const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
   if (LAYOUT === "neu") return priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage });
-  const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
+  const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
       const isKeyCol = keyCols.includes(i);
@@ -592,7 +592,7 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
         children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(anfahrtSumme), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
     ],
   });
-  const totalVals = ["Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), fmtHH(gesamt.hh_gesamt), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
+  const totalVals = ["Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
   const totalWidths = [colWidths[0] + colWidths[1], ...colWidths.slice(2)];
   const totalKey = keyCols.map((k) => k - 1);
   const totalRow = new TableRow({
