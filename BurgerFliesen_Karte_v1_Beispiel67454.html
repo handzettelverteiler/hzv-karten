@@ -813,7 +813,7 @@ const geoLayer = L.geoJSON(geojson, {
 }).addTo(map);
 
 // Kunden-Standort (optional): Logo-Kärtchen oder Häuschen mit Pin
-const KUNDE = null;
+const KUNDE = {"lat": 49.3479175, "lon": 8.2423942, "name": "Burger Fliesenlegermeisterbetrieb", "logo": "", "stil": "haus", "popup": "Burger Fliesenlegermeisterbetrieb<br>Hans-Böckler-Straße 35<br>67454 Haßloch"};
 if (KUNDE && KUNDE.lat) {
   let html, size, anchor;
   const nameTag = KUNDE.name ? '<div style="margin-top:3px;background:#C81E1E;color:#fff;font:bold 11px Arial;padding:2px 7px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.35)">' + KUNDE.name + '</div>' : '';
