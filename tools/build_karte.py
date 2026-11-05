@@ -28,6 +28,8 @@ Input-JSON-Format (Liste von Gebieten):
 Zusatzoptionen:
     --highlight-plz <PLZ>  Ziel-PLZ blau, Rest abgedimmt, Zoom auf die PLZ
     --hide-sidebar         Sidebar ausblenden (fuer die Beispielseite im Angebot)
+    --kunde-standort "lat,lon" [--kunde-name ".."] [--kunde-logo logo.png] [--kunde-stil logo|haus]
+                           Kundenstandort als Marker (Logo-Kaertchen oder rotes Haeuschen)
 URL-Parameter der fertigen Karte:
     ?shot=1          Sidebar + Zoom-Buttons ausblenden (Screenshot-Modus)
     ?shot=1&plz=XXX  zusaetzlich PLZ hervorheben
@@ -205,6 +207,32 @@ const geoLayer = L.geoJSON(geojson, {
   }
 }).addTo(map);
 
+// Kunden-Standort (optional): Logo-Kärtchen oder Häuschen mit Pin
+const KUNDE = __KUNDE__;
+if (KUNDE && KUNDE.lat) {
+  let html, size, anchor;
+  const nameTag = KUNDE.name ? '<div style="margin-top:3px;background:#C81E1E;color:#fff;font:bold 11px Arial;padding:2px 7px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.35)">' + KUNDE.name + '</div>' : '';
+  if (KUNDE.stil === 'logo' && KUNDE.logo) {
+    html = '<div style="display:flex;flex-direction:column;align-items:center">'
+         + '<div style="background:#fff;border:2px solid #C81E1E;border-radius:8px;padding:4px 6px;box-shadow:0 2px 6px rgba(0,0,0,.4);line-height:0"><img src="' + KUNDE.logo + '" style="height:38px;width:auto;display:block"></div>'
+         + '<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #C81E1E;margin-top:-1px"></div>'
+         + '<div style="width:9px;height:9px;border-radius:50%;background:#C81E1E;border:2px solid #fff;box-shadow:0 0 3px rgba(0,0,0,.5);margin-top:1px"></div>'
+         + nameTag + '</div>';
+    size = [170, 110]; anchor = [85, 66];
+  } else {
+    html = '<div style="display:flex;flex-direction:column;align-items:center">'
+         + '<svg width="46" height="52" viewBox="0 0 46 52" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))">'
+         + '<path d="M23 51 L15 40 H6 A4 4 0 0 1 2 36 V6 A4 4 0 0 1 6 2 H40 A4 4 0 0 1 44 6 V36 A4 4 0 0 1 40 40 H31 Z" fill="#C81E1E" stroke="#fff" stroke-width="2"/>'
+         + '<path d="M23 8 L37 20 H33 V34 H13 V20 H9 Z" fill="#fff"/>'
+         + '<rect x="20" y="25" width="6" height="9" fill="#C81E1E"/><rect x="14.5" y="22" width="4" height="4" fill="#C81E1E"/><rect x="27.5" y="22" width="4" height="4" fill="#C81E1E"/>'
+         + '</svg>' + nameTag + '</div>';
+    size = [170, 80]; anchor = [85, 51];
+  }
+  const icon = L.divIcon({ html: html, className: 'kunde-marker', iconSize: size, iconAnchor: anchor });
+  L.marker([KUNDE.lat, KUNDE.lon], { icon: icon, zIndexOffset: 1000, interactive: !!KUNDE.popup })
+    .addTo(map).bindPopup(KUNDE.popup || '');
+}
+
 if (targetLayer) {
   map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] });
 } else if (geojson.features.length) {
@@ -237,7 +265,7 @@ geojson.features.forEach(function(f) {
 
 
 def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
-          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None):
+          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None, kunde=None):
     with open(f"{leaflet_dir}/leaflet.js") as f:
         leaflet_js = f.read()
     with open(f"{leaflet_dir}/leaflet.css") as f:
@@ -327,6 +355,7 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     html = html.replace("__HIGHLIGHT_PLZ__", str(highlight_plz or ""))
     html = html.replace("__SIDEBAR_DISPLAY__", "none" if hide_sidebar else "block")
     html = html.replace("__GEOJSON__", json.dumps(geojson, ensure_ascii=False))
+    html = html.replace("__KUNDE__", json.dumps(kunde or None, ensure_ascii=False))
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -349,12 +378,28 @@ if __name__ == "__main__":
     ap.add_argument("--hide-sidebar", action="store_true", help="Sidebar ausblenden")
     ap.add_argument("--hh-gesamt-total", type=float, default=None, help="HH gesamt fuer die Summenzeile, wenn je Ortsteil kein Wert bekannt ist (z. B. nur PLZ-Gesamtwert)")
     ap.add_argument("--anfahrt-einmalig", type=float, default=None, help="An-/Abfahrt nur einmal fuer das ganze Verteilgebiet (z. B. 35), unabhaengig von der Zahl der PLZ")
+    ap.add_argument("--kunde-standort", default="", help="Kundenstandort 'lat,lon' als Marker auf der Karte")
+    ap.add_argument("--kunde-name", default="", help="Beschriftung unter dem Kunden-Marker")
+    ap.add_argument("--kunde-logo", default="", help="Logo-Datei (png/jpg) fuer den Marker; ohne Logo = Haeuschen")
+    ap.add_argument("--kunde-stil", choices=["logo", "haus"], default=None, help="Marker-Stil (Standard: logo, wenn Logo angegeben, sonst haus)")
+    ap.add_argument("--kunde-popup", default="", help="Popup-Text (HTML) beim Klick auf den Marker")
     args = ap.parse_args()
 
     with open(args.input, encoding="utf-8") as f:
         areas = json.load(f)
 
+    kunde = None
+    if args.kunde_standort:
+        import base64, mimetypes
+        lat, lon = [float(x) for x in args.kunde_standort.split(",")]
+        logo = ""
+        if args.kunde_logo:
+            mime = mimetypes.guess_type(args.kunde_logo)[0] or "image/png"
+            logo = f"data:{mime};base64," + base64.b64encode(open(args.kunde_logo, "rb").read()).decode()
+        kunde = {"lat": lat, "lon": lon, "name": args.kunde_name, "logo": logo,
+                 "stil": args.kunde_stil or ("logo" if logo else "haus"), "popup": args.kunde_popup}
+
     if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
     build(areas, args.title, args.lede, args.cta_url, args.update_note, args.leaflet_dir, args.output,
-          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig, hh_gesamt_total=args.hh_gesamt_total)
+          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig, hh_gesamt_total=args.hh_gesamt_total, kunde=kunde)
