@@ -349,8 +349,8 @@ const blickRows = [
   ["Verteilgebiet", [run(gebietKurz, { size: 21 })]],
   [`Verteilte ${werbemittel}`, [run(`${fmtHH(flyerGesamt)} Stück an Privathaushalte`, { size: 21 })]],
   ["Gesamtpreis", [run(`${fmtEur(endpreis)} netto`, { bold: true, color: RED, size: 30 }), run("  inkl. An-/Abfahrt", { size: 20, color: "555555" })]],
-  ["Zeitraum", [run("nach Ihrem Wunschtermin – wir stimmen ihn direkt mit Ihnen ab", { size: 21 })]],
-  ["Nachweis", [run("Stichprobendokumentation und/oder Fotos nach der Verteilung", { size: 21 })]],
+  ["Zeitraum", [run(config.zeitraum_text || "nach Ihrem Wunschtermin – wir stimmen ihn direkt mit Ihnen ab", { size: 21 })]],
+  ["Nachweis", [run(config.nachweis_kurz || "Stichprobendokumentation und/oder Fotos nach der Verteilung", { size: 21 })]],
   ["Beauftragung", [run("Kurze Antwort per E-Mail genügt", { size: 21, bold: true })]],
 ];
 function blickTable() {
@@ -424,7 +424,7 @@ const schritte = [
   ["Beauftragen", "Eine kurze Antwort per E-Mail genügt. Wir bestätigen Ihnen Auftrag und Verteilzeitraum schriftlich."],
   [`${werbemittel} anliefern`, ohneDruck ? `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – spätestens 3 Werktage vor Verteilbeginn.` : `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – oder wir drucken sie für Sie.`],
   ["Verteilung", `Unsere Verteiler werfen Ihre ${werbemittel} im vereinbarten Zeitraum in die Briefkästen der Privathaushalte ein – in Mehrfamilienhäusern in jeden Briefkasten, nicht ins Treppenhaus.`],
-  ["Nachweis", "Nach Abschluss erhalten Sie eine Stichprobendokumentation und/oder Fotos Ihrer Verteilung."],
+  ["Nachweis", config.nachweis_text || "Nach Abschluss erhalten Sie eine Stichprobendokumentation und/oder Fotos Ihrer Verteilung."],
 ];
 function schritteTable() {
   const W1 = 900, W2 = 9200;
@@ -446,8 +446,8 @@ const page2Neu = [
   schritteTable(),
   para([run("Darauf können Sie sich verlassen", { bold: true, size: 24 })], { before: 300, after: 120 }),
   bullet("Seit über 20 Jahren zuverlässig im Einsatz."),
-  bullet("Ausschließlich erwachsene Verteiler, bezahlt nach dem gesetzlichen Mindestlohn."),
-  bullet("Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
+  bullet(config.verteiler_text || "Ausschließlich erwachsene Verteiler, bezahlt nach dem gesetzlichen Mindestlohn."),
+  bullet(config.nachweis_bullet || "Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
   ...(kartenLink ? [bullet("Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
   para([run("Gut zu wissen", { bold: true, size: 22, color: "555555" })], { before: 280, after: 100 }),
   smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
@@ -789,7 +789,7 @@ const page6Neu = [
     children: [new TextRun({ text: "So einfach beauftragen Sie uns", bold: true, color: RED, size: 32, font: FONT })],
   }),
   p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
-  p(`Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
+  p(config.vorlauf_text || `Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
   kontaktBox(),
   p(`Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }),
   p(`Dieses Angebot ist gültig bis ${gueltigBis}.`, { bold: true, after: 380 }),
