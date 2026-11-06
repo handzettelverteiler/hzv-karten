@@ -8,7 +8,7 @@ import math, subprocess, sys, os
 import numpy as np
 from PIL import Image, ImageDraw
 
-BASE = os.environ.get("HZV_STAEDTE", "/home/claude/hzv-karten/staedte")
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "base_alt")
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 W, H, GROUND = 1600, 873, 578
 LINE = "#2b2b2b"
