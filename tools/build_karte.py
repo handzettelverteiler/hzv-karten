@@ -119,6 +119,7 @@ __LEAFLET_CSS__
     #map { height: 65vh; flex: none; }
     aside { width: 100%; min-width: 0; border-right: 0; border-top: 1px solid #e5e2dd; }
   }
+.leaflet-marker-pane { z-index: 660; } /* Kunden-/Filialmarker vor den PLZ-Schildern */
 </style>
 </head>
 <body>
