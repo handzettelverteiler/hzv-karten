@@ -726,7 +726,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div class="logo"><div class="mark"></div><div class="word">handzettelverteiler<b>.de</b></div></div>
   <div class="eyebrow">Ihre Verteilgebiete</div>
   <h1>Domino&rsquo;s Pizza &ndash; Verteilgebiete Wuppertal komplett</h1>
-  <div class="lede">Alle 23 PLZ-Regionen in Wuppertal &ndash; rund 150.650 bewerbbare Haushalte.</div>
+  <div class="lede">Alle 23 PLZ-Regionen in Wuppertal &ndash; rund 150.650 bewerbbare Haushalte. Rote H&auml;user = Domino&rsquo;s-Filialen.</div>
 
   <div class="summary">
     <div class="cap">Ihr Angebot &ndash; Gesamt</div>
@@ -813,7 +813,8 @@ const geoLayer = L.geoJSON(geojson, {
 }).addTo(map);
 
 // Kunden-Standort (optional): Logo-Kärtchen oder Häuschen mit Pin
-const KUNDE = null;
+const KUNDE_RAW = [{"lat": 51.2511263, "lon": 7.1394095, "name": "Domino's Elberfeld", "logo": "", "stil": "haus", "popup": "<b>Domino's Pizza Wuppertal</b><br>Hoeftstraße 29–31, 42103 Wuppertal"}, {"lat": 51.2721946, "lon": 7.1939444, "name": "Domino's Barmen", "logo": "", "stil": "haus", "popup": "<b>Domino's Pizza Wuppertal</b><br>Steinweg 23, 42275 Wuppertal"}, {"lat": 51.2757213, "lon": 7.2496456, "name": "Domino's Langerfeld", "logo": "", "stil": "haus", "popup": "<b>Domino's Pizza Wuppertal</b><br>Schwelmer Str. 51, 42389 Wuppertal"}, {"lat": 51.2348734, "lon": 7.0804271, "name": "Domino's Vohwinkel", "logo": "", "stil": "haus", "popup": "<b>Domino's Pizza Wuppertal</b><br>Kaiserstraße 95, 42329 Wuppertal"}, {"lat": 51.2306753, "lon": 7.2080055, "name": "Domino's Ronsdorf", "logo": "", "stil": "haus", "popup": "<b>Domino's Pizza Wuppertal</b><br>Erbschlöer Str. 80, 42369 Wuppertal"}];
+(Array.isArray(KUNDE_RAW) ? KUNDE_RAW : [KUNDE_RAW]).forEach(function (KUNDE) {
 if (KUNDE && KUNDE.lat) {
   let html, size, anchor;
   const nameTag = KUNDE.name ? '<div style="margin-top:3px;background:#C81E1E;color:#fff;font:bold 11px Arial;padding:2px 7px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.35)">' + KUNDE.name + '</div>' : '';
@@ -837,6 +838,7 @@ if (KUNDE && KUNDE.lat) {
   L.marker([KUNDE.lat, KUNDE.lon], { icon: icon, zIndexOffset: 1000, interactive: !!KUNDE.popup })
     .addTo(map).bindPopup(KUNDE.popup || '');
 }
+});
 
 if (targetLayer) {
   map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] });
