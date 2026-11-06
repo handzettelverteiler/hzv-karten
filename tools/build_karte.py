@@ -30,6 +30,7 @@ Zusatzoptionen:
     --hide-sidebar         Sidebar ausblenden (fuer die Beispielseite im Angebot)
     --kunde-standort "lat,lon" [--kunde-name ".."] [--kunde-logo logo.png] [--kunde-stil logo|haus]
                            Kundenstandort als Marker (Logo-Kaertchen oder rotes Haeuschen)
+    --kunde-standorte filialen.json   Mehrere Standorte (z. B. Filialen) als Marker, gleiche Optionen fuer Logo/Stil
 URL-Parameter der fertigen Karte:
     ?shot=1          Sidebar + Zoom-Buttons ausblenden (Screenshot-Modus)
     ?shot=1&plz=XXX  zusaetzlich PLZ hervorheben
@@ -208,7 +209,8 @@ const geoLayer = L.geoJSON(geojson, {
 }).addTo(map);
 
 // Kunden-Standort (optional): Logo-Kärtchen oder Häuschen mit Pin
-const KUNDE = __KUNDE__;
+const KUNDE_RAW = __KUNDE__;
+(Array.isArray(KUNDE_RAW) ? KUNDE_RAW : [KUNDE_RAW]).forEach(function (KUNDE) {
 if (KUNDE && KUNDE.lat) {
   let html, size, anchor;
   const nameTag = KUNDE.name ? '<div style="margin-top:3px;background:#C81E1E;color:#fff;font:bold 11px Arial;padding:2px 7px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.35)">' + KUNDE.name + '</div>' : '';
@@ -232,6 +234,7 @@ if (KUNDE && KUNDE.lat) {
   L.marker([KUNDE.lat, KUNDE.lon], { icon: icon, zIndexOffset: 1000, interactive: !!KUNDE.popup })
     .addTo(map).bindPopup(KUNDE.popup || '');
 }
+});
 
 if (targetLayer) {
   map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] });
@@ -383,6 +386,7 @@ if __name__ == "__main__":
     ap.add_argument("--kunde-logo", default="", help="Logo-Datei (png/jpg) fuer den Marker; ohne Logo = Haeuschen")
     ap.add_argument("--kunde-stil", choices=["logo", "haus"], default=None, help="Marker-Stil (Standard: logo, wenn Logo angegeben, sonst haus)")
     ap.add_argument("--kunde-popup", default="", help="Popup-Text (HTML) beim Klick auf den Marker")
+    ap.add_argument("--kunde-standorte", default="", help="JSON-Datei mit mehreren Standorten (Filialen): [{\"lat\":..,\"lon\":..,\"name\":..,\"popup\":..}]; Logo/Stil wie --kunde-logo/--kunde-stil")
     args = ap.parse_args()
 
     with open(args.input, encoding="utf-8") as f:
@@ -398,6 +402,17 @@ if __name__ == "__main__":
             logo = f"data:{mime};base64," + base64.b64encode(open(args.kunde_logo, "rb").read()).decode()
         kunde = {"lat": lat, "lon": lon, "name": args.kunde_name, "logo": logo,
                  "stil": args.kunde_stil or ("logo" if logo else "haus"), "popup": args.kunde_popup}
+
+    if args.kunde_standorte:
+        import base64, mimetypes
+        logo = ""
+        if args.kunde_logo:
+            mime = mimetypes.guess_type(args.kunde_logo)[0] or "image/png"
+            logo = f"data:{mime};base64," + base64.b64encode(open(args.kunde_logo, "rb").read()).decode()
+        with open(args.kunde_standorte, encoding="utf-8") as f:
+            liste = json.load(f)
+        kunde = [{"lat": float(k["lat"]), "lon": float(k["lon"]), "name": k.get("name", ""), "logo": logo,
+                  "stil": args.kunde_stil or ("logo" if logo else "haus"), "popup": k.get("popup", "")} for k in liste]
 
     if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
