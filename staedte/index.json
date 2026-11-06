@@ -1,5 +1,5 @@
 {
- "_info": "HZV Stadtbilder (Stil v2, 1600x873, weisser Hintergrund). Stadt_<Slug>.jpg = Seite 3 (Uebersichtskarte), Stadt_<Slug>_Lupe.jpg = Seite 4 (Beispiel-PLZ). Schluessel = Stadtname klein, ohne Umlaute/Sonderzeichen.",
+ "_info": "HZV Stadtbilder (Stil v3 ab 06.11.2026: blaues Strichmaennchen mit Basecap, Briefkastenanlage mit 'Keine Werbung'), 1600x873. Stadt_<Slug>.jpg = Seite 3, Stadt_<Slug>_Lupe.jpg = Seite 4. Generator: tools/stadtbild/final.py",
  "fallback": "Allgemein",
  "staedte": {
   "aachen": "Aachen",
@@ -68,6 +68,7 @@
   "ludwigshafen": "Ludwigshafen",
   "ludwigshafenamrhein": "Ludwigshafen",
   "luebeck": "Luebeck",
+  "lueneburg": "Lueneburg",
   "luenen": "Luenen",
   "magdeburg": "Magdeburg",
   "mainz": "Mainz",
@@ -103,6 +104,7 @@
   "schwerin": "Schwerin",
   "siegen": "Siegen",
   "solingen": "Solingen",
+  "stade": "Stade",
   "stuttgart": "Stuttgart",
   "trier": "Trier",
   "tuebingen": "Tuebingen",
@@ -110,6 +112,8 @@
   "velbert": "Velbert",
   "villingen": "Villingen_Schwenningen",
   "villingenschwenningen": "Villingen_Schwenningen",
+  "wasserburg": "Wasserburg",
+  "wasserburgaminn": "Wasserburg",
   "wiesbaden": "Wiesbaden",
   "wilhelmshaven": "Wilhelmshaven",
   "witten": "Witten",
