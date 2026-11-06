@@ -27,6 +27,6 @@ T([53.5655,9.9560],'Schanze<br><small>Auslage</small>');
 T([53.5545,9.9180],'Ottensen<br><small>Briefkasten</small>','bk');
 T([53.5745,9.9500],'Eimsbüttel<br><small>Briefkasten</small>','bk');
 T([53.5860,10.0050],'Winterhude<br><small>Briefkasten</small>','bk');
-const lg=L.control({position:'bottomleft'});lg.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML='<b>Postkartenkampagne Hamburg</b><br><span class="sw" style="background:#C81E1E;opacity:.7"></span>Auslage in Geschäften (St. Pauli, Sternschanze)<br><span class="sw" style="background:#3A7BD5;opacity:.6"></span>Briefkastenverteilung (PLZ-Gebiete)';return d};lg.addTo(map);
+const lg=L.control({position:'topleft'});lg.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML='<b>Postkartenkampagne Hamburg</b><br><span class="sw" style="background:#C81E1E;opacity:.7"></span>Auslage in Geschäften (St. Pauli, Sternschanze)<br><span class="sw" style="background:#3A7BD5;opacity:.6"></span>Briefkastenverteilung (PLZ-Gebiete)';return d};lg.addTo(map);
 map.fitBounds(grp.getBounds(),{padding:[20,20]});
 </script></body></html>
