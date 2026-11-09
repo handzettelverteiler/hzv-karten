@@ -130,7 +130,7 @@ __LEAFLET_CSS__
 <div class="layout">
 <aside>
   <div class="logo"><div class="mark"></div><div class="word">handzettelverteiler<b>.de</b></div></div>
-  <div class="eyebrow">Ihre Verteilgebiete</div>
+  <div class="eyebrow">Ihre Verteilgebiete__ANGEBOTSNR__</div>
   <h1>__TITLE__</h1>
   <div class="lede">__LEDE__</div>
 
@@ -277,12 +277,12 @@ geojson.features.forEach(function(f) {
 ANFRAGE_URL = "https://www.handzettelverteiler.com/service-kontakt/ihre-pers%C3%B6nliche-anfrage/"
 AUFTRAG_MAIL = "info@handzettelverteiler.de"
 
-def cta_block(title_plain, plz_text="", gesamt="", cta_url=None):
+def cta_block(title_plain, plz_text="", gesamt="", cta_url=None, angebotsnr=""):
     from urllib.parse import quote
     cta_url = cta_url or ANFRAGE_URL
-    subj = f"Auftrag Flyerverteilung - {title_plain}"
+    subj = (f"Auftrag zu Angebot {angebotsnr} - " if angebotsnr else "Auftrag Flyerverteilung - ") + title_plain
     body = ("Sehr geehrte Damen und Herren,\n\n"
-            f"hiermit beauftragen wir die Flyerverteilung gemäß Ihrem Angebot \"{title_plain}\".\n"
+            + (f"hiermit beauftragen wir die Flyerverteilung gemäß Ihrem Angebot Nr. {angebotsnr} (\"{title_plain}\").\n" if angebotsnr else f"hiermit beauftragen wir die Flyerverteilung gemäß Ihrem Angebot \"{title_plain}\".\n")
             + (f"Verteilgebiete: {plz_text}\n" if plz_text else "")
             + (f"Gesamtsumme laut Angebot: {gesamt} zzgl. MwSt.\n" if gesamt else "")
             + "\nGewünschter Verteilzeitraum: \nFirma / Rechnungsanschrift: \nAnsprechpartner / Telefon: \n\nMit freundlichen Grüßen\n")
@@ -292,7 +292,7 @@ def cta_block(title_plain, plz_text="", gesamt="", cta_url=None):
             '    <div class="ctamail">oder per E-Mail: <a href="mailto:' + AUFTRAG_MAIL + '">' + AUFTRAG_MAIL + '</a></div>')
 
 def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
-          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None, kunde=None):
+          highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None, kunde=None, angebotsnr=""):
     with open(f"{leaflet_dir}/leaflet.js") as f:
         leaflet_js = f.read()
     with open(f"{leaflet_dir}/leaflet.css") as f:
@@ -365,7 +365,8 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
         if a.get("auflage") == 0: continue
         _plz.append(f'{a["plz"]} {a["gebiet"]}' + (f' ({fmt_hh(a["auflage"])} Flyer)' if a.get("auflage") is not None else ""))
     import html as _h
-    html = html.replace("__CTA_BLOCK__", cta_block(_h.unescape(title).replace("–", "-"), "; ".join(_plz), totals["gesamtpreis"].replace("&euro;", "€").replace("&nbsp;", " "), cta_url))
+    html = html.replace("__CTA_BLOCK__", cta_block(_h.unescape(title).replace("–", "-"), "; ".join(_plz), totals["gesamtpreis"].replace("&euro;", "€").replace("&nbsp;", " "), cta_url, angebotsnr))
+    html = html.replace("__ANGEBOTSNR__", f" &middot; Angebot Nr. {angebotsnr}" if angebotsnr else "")
     html = html.replace("__AREA_COUNT__", str(len(areas)))
     html = html.replace("__UPDATE_NOTE__", f" {update_note}" if update_note else "")
     html = html.replace("__BEWERBBAR__", totals["bewerbbar"])
@@ -415,6 +416,7 @@ if __name__ == "__main__":
     ap.add_argument("--kunde-logo", default="", help="Logo-Datei (png/jpg) fuer den Marker; ohne Logo = Haeuschen")
     ap.add_argument("--kunde-stil", choices=["logo", "haus"], default=None, help="Marker-Stil (Standard: logo, wenn Logo angegeben, sonst haus)")
     ap.add_argument("--kunde-popup", default="", help="Popup-Text (HTML) beim Klick auf den Marker")
+    ap.add_argument("--angebotsnr", default="", help="Angebotsnummer JJMM-NN (tools/angebotsnummer.py), erscheint in der Sidebar und im Betreff der Auftrags-E-Mail")
     ap.add_argument("--kunde-standorte", default="", help="JSON-Datei mit mehreren Standorten (Filialen): [{\"lat\":..,\"lon\":..,\"name\":..,\"popup\":..}]; Logo/Stil wie --kunde-logo/--kunde-stil")
     args = ap.parse_args()
 
@@ -446,4 +448,4 @@ if __name__ == "__main__":
     if args.highlight_plz and args.highlight_plz not in [str(a.get("id") or a["plz"]) for a in areas]:
         raise SystemExit(f"--highlight-plz {args.highlight_plz} ist nicht in der Areas-Datei enthalten")
     build(areas, args.title, args.lede, args.cta_url, args.update_note, args.leaflet_dir, args.output,
-          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig, hh_gesamt_total=args.hh_gesamt_total, kunde=kunde)
+          highlight_plz=args.highlight_plz, hide_sidebar=args.hide_sidebar, anfahrt_einmalig=args.anfahrt_einmalig, hh_gesamt_total=args.hh_gesamt_total, kunde=kunde, angebotsnr=args.angebotsnr)

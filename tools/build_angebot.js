@@ -223,6 +223,8 @@ const telefon = config.absender?.telefon || config.kontakt?.telefon || "0681 410
 const kartenLink = config.karten_link || "";
 function datumDE(d) { return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }); }
 const angebotsDatum = config.angebotsdatum || datumDE(new Date());
+// Angebotsnummer JJMM-NN[-Version] (Stefan, 09.11.2026) – vergeben mit tools/angebotsnummer.py, Register daten/angebote_register.csv
+const angebotsNr = config.angebotsnummer || "";
 const gueltigBis = config.gueltig_bis || (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return datumDE(d); })();
 const anfahrtSumme = einePLZ ? anfahrtGesamt : (config.anfahrt_gesamt ?? areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0));
 const endpreis = Math.round((gesamt.preis + anfahrtSumme) * 100) / 100;
@@ -271,6 +273,7 @@ const page1Alt = [
     border: { left: { color: RED, space: 8, style: BorderStyle.SINGLE, size: 36 } },
     children: [new TextRun({ text: "Angebot", bold: true, color: RED, size: 56, font: FONT })],
   }),
+  ...(angebotsNr ? [p(`Angebotsnummer ${angebotsNr} · vom ${angebotsDatum}`, { bold: true, color: "555555", size: 20, after: 200 })] : []),
   new Table({
     width: { size: 10100, type: WidthType.DXA },
     columnWidths: [10100],
@@ -386,7 +389,7 @@ const page1Neu = [
   new Paragraph({
     spacing: { after: 200 },
     border: { left: { color: RED, space: 8, style: BorderStyle.SINGLE, size: 36 } },
-    children: [run(`vom ${angebotsDatum} · gültig bis ${gueltigBis}`, { size: 20, color: "555555" })],
+    children: [...(angebotsNr ? [run(`Nr. ${angebotsNr}`, { size: 20, color: "555555", bold: true }), run(" · ", { size: 20, color: "555555" })] : []), run(`vom ${angebotsDatum} · gültig bis ${gueltigBis}`, { size: 20, color: "555555" })],
   }),
   new Table({
     width: { size: 10100, type: WidthType.DXA },
@@ -788,7 +791,7 @@ const page6Neu = [
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
     children: [new TextRun({ text: "So einfach beauftragen Sie uns", bold: true, color: RED, size: 32, font: FONT })],
   }),
-  p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
+  p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot${angebotsNr ? " " + angebotsNr : ""}“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
   p(config.vorlauf_text || `Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
   kontaktBox(),
   p(`Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }),
