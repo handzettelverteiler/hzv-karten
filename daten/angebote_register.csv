@@ -27,7 +27,7 @@ nr;datum;kunde;gebiet;flyer;netto;kartenlink;ordner;datei;status;notiz
 2611-20;2026-11-04;Pflege vor Ort GmbH;Muelheim an der Ruhr;49250;5.170,80;;November\Pflege vor Ort;Angebot_Pflege vor Ort GmbH_04.11.2026_Muelheim an der Ruhr.docx;offen;
 2611-21;2026-11-04;Goldankauf Landau;Landau;79950;11.526,25;;November\Goldankauf Landau;Angebot_Goldankauf Landau_04.11.2026_Landau.docx;offen;
 2611-21-2;2026-11-04;Goldankauf Landau;Landau 30000 DIN A4;30000;4.118,00;;November\Goldankauf Landau;Angebot_Goldankauf Landau_04.11.2026_Landau_30000_DIN A4.docx;offen;
-2611-21-3;2026-11-09;Goldankauf Landau;Landau;79950;11.526,25;;November\Goldankauf Landau;Angebot_Goldankauf Landau_04.11.2026_Landau.docx;offen;35.000 DIN A4 glänzend, + Herxheim 76863
+2611-21-3;2026-11-09;Goldankauf Landau;Landau 35000 DIN A4 glänzend;35000;4.828,00;https://handzettelverteiler.github.io/hzv-karten/GoldankaufLandau_Karte_v3_35000.html;November\Goldankauf Landau;Angebot_2611-21-3_Goldankauf Landau_09.11.2026_Landau_35000_DIN A4.docx;offen;35.000 DIN A4 glänzend, + Herxheim 76863
 2611-22;2026-11-05;Nova Mönchengladbach UG (haftungsbeschränkt);Moenchengladbach;53250;5.393,50;;November\Nova Moenchengladbach;Angebot_Nova Moenchengladbach_05.11.2026_Moenchengladbach.docx;offen;
 2611-23;2026-11-05;kitea Berlin-Mahlsdorf;Berlin-Mahlsdorf;10800;1.331,00;;November\kitea;Angebot_kitea_05.11.2026_Berlin-Mahlsdorf.docx;offen;
 2611-24;2026-11-05;MFG – Marcel Frenzel KFZ-Gutachten;Werder;5000;635,00;;November\Marcel Frenzel;Angebot_MFG Marcel Frenzel_05.11.2026_Werder.docx;offen;
