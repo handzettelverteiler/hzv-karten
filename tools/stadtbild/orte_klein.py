@@ -14,6 +14,8 @@ reg("Wiesloch", ["Wiesloch"], lambda: basis(203) + weinberg(0, 340, 140) + kirch
 reg("Eschborn", ["Eschborn", "Niederhöchstadt", "Niederhoechstadt"], lambda: basis(205) + fachwerk(30, 3) + kirche(220, 190, 140, WHITE, SLATE, "spire", "center", 56, 260) + turm(450, 46, 190, "#c9b27c", "flat") + hochhaus(560, 70, 270) + modern(640, 150, 150, "#d6e6f2") + hochhaus(800, 60, 220, "#bcd3e6", True))
 reg("Leimen", ["Leimen"], lambda: basis(204) + weinberg(0, 300, 130) + kirche(330, 190, 140, WHITE, SLATE, "helm", "left") + zementwerk(620))
 
+reg("Ansbach", ["Ansbach"], lambda: basis(206) + schloss(30, 380, 120, SAND, ROOF_RED, (), None) + turm(470, 40, 215, SAND, "spire") + turm(700, 40, 215, SAND, "spire") + kirche(480, 250, 140, SAND, SLATE, "spire", "center", 58, 310) + fachwerk(800, 2))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
