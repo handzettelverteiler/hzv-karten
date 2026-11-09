@@ -91,6 +91,10 @@ __LEAFLET_CSS__
   .summary .note { font-size: 11px; opacity: .7; margin-top: 6px; font-style: italic; }
   .cta { display: block; text-align: center; background: #fff; color: #12463C; font-weight: 700; padding: 10px; border-radius: 6px; text-decoration: none; margin-top: 12px; font-size: 14px; }
   .cta:hover { background: #eee; }
+  .cta.cta2 { background: transparent; color: #fff; border: 1.5px solid #fff; margin-top: 8px; font-weight: 600; }
+  .cta.cta2:hover { background: rgba(255,255,255,.12); }
+  .ctamail { text-align: center; font-size: 12px; margin-top: 8px; opacity: .9; }
+  .ctamail a { color: #fff; }
   .toggle-box { border: 1px solid #e5e2dd; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
   .toggle-box .lbl { font-size: 13px; font-weight: 600; }
   .toggle-box .sub { font-size: 11px; color: #888; }
@@ -138,7 +142,7 @@ __AUFLAGE_ROW__    <div class="row"><span>__ANFAHRT_LABEL__</span><span class="v
     <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">__VERTEILUNG__</span></div>
     <div class="row total"><span>Gesamtsumme</span><span class="val">__GESAMTPREIS__</span></div>
     <div class="note">Alle Preise zzgl. gesetzl. MwSt.</div>
-    <a class="cta" href="__CTA_URL__" target="_blank" rel="noopener">Jetzt anfragen</a>
+__CTA_BLOCK__
   </div>
 
   <div class="toggle-box">
@@ -268,6 +272,25 @@ geojson.features.forEach(function(f) {
 """
 
 
+# Bestell-/Anfrage-Buttons (Stefan, 09.11.2026): Kunde soll direkt beauftragen oder anfragen koennen
+# statt nur auf der Startseite von handzettelverteiler.de zu landen.
+ANFRAGE_URL = "https://www.handzettelverteiler.com/service-kontakt/ihre-pers%C3%B6nliche-anfrage/"
+AUFTRAG_MAIL = "info@handzettelverteiler.de"
+
+def cta_block(title_plain, plz_text="", gesamt="", cta_url=None):
+    from urllib.parse import quote
+    cta_url = cta_url or ANFRAGE_URL
+    subj = f"Auftrag Flyerverteilung - {title_plain}"
+    body = ("Sehr geehrte Damen und Herren,\n\n"
+            f"hiermit beauftragen wir die Flyerverteilung gemäß Ihrem Angebot \"{title_plain}\".\n"
+            + (f"Verteilgebiete: {plz_text}\n" if plz_text else "")
+            + (f"Gesamtsumme laut Angebot: {gesamt} zzgl. MwSt.\n" if gesamt else "")
+            + "\nGewünschter Verteilzeitraum: \nFirma / Rechnungsanschrift: \nAnsprechpartner / Telefon: \n\nMit freundlichen Grüßen\n")
+    mailto = f"mailto:{AUFTRAG_MAIL}?subject={quote(subj)}&body={quote(body)}"
+    return ('    <a class="cta" href="' + mailto + '">Jetzt beauftragen</a>\n'
+            '    <a class="cta cta2" href="' + cta_url + '" target="_blank" rel="noopener">Anfrage / R&uuml;ckfrage senden</a>\n'
+            '    <div class="ctamail">oder per E-Mail: <a href="mailto:' + AUFTRAG_MAIL + '">' + AUFTRAG_MAIL + '</a></div>')
+
 def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
           highlight_plz="", hide_sidebar=False, anfahrt_einmalig=None, hh_gesamt_total=None, kunde=None):
     with open(f"{leaflet_dir}/leaflet.js") as f:
@@ -337,7 +360,12 @@ def build(areas, title, lede, cta_url, update_note, leaflet_dir, output_path,
     html = html.replace("__TITLE_PLAIN__", title.replace("&ndash;", "-"))
     html = html.replace("__TITLE__", title)
     html = html.replace("__LEDE__", lede)
-    html = html.replace("__CTA_URL__", cta_url)
+    _plz = []
+    for a in areas:
+        if a.get("auflage") == 0: continue
+        _plz.append(f'{a["plz"]} {a["gebiet"]}' + (f' ({fmt_hh(a["auflage"])} Flyer)' if a.get("auflage") is not None else ""))
+    import html as _h
+    html = html.replace("__CTA_BLOCK__", cta_block(_h.unescape(title).replace("–", "-"), "; ".join(_plz), totals["gesamtpreis"].replace("&euro;", "€").replace("&nbsp;", " "), cta_url))
     html = html.replace("__AREA_COUNT__", str(len(areas)))
     html = html.replace("__UPDATE_NOTE__", f" {update_note}" if update_note else "")
     html = html.replace("__BEWERBBAR__", totals["bewerbbar"])
@@ -375,7 +403,7 @@ if __name__ == "__main__":
     ap.add_argument("--output", required=True, help="Pfad zur Ausgabe-HTML-Datei")
     ap.add_argument("--title", required=True, help="Projekttitel (HTML erlaubt, z.B. &ndash;)")
     ap.add_argument("--lede", default="Vorrangig in „guten Lagen“ innerhalb des Gebiets verteilen: hohe Eigentümerquote, Familien mit Kindern, mittlere Kaufkraft.")
-    ap.add_argument("--cta-url", default="https://handzettelverteiler.de/kontakt/")
+    ap.add_argument("--cta-url", default=ANFRAGE_URL)
     ap.add_argument("--update-note", default="")
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
     ap.add_argument("--highlight-plz", default="", help="Ziel-PLZ (bzw. Gebiets-id bei Ortsteilen) blau hervorheben, Rest abdimmen, Zoom darauf")
