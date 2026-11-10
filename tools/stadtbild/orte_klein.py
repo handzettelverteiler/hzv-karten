@@ -16,6 +16,7 @@ reg("Leimen", ["Leimen"], lambda: basis(204) + weinberg(0, 300, 130) + kirche(33
 
 reg("Ansbach", ["Ansbach"], lambda: basis(206) + schloss(30, 380, 120, SAND, ROOF_RED, (), None) + turm(470, 40, 215, SAND, "spire") + turm(700, 40, 215, SAND, "spire") + kirche(480, 250, 140, SAND, SLATE, "spire", "center", 58, 310) + fachwerk(800, 2))
 reg("Reiskirchen", ["Reiskirchen"], lambda: basis(207) + fachwerk(40, 3) + kirche(260, 190, 140, WHITE, SLATE, "helm", "left", 58, 260) + fachwerk(520, 2) + windrad(700, 230) + windrad(840, 190))
+reg("Breitscheid", ["Breitscheid", "Breitscheid (Hessen)", "Driedorf"], lambda: basis(208) + huegel(0, 420, 90) + modern(30, 190, 95, "#c9d3dc") + fachwerk(250, 2) + kirche(380, 190, 140, WHITE, SLATE, "spire", "left", 58, 260) + fachwerk(620, 2) + windrad(760, 240) + windrad(870, 200))
 
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
