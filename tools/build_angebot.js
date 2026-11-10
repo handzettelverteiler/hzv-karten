@@ -228,7 +228,11 @@ const angebotsDatum = config.angebotsdatum || datumDE(new Date());
 const angebotsNr = config.angebotsnummer || "";
 const gueltigBis = config.gueltig_bis || (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return datumDE(d); })();
 const anfahrtSumme = einePLZ ? anfahrtGesamt : (config.anfahrt_gesamt ?? areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0));
-const endpreis = Math.round((gesamt.preis + anfahrtSumme) * 100) / 100;
+// config.zusatz_posten: weitere Preiszeilen (z. B. Flyerdruck, Abholung) unter der An-/Abfahrt, im Gesamtpreis enthalten
+// Beispiel: "zusatz_posten": [{ "text": "Druck 3.500 Flyer DIN A5", "preis": 50 }]
+const zusatzPosten = Array.isArray(config.zusatz_posten) ? config.zusatz_posten : [];
+const zusatzSumme = zusatzPosten.reduce((s, z) => s + (z.preis || 0), 0);
+const endpreis = Math.round((gesamt.preis + anfahrtSumme + zusatzSumme) * 100) / 100;
 const flyerGesamt = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
 function euroText(n) { return Number.isInteger(n) ? `${fmtHH(n)},- Euro` : `${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Euro`; }
 // Option: explizit per config.option, abschaltbar mit "option": false; sonst automatisch, wenn genau EINE PLZ nur teilweise beliefert wird (Auffüllen)
@@ -352,7 +356,7 @@ const gebietKurz = config.gebiet_kurz || (einePLZ ? `${stadt}, PLZ ${plzListe} (
 const blickRows = [
   ["Verteilgebiet", [run(gebietKurz, { size: 21 })]],
   [`Verteilte ${werbemittel}`, [run(`${fmtHH(flyerGesamt)} Stück an Privathaushalte`, { size: 21 })]],
-  ["Gesamtpreis", [run(`${fmtEur(endpreis)} netto`, { bold: true, color: RED, size: 30 }), run("  inkl. An-/Abfahrt", { size: 20, color: "555555" })]],
+  ["Gesamtpreis", [run(`${fmtEur(endpreis)} netto`, { bold: true, color: RED, size: 30 }), run(config.gesamtpreis_zusatz || "  inkl. An-/Abfahrt", { size: 20, color: "555555" })]],
   ["Zeitraum", [run(config.zeitraum_text || "nach Ihrem Wunschtermin – wir stimmen ihn direkt mit Ihnen ab", { size: 21 })]],
   ["Nachweis", [run(config.nachweis_kurz || "Stichprobendokumentation und/oder Fotos nach der Verteilung", { size: 21 })]],
   ["Beauftragung", [run("Kurze Antwort per E-Mail genügt", { size: 21, bold: true })]],
@@ -617,7 +621,17 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
       });
     }),
   });
-  return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows, anfahrtRow, totalRow] });
+  return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows, anfahrtRow, ...zusatzPosten.map((z) => new TableRow({
+    children: [
+      new TableCell({ columnSpan: nLast, width: { size: spanW, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+        margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT },
+        children: [new Paragraph({ children: [new TextRun({ text: z.text, size: 19, font: FONT, italics: true, color: "222222" })] })] }),
+      new TableCell({ width: { size: colWidths[nLast], type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+        margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT },
+        shading: { type: ShadingType.CLEAR, fill: GREEN_BG },
+        children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(z.preis), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
+    ],
+  })), totalRow] });
 }
 
 const page4Alt = [
