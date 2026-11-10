@@ -145,6 +145,7 @@ const kunde = config.kunde; // { name, strasse, ort }
 const stadt = config.stadt; // z.B. "Neuötting" - für Textbausteine
 // "flyerdruck": false -> Kunde liefert die Flyer selbst: keine Flyerdruck-Seite, Materialien-Text ohne Druck-Hinweis (Stefan, 09.10.2026)
 const ohneDruck = config.flyerdruck === false;
+// "anliefer_schritt": {titel,text} ersetzt Schritt 2 (z. B. Abholung beim Kunden, Food Hangar 10.11.2026)
 // "werbemittel": z. B. "Briefe" statt "Flyer" in Verteilungsdetails/Teilmengen-Hinweis; "materialien_text": eigener Materialien-Absatz (z. B. kuvertierte Briefe)
 const werbemittel = config.werbemittel || "Flyer";
 const areas = config.areas; // Array wie in references/config-beispiel.json
@@ -425,7 +426,7 @@ const page1Neu = [
 // ==================== SEITE 2 (Layout neu): SO LÄUFT IHRE VERTEILUNG ====================
 const schritte = [
   ["Beauftragen", "Eine kurze Antwort per E-Mail genügt. Wir bestätigen Ihnen Auftrag und Verteilzeitraum schriftlich."],
-  [`${werbemittel} anliefern`, ohneDruck ? `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – spätestens 3 Werktage vor Verteilbeginn.` : `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – oder wir drucken sie für Sie.`],
+  config.anliefer_schritt ? [config.anliefer_schritt.titel, config.anliefer_schritt.text] : [`${werbemittel} anliefern`, ohneDruck ? `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – spätestens 3 Werktage vor Verteilbeginn.` : `Sie senden uns die ${werbemittel} an die Lieferanschrift aus der Auftragsbestätigung – oder wir drucken sie für Sie.`],
   ["Verteilung", `Unsere Verteiler werfen Ihre ${werbemittel} im vereinbarten Zeitraum in die Briefkästen der Privathaushalte ein – in Mehrfamilienhäusern in jeden Briefkasten, nicht ins Treppenhaus.`],
   ["Nachweis", config.nachweis_text || "Nach Abschluss erhalten Sie eine Stichprobendokumentation und/oder Fotos Ihrer Verteilung."],
 ];
