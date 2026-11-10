@@ -662,7 +662,7 @@ function optionBox() {
     children: [
       para([run(opt.titel, { bold: true, color: RED, size: 23 })], { after: 60 }),
       para([run(opt.text, { size: 21 })], { after: 60 }),
-      para([run(`Gesamt mit Option: ${fmtHH(mitFlyer)} ${werbemittel} für ${euroText(mitPreis)} netto.`, { size: 21, bold: true })]),
+      para([run(opt.gesamt_text || `Gesamt mit Option: ${fmtHH(mitFlyer)} ${werbemittel} für ${euroText(mitPreis)} netto.`, { size: 21, bold: true })]),
     ],
   })] })] })];
 }
