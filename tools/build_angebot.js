@@ -676,7 +676,7 @@ const page4Children = LAYOUT === "alt" ? page4Alt : page4Neu;
 // Standard (Stefan, 02.10.2026): Option A = DIN A5, Option B = DIN A4, je beidseitig 4/4, 135g matt.
 // Preise: live von wir-machen-druck.de (netto) x 1,30, auf volle Euro aufgerundet. Auflage = Summe HH bewerbbar,
 // aufgerundet auf die nächste WMD-Auflagenstufe. Per config.flyerdruck komplett überschreibbar (Sonderwunsch Kunde).
-// Config: "flyerdruck": { "auflage": 20000, "preise": [260, 479] }
+// Config: "flyerdruck": { "auflage": 20000, "preise": [260, 479, 610] }  (A5, A4, DIN lang Wickelfalz 6-seitig)
 const FD_DEFAULT = {
   intro: LAYOUT === "alt" ? "Auf Wunsch übernehmen wir auch den Druck Ihrer Flyer." : "Auf Wunsch übernehmen wir auch den Druck Ihrer Flyer – Sie bekommen dann alles aus einer Hand.",
   auflage: null,
@@ -688,6 +688,11 @@ const FD_DEFAULT = {
     { titel: "Flyer DIN A4 (21,0 cm x 29,7 cm), beidseitig bedruckt",
       specs: ["135g hochwertiger Qualitätsdruck matt", "4/4 farbig (beidseitiger Druck)",
               "Endformat: 21,0 cm x 29,7 cm", "Datenformat: 21,6 cm x 30,3 cm"],
+      druckverfahren: "Diese Auflage wird im hochwertigen Offsetdruck hergestellt.", preis: null },
+    // Option C (Stefan, 10.11.2026): immer zusätzlich DIN lang Wickelfalz 6-seitig, 135g
+    { titel: "Faltblatt DIN lang, Wickelfalz 6-seitig, beidseitig bedruckt",
+      specs: ["135g hochwertiger Qualitätsdruck matt", "4/4 farbig (beidseitiger Druck)",
+              "Endformat offen: 29,7 cm x 21,0 cm, gefalzt: 10,0 cm x 21,0 cm", "Datenformat: 30,3 cm x 21,6 cm"],
       druckverfahren: "Diese Auflage wird im hochwertigen Offsetdruck hergestellt.", preis: null },
   ],
   hinweis: "Auflage, Flyerformat und Papierstärke passen wir selbstverständlich individuell an Ihre Wünsche an – sprechen Sie uns gerne an.",
