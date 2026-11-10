@@ -155,14 +155,14 @@ const absenderStrasse = config.absender?.strasse || "Bleichstraße 27";
 const absenderOrt = config.absender?.ort || "66111 Saarbrücken";
 
 const gesamt = {
-  hh_bewerbbar: areas.reduce((s, a) => s + a.hh_bewerbbar, 0),
+  hh_bewerbbar: config.hh_bewerbbar_total ?? areas.reduce((s, a) => s + a.hh_bewerbbar, 0), // config.hh_bewerbbar_total: z. B. dieselbe PLZ mehrfach (mehrere Verteiltermine)
   hh_gesamt: config.hh_gesamt_total ?? areas.reduce((s, a) => s + (a.hh_gesamt ?? 0), 0), // config.hh_gesamt_total: HH gesamt nur je PLZ bekannt (Ortsteile ohne Einzelwert)
   preis: areas.reduce((s, a) => s + a.preis_verteilung, 0),
 };
 const ortsteile = [...new Set(areas.map((a) => a.gebiet))].join(", ");
 const plzSet = [...new Set(areas.map((a) => a.plz))];
 const plzListe = plzSet.join(", ");
-const einePLZ = plzSet.length === 1 && areas.length > 1;          // Ortsteile einer PLZ
+const einePLZ = config.eine_plz_ortsteile ?? (plzSet.length === 1 && areas.length > 1);          // Ortsteile einer PLZ; config.eine_plz_ortsteile=false z. B. bei mehreren Verteilterminen in derselben PLZ
 const einStadt = !einePLZ && (config.ein_stadt ?? (new Set(areas.map((a) => a.gebiet)).size === 1 && areas.length > 1)); // config.ein_stadt: alle PLZ in einer Stadt, gebiet = Stadtteil
 function listeUnd(arr) { return arr.length <= 1 ? arr.join("") : arr.slice(0, -1).join(", ") + " und " + arr[arr.length - 1]; }
 const stadtteile = listeUnd([...new Set(areas.map((a) => a.gebiet))]);
@@ -499,7 +499,7 @@ const page3bChildren = [
   stadtIllustrationPara(true),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
-    children: [new TextRun({ text: `Beispiel: PLZ-Region ${bArea.plz} – ${bArea.gebiet}`, bold: true, color: RED, size: 32, font: FONT })],
+    children: [new TextRun({ text: config.beispiel_titel || `Beispiel: PLZ-Region ${bArea.plz} – ${bArea.gebiet}`, bold: true, color: RED, size: 32, font: FONT })],
   }),
   p(
     config.beispiel_text ||
@@ -586,7 +586,7 @@ function priceTable() {
 
 // Layout neu: An-/Abfahrt als eigene Zeile, Summe = Gesamtpreis inkl. Anfahrt (Anfahrt bleibt separat ausgewiesen)
 function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
-  const anfahrtLabel = (einePLZ || plzSet.length === 1) ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`);
+  const anfahrtLabel = config.anfahrt_label || ((einePLZ || plzSet.length === 1) ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`));
   const nLast = colWidths.length - 1;
   const spanW = colWidths.slice(0, nLast).reduce((s, w) => s + w, 0);
   const anfahrtRow = new TableRow({
