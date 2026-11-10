@@ -745,7 +745,7 @@ const page5Children = [
     alignment: AlignmentType.CENTER, spacing: { after: 240 }, pageBreakBefore: true,
     children: [new ImageRun({ data: flyerdruckIllustration, type: "png", transformation: { width: 647, height: 162 } })],
   }),
-  heading("Flyerdruck (optional)", { before: 0 }),
+  heading(FD.titel || "Flyerdruck (optional)", { before: 0 }),
   p(FD.intro, { after: 0 }),
   ...optionBlocks,
   p(FD.hinweis, { italics: true, color: GREY, before: 320, after: 0 }),
