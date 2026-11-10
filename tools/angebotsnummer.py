@@ -12,6 +12,11 @@ Aufrufe (immer aus dem Repo heraus; synchronisiert per git pull/commit/push, dam
   python3 tools/angebotsnummer.py setze --nr 2611-41 --netto 1635,00 --flyer 15000 --kartenlink URL --datei "Angebot_…docx" --status beauftragt
   python3 tools/angebotsnummer.py offen [--tage 5]     # offene Angebote, älter als N Tage (Nachfassen)
   python3 tools/angebotsnummer.py zeige --nr 2611-41
+  python3 tools/angebotsnummer.py dateiname --nr 2611-46 --kunde "GVG" --gebiet "München" [--datum 2026-11-10]
+        -> 2611-46_Angebot_GVG_10.11.2026_München   (Endung .docx/.pdf selbst anhängen)
+
+Dateiname (Stefan, 10.11.2026): Angebotsnummer steht GANZ VORNE, damit im Explorer nach Nummer gesucht/sortiert
+werden kann: <Nr>_Angebot_<Kunde>_<TT.MM.JJJJ>_<Stadt>.docx bzw. .pdf. Gilt für alle ab 2611-46 vergebenen Nummern.
 Option --ohne-git: nur lokal schreiben (Tests).
 """
 import argparse, csv, datetime, os, re, subprocess, sys
@@ -84,7 +89,7 @@ def finde(rows, nr):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("befehl", choices=["neu", "version", "setze", "offen", "zeige"])
+    ap.add_argument("befehl", choices=["neu", "version", "setze", "offen", "zeige", "dateiname"])
     ap.add_argument("--nr"); ap.add_argument("--kunde"); ap.add_argument("--gebiet"); ap.add_argument("--datum")
     ap.add_argument("--flyer"); ap.add_argument("--netto"); ap.add_argument("--kartenlink"); ap.add_argument("--ordner")
     ap.add_argument("--datei"); ap.add_argument("--status"); ap.add_argument("--notiz"); ap.add_argument("--tage", type=int, default=5)
@@ -134,6 +139,13 @@ def main():
         for r in lesen():
             if r["status"] == "offen" and datetime.date.fromisoformat(r["datum"]) <= grenze:
                 print(";".join(r.get(c, "") for c in COLS))
+
+    elif a.befehl == "dateiname":
+        if not (a.nr and a.kunde and a.gebiet):
+            sys.exit("--nr, --kunde und --gebiet nötig")
+        d = datetime.date.fromisoformat(a.datum) if a.datum else heute()
+        sauber = lambda t: re.sub(r'[\\/:*?"<>|]', "", t).strip()
+        print(f"{a.nr}_Angebot_{sauber(a.kunde)}_{d.strftime('%d.%m.%Y')}_{sauber(a.gebiet)}")
 
     elif a.befehl == "zeige":
         for r in lesen():
