@@ -241,12 +241,19 @@ if (KUNDE && KUNDE.lat) {
 }
 });
 
+// Uebersicht: Gebiete + alle Kundenstandorte ins Bild nehmen (Stefan, 10.11.2026 – ISR mit Standorten ausserhalb der PLZ)
+function overviewBounds() {
+  const b = geoLayer.getBounds();
+  (Array.isArray(KUNDE_RAW) ? KUNDE_RAW : [KUNDE_RAW]).forEach(function (K) { if (K && K.lat) b.extend([K.lat, K.lon]); });
+  return b;
+}
+const OV_PAD = { paddingTopLeft: [40, 90], paddingBottomRight: [40, 30] };
 if (targetLayer) {
   map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] });
 } else if (geojson.features.length) {
-  map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] });
+  map.fitBounds(overviewBounds(), OV_PAD);
 }
-setTimeout(function() { map.invalidateSize(); if (targetLayer) map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] }); else map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] }); }, 50);
+setTimeout(function() { map.invalidateSize(); if (targetLayer) map.fitBounds(targetLayer.getBounds(), { padding: [40, 40] }); else map.fitBounds(overviewBounds(), OV_PAD); }, 50);
 
 if (!HIGHLIGHT_PLZ && geojson.features.some(function(f){ return f.properties.optional; })) {
   const lg = L.control({ position: 'bottomleft' });
