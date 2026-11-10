@@ -18,6 +18,8 @@ reg("Ansbach", ["Ansbach"], lambda: basis(206) + schloss(30, 380, 120, SAND, ROO
 reg("Reiskirchen", ["Reiskirchen"], lambda: basis(207) + fachwerk(40, 3) + kirche(260, 190, 140, WHITE, SLATE, "helm", "left", 58, 260) + fachwerk(520, 2) + windrad(700, 230) + windrad(840, 190))
 reg("Breitscheid", ["Breitscheid", "Breitscheid (Hessen)", "Driedorf"], lambda: basis(208) + huegel(0, 420, 90) + modern(30, 190, 95, "#c9d3dc") + fachwerk(250, 2) + kirche(380, 190, 140, WHITE, SLATE, "spire", "left", 58, 260) + fachwerk(620, 2) + windrad(760, 240) + windrad(870, 200))
 
+reg("Enger", ["Enger", "Spenge"], lambda: basis(209) + huegel(0, 300, 80) + burg(20, 240, 100, "#d9cfb8", 120) + fachwerk(290, 2) + kirche(420, 210, 150, SAND, SLATE, "spire", "center", 62, 300) + denkmal(690, 140) + muehle(810, 150))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
