@@ -729,9 +729,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="layout">
 <aside>
   <div class="logo"><div class="mark"></div><div class="word">handzettelverteiler<b>.de</b></div></div>
-  <div class="eyebrow">Ihre Verteilgebiete &middot; Angebot Nr. 2611-57</div>
+  <div class="eyebrow">Ihre Verteilgebiete &middot; Angebot Nr. 2611-57-2</div>
   <h1>Contipark &ndash; Haushaltsverteilung Potsdam</h1>
-  <div class="lede">Haushaltsverteilung PLZ 14467 rund um die Hegelallee 6</div>
+  <div class="lede">Vorrangig in „guten Lagen“ innerhalb des Gebiets verteilen: hohe Eigentümerquote, Familien mit Kindern, mittlere Kaufkraft.</div>
 
   <div class="summary">
     <div class="cap">Ihr Angebot &ndash; Gesamt</div>
@@ -741,7 +741,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="row"><span>Preis f&uuml;r Verteilung</span><span class="val">499,80 €</span></div>
     <div class="row total"><span>Gesamtsumme</span><span class="val">534,80 €</span></div>
     <div class="note">Alle Preise zzgl. gesetzl. MwSt.</div>
-    <a class="cta" href="mailto:info@handzettelverteiler.de?subject=Auftrag%20zu%20Angebot%202611-57%20-%20Contipark%20-%20Haushaltsverteilung%20Potsdam&body=Sehr%20geehrte%20Damen%20und%20Herren%2C%0A%0Ahiermit%20beauftragen%20wir%20die%20Flyerverteilung%20gem%C3%A4%C3%9F%20Ihrem%20Angebot%20Nr.%202611-57%20%28%22Contipark%20-%20Haushaltsverteilung%20Potsdam%22%29.%0AVerteilgebiete%3A%2014467%20Potsdam%20N%C3%B6rdliche%20Innenstadt%0AGesamtsumme%20laut%20Angebot%3A%20534%2C80%20%E2%82%AC%20zzgl.%20MwSt.%0A%0AGew%C3%BCnschter%20Verteilzeitraum%3A%20%0AFirma%20/%20Rechnungsanschrift%3A%20%0AAnsprechpartner%20/%20Telefon%3A%20%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen%0A">Jetzt beauftragen</a>
+    <a class="cta" href="mailto:info@handzettelverteiler.de?subject=Auftrag%20zu%20Angebot%202611-57-2%20-%20Contipark%20-%20Haushaltsverteilung%20Potsdam&body=Sehr%20geehrte%20Damen%20und%20Herren%2C%0A%0Ahiermit%20beauftragen%20wir%20die%20Flyerverteilung%20gem%C3%A4%C3%9F%20Ihrem%20Angebot%20Nr.%202611-57-2%20%28%22Contipark%20-%20Haushaltsverteilung%20Potsdam%22%29.%0AVerteilgebiete%3A%2014467%20Potsdam%20N%C3%B6rdliche%20Innenstadt%0AGesamtsumme%20laut%20Angebot%3A%20534%2C80%20%E2%82%AC%20zzgl.%20MwSt.%0A%0AGew%C3%BCnschter%20Verteilzeitraum%3A%20%0AFirma%20/%20Rechnungsanschrift%3A%20%0AAnsprechpartner%20/%20Telefon%3A%20%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen%0A">Jetzt beauftragen</a>
     <a class="cta cta2" href="https://www.handzettelverteiler.com/service-kontakt/ihre-pers%C3%B6nliche-anfrage/" target="_blank" rel="noopener">Anfrage / R&uuml;ckfrage senden</a>
     <div class="ctamail">oder per E-Mail: <a href="mailto:info@handzettelverteiler.de">info@handzettelverteiler.de</a></div>
   </div>
@@ -820,7 +820,7 @@ const geoLayer = L.geoJSON(geojson, {
 }).addTo(map);
 
 // Kunden-Standort (optional): Logo-Kärtchen oder Häuschen mit Pin
-const KUNDE_RAW = {"lat": 52.4035818, "lon": 13.0558147, "name": "Contipark", "logo": "", "stil": "haus", "popup": "Contipark – Hegelallee 6, 14467 Potsdam"};
+const KUNDE_RAW = {"lat": 52.4035818, "lon": 13.0558147, "name": "Contipark", "logo": "", "stil": "haus", "popup": ""};
 (Array.isArray(KUNDE_RAW) ? KUNDE_RAW : [KUNDE_RAW]).forEach(function (KUNDE) {
 if (KUNDE && KUNDE.lat) {
   let html, size, anchor;
