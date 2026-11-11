@@ -21,6 +21,8 @@ reg("Breitscheid", ["Breitscheid", "Breitscheid (Hessen)", "Driedorf"], lambda: 
 reg("Enger", ["Enger", "Spenge"], lambda: basis(209) + huegel(0, 300, 80) + burg(20, 240, 100, "#d9cfb8", 120) + fachwerk(290, 2) + kirche(420, 210, 150, SAND, SLATE, "spire", "center", 62, 300) + denkmal(690, 140) + muehle(810, 150))
 reg("Gotha", ["Gotha"], lambda: basis(210) + huegel(0, 520, 80) + schloss(30, 420, 120, WHITE, SLATE, (("helm", 0.0), ("helm", 1.0)), None, 56, 200) + rathaus(520, 150, 130, "#e08a5a", "stepped") + kirche(700, 200, 140, SAND, SLATE, "helm", "left", 58, 270))
 
+reg("Neckarsulm", ["Neckarsulm", "Amorbach", "Dahenfeld", "Obereisesheim", "Untereisesheim"], lambda: basis(211) + weinberg(0, 300, 140) + burg(300, 240, 110, SAND, 140) + kirche(570, 200, 140, WHITE, SLATE, "helm", "left", 58, 280) + modern(800, 130, 110, "#d6e0e8"))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
