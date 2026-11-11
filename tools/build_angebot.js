@@ -90,12 +90,16 @@ if (!mapImagePath || !fs.existsSync(mapImagePath)) {
   process.exit(1);
 }
 const mapImage = img(mapImagePath);
-const beispielPath = resolvePath(config.beispiel_plz_map_image);
-if (!beispielPath || !fs.existsSync(beispielPath)) {
+// config.typ = "sonder": Angebot ohne PLZ-Haushaltslogik (z. B. Auslagenverteilung, Straßenpromotion – Contipark 11.11.2026):
+// Seite 3 = eine Karte (map_image, Titel config.karten_titel), keine Beispiel-PLZ-Seite, keine PLZ-Preistabelle –
+// Leistung und Preise kommen aus config.extra_seiten, Gesamtpreis aus config.endpreis. areas darf leer sein.
+const SONDER = config.typ === "sonder";
+const beispielPath = SONDER ? null : resolvePath(config.beispiel_plz_map_image);
+if (!SONDER && (!beispielPath || !fs.existsSync(beispielPath))) {
   console.error("FEHLER: config.beispiel_plz_map_image fehlt oder Datei nicht gefunden (blauer Einzel-PLZ-Screenshot ist Pflicht).");
   process.exit(1);
 }
-const beispielImage = img(beispielPath);
+const beispielImage = SONDER ? null : img(beispielPath);
 
 // ---- Stadtbilder (v4): Seite 3 = Stadtbild, Seite 4 = Lupen-Variante ----
 // Reihenfolge (Stefan, 04.10.2026: neue Zeichnung zuerst): config.stadt_illustration > staedte/index.json (neue Zeichnungen) >
@@ -232,7 +236,7 @@ const anfahrtSumme = einePLZ ? anfahrtGesamt : (config.anfahrt_gesamt ?? areas.r
 // Beispiel: "zusatz_posten": [{ "text": "Druck 3.500 Flyer DIN A5", "preis": 50 }]
 const zusatzPosten = Array.isArray(config.zusatz_posten) ? config.zusatz_posten : [];
 const zusatzSumme = zusatzPosten.reduce((s, z) => s + (z.preis || 0), 0);
-const endpreis = Math.round((gesamt.preis + anfahrtSumme + zusatzSumme) * 100) / 100;
+const endpreis = config.endpreis ?? Math.round((gesamt.preis + anfahrtSumme + zusatzSumme) * 100) / 100;
 const flyerGesamt = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
 function euroText(n) { return Number.isInteger(n) ? `${fmtHH(n)},- Euro` : `${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Euro`; }
 // Option: explizit per config.option, abschaltbar mit "option": false; sonst automatisch, wenn genau EINE PLZ nur teilweise beliefert wird (Auffüllen)
@@ -466,10 +470,12 @@ const page2Neu = [
   bullet(config.nachweis_bullet || "Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
   ...(kartenLink ? [bullet("Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
   para([run("Gut zu wissen", { bold: true, size: 22, color: "555555" })], { before: 280, after: 100 }),
+  ...(Array.isArray(config.gut_zu_wissen) ? config.gut_zu_wissen.map((t) => smallBullet(t)) : [
   smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
   smallBullet("Wo kein Zugang besteht, erfolgt kein Einwurf – etwa bei verschlossenen Häusern, wenn nach Klingeln niemand öffnet, bei unzugänglichen Briefkästen oder Grundstücken mit „Vorsicht Hund“."),
   smallBullet("Gewerbe- und Industriegebiete, Kleingartenanlagen und Kleinstsiedlungen unter 150 Haushalten werden nicht beliefert; eine Auswahl nach Haustypen ist nicht möglich."),
   smallBullet("Wir beliefern in jedem Verteilbezirk mindestens 90 % der erreichbaren Haushalte. Alle Einzelheiten regeln unsere AGB am Ende dieses Angebots."),
+  ]),
 ];
 const page1Children = LAYOUT === "alt" ? page1Alt : page1Neu;
 const page2Children = LAYOUT === "alt" ? page2Alt : page2Neu;
@@ -490,7 +496,7 @@ const page3Children = [
   stadtIllustrationPara(),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
-    children: [new TextRun({ text: `Verteilgebiete ${stadt}`, bold: true, color: RED, size: 32, font: FONT })],
+    children: [new TextRun({ text: config.karten_titel || `Verteilgebiete ${stadt}`, bold: true, color: RED, size: 32, font: FONT })],
   }),
   p(config.karten_text || (einePLZ ? `Sie sehen hier die einzelnen Ortsteile der PLZ ${plzListe}. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.` : `Sie sehen hier die einzelnen Verteilbereiche. Die Haushaltszahlen sind weiter unten in der Tabelle aufgeführt.`), { align: AlignmentType.CENTER, after: 240 }),
   new Paragraph({
@@ -500,10 +506,10 @@ const page3Children = [
 ];
 
 // ==================== SEITE 4: BEISPIEL PLZ-REGION (Hochformat) ====================
-const bKey = String(config.beispiel_area || areas[0].plz);
-const bArea = areas.find((a) => a.id === bKey || a.gebiet === bKey) || areas.find((a) => String(a.plz) === bKey) || areas[0];
+const bKey = SONDER ? "" : String(config.beispiel_area || areas[0].plz);
+const bArea = SONDER ? {} : (areas.find((a) => a.id === bKey || a.gebiet === bKey) || areas.find((a) => String(a.plz) === bKey) || areas[0]);
 const bDiff = bArea.hh_gesamt - bArea.hh_bewerbbar;
-const page3bChildren = [
+const page3bChildren = SONDER ? [] : [
   stadtIllustrationPara(true),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
@@ -1017,8 +1023,8 @@ const doc = new Document({
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page1Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page2Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3Children },
-    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3bChildren },
-    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...extraSeitenChildren, ...(ohneDruck ? [] : page5Children), ...page6Children] },
+    ...(SONDER ? [] : [{ properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3bChildren }]),
+    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...(SONDER ? [] : page4Children), ...extraSeitenChildren, ...(ohneDruck ? [] : page5Children), ...page6Children] },
     { properties: { page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbTitleChildren },
     { properties: { type: SectionType.CONTINUOUS, column: { count: 2, space: 360 }, page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbChildren },
   ],
@@ -1030,5 +1036,5 @@ Packer.toBuffer(doc).then((buf) => {
   const fixScript = path.join(__dirname, "fix_rid0.py");
   console.log(execFileSync("python3", [fixScript, outPath]).toString().trim());
   console.log("Geschrieben:", outPath, buf.length, "bytes");
-  console.log(`Summen -> HH bewerbbar: ${fmtHH(gesamt.hh_bewerbbar)}, HH gesamt: ${fmtHH(gesamt.hh_gesamt)}, Preis: ${fmtEur(gesamt.preis)}`);
+  if (!SONDER) console.log(`Summen -> HH bewerbbar: ${fmtHH(gesamt.hh_bewerbbar)}, HH gesamt: ${fmtHH(gesamt.hh_gesamt)}, Preis: ${fmtEur(gesamt.preis)}`);
 });
