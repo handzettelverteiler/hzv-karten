@@ -683,7 +683,7 @@ const P=[52.4035818,13.0558147];
 const map=L.map('map',{zoomControl:true}).setView([52.4018,13.0560],16);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap-Mitwirkende'}).addTo(map);
 L.circle(P,{radius:500,color:'#1E6FD9',weight:2.5,dashArray:'8 6',fillColor:'#1E6FD9',fillOpacity:.10}).addTo(map);
-const b=[[52.39962, 13.04862], [52.39979, 13.04993], [52.3999, 13.05084], [52.40005, 13.052], [52.40026, 13.05367], [52.40046, 13.05521], [52.40058, 13.05613], [52.40076, 13.0576]], g=[[52.40174, 13.05781], [52.40184, 13.05867], [52.40193, 13.05937], [52.40208, 13.06052], [52.40213, 13.06093], [52.40225, 13.06189]];
+const b=[[52.39962, 13.04862], [52.39979, 13.04993], [52.3999, 13.05084], [52.40005, 13.052], [52.40026, 13.05367], [52.40046, 13.05521], [52.40058, 13.05613], [52.40076, 13.0576], [52.40087, 13.05887], [52.40101, 13.06021]], g=[[52.40174, 13.05781], [52.40184, 13.05867], [52.40193, 13.05937], [52.40208, 13.06052], [52.40213, 13.06093], [52.40225, 13.06189]];
 L.polyline(b,{color:'#C81E1E',weight:9,opacity:.85}).addTo(map).bindTooltip('Brandenburger Straße',{permanent:true,direction:'bottom',className:'lbl',offset:[0,8]});
 L.polyline(g,{color:'#C81E1E',weight:9,opacity:.85}).addTo(map).bindTooltip('Gutenbergstraße',{permanent:true,direction:'top',className:'lbl',offset:[0,-8]});
 L.circleMarker(P,{radius:10,color:'#fff',weight:3,fillColor:'#0B3D91',fillOpacity:1}).addTo(map).bindTooltip('Contipark · Hegelallee 6',{permanent:true,direction:'top',className:'lbl k',offset:[0,-10]});
