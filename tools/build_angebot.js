@@ -361,6 +361,13 @@ const blickRows = [
   ["Nachweis", [run(config.nachweis_kurz || "Stichprobendokumentation und/oder Fotos nach der Verteilung", { size: 21 })]],
   ["Beauftragung", [run("Kurze Antwort per E-Mail genügt", { size: 21, bold: true })]],
 ];
+// config.blick_rows: eigene Zeilen für "Ihr Angebot auf einen Blick" (Kombi-Angebote, z. B. Haushalt + Auslage + Straße, Contipark 11.11.2026)
+// Format: [["Label", "Text", {"bold":true,"red":true,"size":30,"zusatz":"  inkl. ..."}], ...] – die Zeile mit "hervorheben": true bekommt den roten Hintergrund
+if (Array.isArray(config.blick_rows)) {
+  blickRows.length = 0;
+  config.blick_rows.forEach(([l, t, o = {}]) => blickRows.push([l, [run(t, { size: o.size || 21, bold: !!o.bold, color: o.red ? RED : undefined }), ...(o.zusatz ? [run(o.zusatz, { size: 20, color: "555555" })] : [])], !!o.hervorheben]));
+}
+const blickHL = blickRows.findIndex((r) => r[2] === true) >= 0 ? blickRows.findIndex((r) => r[2] === true) : 2;
 function blickTable() {
   const W1 = 2300, W2 = 7800;
   const head = new TableRow({ children: [new TableCell({
@@ -369,10 +376,10 @@ function blickTable() {
     children: [para([run("Ihr Angebot auf einen Blick", { bold: true, color: "FFFFFF", size: 24 })])],
   })] });
   const rows = blickRows.map(([l, runs], i) => new TableRow({ children: [
-    new TableCell({ width: { size: W1, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: i === 2 ? "FDECEC" : LIGHT }, verticalAlign: VerticalAlign.CENTER,
+    new TableCell({ width: { size: W1, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: i === blickHL ? "FDECEC" : LIGHT }, verticalAlign: VerticalAlign.CENTER,
       margins: { top: 70, bottom: 70, left: 180, right: 100 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 2, color: "E3E3E3" } },
       children: [para([run(l, { size: 20, color: "555555" })])] }),
-    new TableCell({ width: { size: W2, type: WidthType.DXA }, shading: i === 2 ? { type: ShadingType.CLEAR, fill: "FDECEC" } : undefined, verticalAlign: VerticalAlign.CENTER,
+    new TableCell({ width: { size: W2, type: WidthType.DXA }, shading: i === blickHL ? { type: ShadingType.CLEAR, fill: "FDECEC" } : undefined, verticalAlign: VerticalAlign.CENTER,
       margins: { top: 70, bottom: 70, left: 140, right: 140 }, borders: { ...NO_BORDERS, bottom: { style: BorderStyle.SINGLE, size: 2, color: "E3E3E3" } },
       children: [para(runs)] }),
   ] }));
@@ -434,6 +441,7 @@ const schritte = [
   ["Verteilung", `Unsere Verteiler werfen Ihre ${werbemittel} im vereinbarten Zeitraum in die Briefkästen der Privathaushalte ein – in Mehrfamilienhäusern in jeden Briefkasten, nicht ins Treppenhaus.`],
   ["Nachweis", config.nachweis_text || "Nach Abschluss erhalten Sie eine Stichprobendokumentation und/oder Fotos Ihrer Verteilung."],
 ];
+if (Array.isArray(config.schritte)) { schritte.length = 0; config.schritte.forEach((x) => schritte.push(x)); } // eigene 4 Schritte [[titel, text], ...]
 function schritteTable() {
   const W1 = 900, W2 = 9200;
   return new Table({ width: { size: W1 + W2, type: WidthType.DXA }, columnWidths: [W1, W2], rows: schritte.map(([t, txt], i) => new TableRow({ children: [
@@ -685,6 +693,47 @@ const page4Neu = [
     { before: opt ? 240 : 0, after: 0, size: 21, color: "444444" }),
 ];
 const page4Children = LAYOUT === "alt" ? page4Alt : page4Neu;
+
+// ==================== ZUSATZSEITEN (config.extra_seiten) – nach der Preisübersicht, vor dem Flyerdruck ====================
+// Für Kombi-Angebote (Auslagenverteilung, Straßenpromotion, Zeitplan …), Contipark 11.11.2026.
+// Seite: { titel, bild (Pfad), bild_max: [w,h], bloecke: [ {typ:"text"|"heading"|"bullets"|"hinweis"|"tabelle"|"box", ...} ] }
+// tabelle: { kopf: [...], zeilen: [[...]], breiten: [dxa...], gruen: [Spaltenindizes], rechts_ab: 1, summe: true (letzte Zeile fett mit Linie) }
+function extraTabelle(b) {
+  const n = b.kopf.length; const breiten = b.breiten || Array(n).fill(Math.floor(10100 / n)); const W = breiten.reduce((x, y) => x + y, 0);
+  const rechtsAb = b.rechts_ab ?? 1; const gruen = b.gruen || [];
+  const cell = (t, i, o = {}) => new TableCell({ width: { size: breiten[i], type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+    shading: o.fill ? { type: ShadingType.CLEAR, fill: o.fill } : undefined, margins: { top: 70, bottom: 70, left: 100, right: 100 },
+    borders: { bottom: { style: BorderStyle.SINGLE, size: 2, color: "E0E0E0" }, ...(o.top ? { top: { style: BorderStyle.SINGLE, size: 12, color: "222222" } } : {}) },
+    children: [new Paragraph({ alignment: i >= rechtsAb ? AlignmentType.RIGHT : AlignmentType.LEFT, children: [new TextRun({ text: String(t), size: 19, font: FONT, bold: !!o.bold, color: o.color || "222222" })] })] });
+  const head = new TableRow({ tableHeader: true, children: b.kopf.map((t, i) => cell(t, i, { fill: RED, bold: true, color: "FFFFFF" })) });
+  const rows = b.zeilen.map((z, ri) => { const last = b.summe && ri === b.zeilen.length - 1;
+    return new TableRow({ children: z.map((t, i) => cell(t, i, { fill: gruen.includes(i) ? GREEN_BG : (ri % 2 ? LIGHT : undefined), bold: last || gruen.includes(i), top: last })) }); });
+  return new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: breiten, rows: [head, ...rows] });
+}
+function extraBox(b) {
+  return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: [10100], rows: [new TableRow({ children: [new TableCell({
+    width: { size: 10100, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: LIGHT }, margins: { top: 120, bottom: 120, left: 220, right: 220 },
+    borders: { ...NO_BORDERS, left: { style: BorderStyle.SINGLE, size: 36, color: RED } },
+    children: [...(b.titel ? [para([run(b.titel, { bold: true, color: RED, size: 22 })], { after: 60 })] : []), ...(b.zeilen || [b.text]).map((t) => para([run(t, { size: 21 })], { after: 40 }))] })] })] });
+}
+const extraSeitenChildren = [];
+(config.extra_seiten || []).forEach((sx) => {
+  if (sx.bild) {
+    const bp = resolvePath(sx.bild); const bd = img(bp); const [mw, mh] = sx.bild_max || [200, 160];
+    extraSeitenChildren.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true, children: [new ImageRun({ data: bd, type: imgType(bp), transformation: fit(bd, mw, mh) })] }));
+    extraSeitenChildren.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: sx.titel, bold: true, color: RED, size: 32, font: FONT })] }));
+  } else {
+    extraSeitenChildren.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, pageBreakBefore: true, children: [new TextRun({ text: sx.titel, bold: true, color: RED, size: 32, font: FONT })] }));
+  }
+  (sx.bloecke || []).forEach((b) => {
+    if (b.typ === "text") extraSeitenChildren.push(p(b.text, { after: b.after ?? 160, bold: !!b.bold, size: b.size }));
+    else if (b.typ === "heading") extraSeitenChildren.push(para([run(b.text, { bold: true, size: 24 })], { before: b.before ?? 200, after: 100 }));
+    else if (b.typ === "bullets") b.items.forEach((t) => extraSeitenChildren.push(smallBullet(t, { size: b.size || 21 })));
+    else if (b.typ === "hinweis") extraSeitenChildren.push(p(b.text, { italics: true, color: GREY, size: 18, before: 100, after: b.after ?? 160 }));
+    else if (b.typ === "tabelle") { extraSeitenChildren.push(extraTabelle(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
+    else if (b.typ === "box") { extraSeitenChildren.push(extraBox(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
+  });
+});
 
 // ==================== SEITE 6: FLYERDRUCK (optional) – Option A / Option B ====================
 // Standard (Stefan, 02.10.2026): Option A = DIN A5, Option B = DIN A4, je beidseitig 4/4, 135g matt.
@@ -969,7 +1018,7 @@ const doc = new Document({
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page2Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3Children },
     { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: page3bChildren },
-    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...(ohneDruck ? [] : page5Children), ...page6Children] },
+    { properties: { page: { size: A4, margin: { top: 1000, bottom: 1000, left: 1100, right: 1100 } } }, headers: { default: emptyHeader() }, footers: { default: footerWithFigures() }, children: [...page4Children, ...extraSeitenChildren, ...(ohneDruck ? [] : page5Children), ...page6Children] },
     { properties: { page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbTitleChildren },
     { properties: { type: SectionType.CONTINUOUS, column: { count: 2, space: 360 }, page: { size: A4, margin: { top: 700, bottom: 700, left: 900, right: 900 } } }, headers: { default: emptyHeader() }, footers: { default: emptyFooter() }, children: agbChildren },
   ],
