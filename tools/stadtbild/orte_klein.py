@@ -25,6 +25,8 @@ reg("Neckarsulm", ["Neckarsulm", "Amorbach", "Dahenfeld", "Obereisesheim", "Unte
 
 reg("Sulingen", ["Sulingen", "Bassum", "Twistringen", "Barnstorf", "Ehrenburg", "Scholen", "Schwaförden", "Schwafoerden", "Diepholz"], lambda: basis(212) + huegel(0, 520, 60) + dom(20, 230, 150, BRICK, 290, 64, "helm") + fachwerk(340, 1) + kirche(430, 190, 130, BRICK, SLATE, "spire", "left", 56, 270) + fachwerk(660, 1) + muehle(790, 150))
 
+reg("Karben", ["Karben", "Nidderau", "Niddatal", "Wöllstadt", "Woellstadt"], lambda: basis(214) + huegel(0, 380, 70) + fachwerk(30, 3) + kirche(240, 190, 140, WHITE, SLATE, "helm", "left", 58, 260) + rathaus(500, 150, 120, YELLOW, "baroque") + fachwerk(680, 2) + windrad(860, 200))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
