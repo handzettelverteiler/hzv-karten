@@ -29,6 +29,7 @@ reg("Karben", ["Karben", "Nidderau", "Niddatal", "Wöllstadt", "Woellstadt"], la
 
 reg("Bischofsheim", ["Bischofsheim", "Ginsheim-Gustavsburg", "Ginsheim", "Gustavsburg", "Mainspitze"], lambda: basis(216) + huegel(0, 400, 60) + dom(20, 200, 150, REDSAND, 280, 60, "helm") + burg(250, 200, 100, SAND, 120) + kirche(480, 170, 130, WHITE, SLATE, "spire", "left", 56, 250) + fachwerk(690, 2) + modern(810, 120, 110, "#d6e0e8"))
 
+reg("Wartenberg", ["Wartenberg", "Thenn", "Pesenlern", "Manhartsdorf", "Auerbach"], lambda: basis(217) + huegel(0, 420, 80) + kirche(40, 200, 140, WHITE, ROOF_RED, "onion", "left", 58, 270) + rathaus(330, 150, 120, YELLOW, "baroque") + kirche(560, 160, 110, WHITE, ROOF_RED, "helm", "left", 50, 210))
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
