@@ -23,6 +23,8 @@ reg("Gotha", ["Gotha"], lambda: basis(210) + huegel(0, 520, 80) + schloss(30, 42
 
 reg("Neckarsulm", ["Neckarsulm", "Amorbach", "Dahenfeld", "Obereisesheim", "Untereisesheim"], lambda: basis(211) + weinberg(0, 300, 140) + burg(300, 240, 110, SAND, 140) + kirche(570, 200, 140, WHITE, SLATE, "helm", "left", 58, 280) + modern(800, 130, 110, "#d6e0e8"))
 
+reg("Sulingen", ["Sulingen", "Bassum", "Twistringen", "Barnstorf", "Ehrenburg", "Scholen", "Schwaförden", "Schwafoerden", "Diepholz"], lambda: basis(212) + huegel(0, 520, 60) + dom(20, 230, 150, BRICK, 290, 64, "helm") + fachwerk(340, 1) + kirche(430, 190, 130, BRICK, SLATE, "spire", "left", 56, 270) + fachwerk(660, 1) + muehle(790, 150))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
