@@ -31,6 +31,7 @@ reg("Bischofsheim", ["Bischofsheim", "Ginsheim-Gustavsburg", "Ginsheim", "Gustav
 
 reg("Wartenberg", ["Wartenberg", "Thenn", "Pesenlern", "Manhartsdorf", "Auerbach"], lambda: basis(217) + huegel(0, 420, 80) + kirche(40, 200, 140, WHITE, ROOF_RED, "onion", "left", 58, 270) + rathaus(330, 150, 120, YELLOW, "baroque") + kirche(560, 160, 110, WHITE, ROOF_RED, "helm", "left", 50, 210))
 reg("Greussen", ["Greußen", "Greussen", "Clingen", "Großenehrich", "Grossenehrich", "Westgreußen", "Westgreussen"], lambda: basis(218) + huegel(0, 520, 70) + fachwerk(30, 2) + kirche(200, 190, 140, WHITE, SLATE, "helm", "left", 60, 290) + rathaus(500, 150, 125, YELLOW, "stepped") + fachwerk(680, 2) + muehle(820, 150))
+reg("Kierspe", ["Kierspe", "Meinerzhagen", "Halver", "Marienheide"], lambda: basis(219) + huegel(0, 560, 110) + fachwerk(30, 2) + kirche(170, 180, 130, WHITE, SLATE, "spire", "left", 56, 260) + fachwerk(410, 2) + kirche(540, 170, 125, SAND, SLATE, "helm", "left", 54, 240) + windrad(780, 230) + windrad(890, 190))
 
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
