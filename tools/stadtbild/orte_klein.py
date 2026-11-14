@@ -33,8 +33,23 @@ reg("Wartenberg", ["Wartenberg", "Thenn", "Pesenlern", "Manhartsdorf", "Auerbach
 reg("Greussen", ["Greußen", "Greussen", "Clingen", "Großenehrich", "Grossenehrich", "Westgreußen", "Westgreussen"], lambda: basis(218) + huegel(0, 520, 70) + fachwerk(30, 2) + kirche(200, 190, 140, WHITE, SLATE, "helm", "left", 60, 290) + rathaus(500, 150, 125, YELLOW, "stepped") + fachwerk(680, 2) + muehle(820, 150))
 reg("Kierspe", ["Kierspe", "Meinerzhagen", "Halver", "Marienheide"], lambda: basis(219) + huegel(0, 560, 110) + fachwerk(30, 2) + kirche(170, 180, 130, WHITE, SLATE, "spire", "left", 56, 260) + fachwerk(410, 2) + kirche(540, 170, 125, SAND, SLATE, "helm", "left", 54, 240) + windrad(780, 230) + windrad(890, 190))
 
+def _sendemast(x, h=300):
+    """Funkerberg-Sendemast (Gittermast mit Abspannung) – Königs Wusterhausen."""
+    top_y = G - h
+    out = line(x - 22, G, x, top_y, 3, "#c0392b") + line(x + 22, G, x, top_y, 3, "#c0392b")
+    for i in range(1, 9):
+        yy = G - h * i / 9
+        dx = 22 * (1 - i / 9)
+        out += line(x - dx, yy, x + dx, yy, 2, "#c0392b")
+    out += line(x, top_y, x - 90, G, 1.2, "#777") + line(x, top_y, x + 90, G, 1.2, "#777")
+    return out
+
+
+reg("KoenigsWusterhausen", ["Königs Wusterhausen", "Koenigs Wusterhausen", "Königs-Wusterhausen", "Zeesen", "Zernsdorf", "Deutsch Wusterhausen", "Wildau"], lambda: basis(220) + huegel(0, 420, 90) + _sendemast(130, 300) + schloss(260, 260, 120, "#f3e3b5", ROOF_RED, (), "helm", 54, 190) + kirche(600, 190, 135, BRICK, SLATE, "spire", "left", 58, 270) + fachwerk(830, 1))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
         sb.build(slug)
         final.build(slug, f"{sb.OUT}/Stadt_{slug}.jpg")
+
