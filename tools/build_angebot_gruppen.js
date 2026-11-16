@@ -530,7 +530,7 @@ const page3bChildren = SONDER ? [] : [
 function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
   const hasAuflage = areas.some((a) => a.auflage != null);
-  const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), "Preis"];
+  const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), config.preis_spalte || "Preis"];
   const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
   const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
   const ROW_PAD = (areas.length > 15 || config.gruppen) ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
@@ -591,7 +591,7 @@ function priceTable() {
         new TableCell({ columnSpan: nCols - 1, width: { size: spanW, type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, children: [cellTxt(`An-/Abfahrt (${ga.length} PLZ-Regionen × 35 €)`, { italics: true })] }),
         new TableCell({ width: { size: colWidths[nCols - 1], type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, shading: { type: ShadingType.CLEAR, fill: GREEN_BG }, children: [cellTxt(fmtEur(anf), { bold: true, right: true })] }) ] }));
       const hb = ga.reduce((x, a) => x + a.hh_bewerbbar, 0), hg = ga.reduce((x, a) => x + (a.hh_gesamt || 0), 0), pr = ga.reduce((x, a) => x + a.preis_verteilung, 0) + anf;
-      const sv = [`Summe ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
+      const sv = [`${config.summe_prefix || "Summe"} ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
       const sw = [colWidths[0] + colWidths[1], colWidths[2], colWidths[3], colWidths[4], colWidths[5]];
       dataRows.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 : undefined, width: { size: sw[i], type: WidthType.DXA },
         shading: (i === 1 || i === 4) ? { type: ShadingType.CLEAR, fill: GREEN_BG } : { type: ShadingType.CLEAR, fill: "EDEDED" },
@@ -639,7 +639,7 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
         children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(anfahrtSumme), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
     ],
   });
-  const totalVals = ["Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
+  const totalVals = [config.total_label || "Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
   const totalWidths = [colWidths[0] + colWidths[1], ...colWidths.slice(2)];
   const totalKey = keyCols.map((k) => k - 1);
   const totalRow = new TableRow({
