@@ -232,6 +232,7 @@ console.log(`Layout: ${LAYOUT}`);
 // ---- gemeinsame Werte für Layout "neu" ----
 const telefon = config.absender?.telefon || config.kontakt?.telefon || "0681 41098133";
 const kartenLink = config.karten_link || "";
+const angebotsNr = config.angebotsnummer || "";
 function datumDE(d) { return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }); }
 const angebotsDatum = config.angebotsdatum || datumDE(new Date());
 const gueltigBis = config.gueltig_bis || (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return datumDE(d); })();
@@ -397,7 +398,7 @@ const page1Neu = [
   new Paragraph({
     spacing: { after: 200 },
     border: { left: { color: RED, space: 8, style: BorderStyle.SINGLE, size: 36 } },
-    children: [run(`vom ${angebotsDatum} · gültig bis ${gueltigBis}`, { size: 20, color: "555555" })],
+    children: [...(angebotsNr ? [run(`Nr. ${angebotsNr}`, { size: 20, color: "555555", bold: true }), run(" · ", { size: 20, color: "555555" })] : []), run(`vom ${angebotsDatum} · gültig bis ${gueltigBis}`, { size: 20, color: "555555" })],
   }),
   new Table({
     width: { size: 10100, type: WidthType.DXA },
@@ -863,7 +864,7 @@ const page6Neu = [
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
     children: [new TextRun({ text: "So einfach beauftragen Sie uns", bold: true, color: RED, size: 32, font: FONT })],
   }),
-  p(config.beauftragung_text || `Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
+  p(config.beauftragung_text || `Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot${angebotsNr ? " " + angebotsNr : ""}“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und Verteilzeitraum anschließend schriftlich.`, { after: 200 }),
   p(`Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
   kontaktBox(),
   p(`Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }),
