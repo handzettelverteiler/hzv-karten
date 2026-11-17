@@ -56,7 +56,8 @@ body.shot aside{display:none}body.shot .leaflet-control-zoom{display:none}
 <div class="row"><span>Haushalte bewerbbar</span><span id="sHH">0</span></div>
 <div id="sPreise"></div>
 <div class="row"><span>An-/Abfahrt (35 € je PLZ)</span><span id="sAnf">0 €</span></div>
-<div class="note">Verteilpreise je Prospektgewicht, An-/Abfahrt kommt einmal je gebuchter PLZ-Region hinzu. Alle Preise netto zzgl. MwSt.</div>
+<div class="row big" id="sTotRow" style="display:none"><span>Gesamt inkl. An-/Abfahrt</span><span id="sTot">0 €</span></div>
+<div class="note">__NOTE__</div>
 <a class="btn w" id="mail" href="#">Auswahl per E-Mail senden</a>
 <button class="btn g" id="clear">Auswahl leeren</button></div>
 <div id="kreise"></div>
@@ -64,6 +65,7 @@ body.shot aside{display:none}body.shot .leaflet-control-zoom{display:none}
 </aside><div id="map"></div></div>
 <script>__LEAFLET_JS__</script>
 <script>
+const ANR='__ANR__', KPOS=__KPOS__, PRESEL=__PRESEL__;
 const DATA=__DATA__, KLASSEN=__KLASSEN__, FARBEN=__FARBEN__, MAIL='__MAIL__', KUNDE='__KUNDE__';
 const QS=new URLSearchParams(location.search), SHOT=QS.get('shot')==='1';
 let HL=QS.get('plz')||'__HIGHLIGHT_PLZ__'; if(HL.indexOf('__')===0) HL='';
@@ -96,10 +98,11 @@ function upd(){const A=DATA.filter(a=>sel.has(a.plz));
  document.getElementById('sN').textContent=A.length; document.getElementById('sHH').textContent=fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0));
  document.getElementById('sPreise').innerHTML=KLASSEN.map((k,i)=>`<div class="row big"><span>Verteilung ${k}</span><span>${fmtE(A.reduce((s,a)=>s+a.preise[i],0))}</span></div>`).join('');
  document.getElementById('sAnf').textContent=fmtE(A.reduce((s,a)=>s+a.anfahrt,0));
- const body='Guten Tag,\n\nfür unsere nächste Prospektverteilung wählen wir folgende PLZ-Regionen ('+A.length+' PLZ, '+fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0))+' Haushalte):\n\n'+A.map(a=>a.plz+' '+a.gebiet).join('\n')+'\n\nProspektgewicht: ___ g\nWunschzeitraum: ___\n\nViele Grüße\n'+KUNDE;
- document.getElementById('mail').href='mailto:'+MAIL+'?subject='+encodeURIComponent('Gebietsauswahl Prospektverteilung '+KUNDE)+'&body='+encodeURIComponent(body);}
+ if(KLASSEN.length===1){document.getElementById('sTotRow').style.display='';document.getElementById('sTot').textContent=fmtE(A.reduce((s,a)=>s+a.preise[0]+a.anfahrt,0));}
+ const body='Guten Tag,\n\nfür unsere nächste Verteilung wählen wir folgende PLZ-Regionen ('+A.length+' PLZ, '+fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0))+' Haushalte):\n\n'+A.map(a=>a.plz+' '+a.gebiet).join('\n')+(KLASSEN.length>1?'\n\nProspektgewicht: ___ g':'')+'\n\nWunschzeitraum: ___\n\nViele Grüße\n'+KUNDE;
+ document.getElementById('mail').href='mailto:'+MAIL+'?subject='+encodeURIComponent((ANR?'Angebot '+ANR+' – ':'')+'Gebietsauswahl Verteilung '+KUNDE)+'&body='+encodeURIComponent(body);}
 const kEl=document.getElementById('kreise');
-kreise.forEach(k=>{const A=DATA.filter(a=>a.kreis===k); const d=document.createElement('div'); d.className='kreis';
+kreise.forEach(k=>{const A=DATA.filter(a=>a.kreis===k); const d=document.createElement('div'); d.className='kreis'+(kreise.length===1?' open':'');
  d.innerHTML=`<div class="head"><span class="sw" style="background:${farbe(k)}"></span><b>${k}</b><span class="n">${A.length} PLZ · ${fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0))} HH</span></div>
  <div class="list"><div style="margin:4px 0 6px"><button class="kbtn" data-a="1">alle wählen</button> <button class="kbtn" data-a="0">keine</button></div>
  ${A.map(a=>`<label class="item"><input type="checkbox" id="cb${a.plz}"> <b>${a.plz}</b> ${a.gebiet}<span class="hh">${fmtHH(a.hh_bewerbbar)}</span></label>`).join('')}</div>`;
@@ -107,6 +110,9 @@ kreise.forEach(k=>{const A=DATA.filter(a=>a.kreis===k); const d=document.createE
  d.querySelectorAll('.kbtn').forEach(b=>b.onclick=()=>A.forEach(a=>toggle(a.plz,b.dataset.a==='1')));
  A.forEach(a=>d.querySelector('#cb'+a.plz).onchange=e=>toggle(a.plz,e.target.checked));
  kEl.appendChild(d);});
+if(KPOS){const ic=L.divIcon({className:'',html:'<div style="background:#12463C;color:#fff;border:2px solid #fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 1px 4px rgba(0,0,0,.5)">&#8962;</div>',iconSize:[30,30],iconAnchor:[15,15]});
+ L.marker([KPOS.lat,KPOS.lon],{icon:ic,zIndexOffset:1000}).addTo(map).bindPopup('<b>'+KPOS.name+'</b><br>'+KPOS.popup);}
+if(PRESEL&&!SHOT&&!HL) DATA.forEach(a=>toggle(a.plz,true));
 document.getElementById('clear').onclick=()=>[...sel].forEach(p=>toggle(p,false));
 upd();
 </script></body></html>"""
@@ -121,6 +127,10 @@ def main():
     ap.add_argument("--kunde", default=""); ap.add_argument("--mail", default="info@handzettelverteiler.de")
     ap.add_argument("--stand", default="")
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
+    ap.add_argument("--angebotsnr", default="")
+    ap.add_argument("--note", default="Verteilpreise je Prospektgewicht, An-/Abfahrt kommt einmal je gebuchter PLZ-Region hinzu. Alle Preise netto zzgl. MwSt.")
+    ap.add_argument("--kunde-standort", default=""); ap.add_argument("--kunde-name", default=""); ap.add_argument("--kunde-popup", default="")
+    ap.add_argument("--alle-vorwaehlen", action="store_true", help="alle PLZ beim Öffnen ausgewählt (Kunde wählt ab)")
     ap.add_argument("--highlight-plz", default=""); ap.add_argument("--hide-sidebar", action="store_true")
     a = ap.parse_args()
     data = json.load(open(a.input, encoding="utf-8"))
@@ -133,6 +143,8 @@ def main():
         "__TITLE_PLAIN__": a.title.replace("&ndash;", "-"), "__TITLE__": a.title, "__LEDE__": a.lede,
         "__SIDEBAR_DISPLAY__": "none" if a.hide_sidebar else "block", "__STAND__": a.stand,
         "__KLASSEN__": json.dumps(a.klassen, ensure_ascii=False), "__FARBEN__": json.dumps(FARBEN),
+        "__ANR__": a.angebotsnr, "__NOTE__": a.note, "__PRESEL__": "true" if a.alle_vorwaehlen else "false",
+        "__KPOS__": json.dumps({"lat": float(a.kunde_standort.split(",")[0]), "lon": float(a.kunde_standort.split(",")[1]), "name": a.kunde_name, "popup": a.kunde_popup}, ensure_ascii=False) if a.kunde_standort else "null",
         "__MAIL__": a.mail, "__KUNDE__": a.kunde.replace("'", "\\'"), "__HIGHLIGHT_PLZ__": a.highlight_plz,
     }
     for k, v in rep.items():
