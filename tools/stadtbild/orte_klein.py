@@ -87,6 +87,8 @@ reg("Ebstorf", ["Ebstorf", "Bienenbüttel", "Bienenbuettel", "Wriedel", "Gerdau"
 
 reg("Fellbach", ["Fellbach", "Schmiden", "Oeffingen", "Fellbach-Schmiden", "Fellbach-Oeffingen"], lambda: basis(224) + weinberg(0, 330, 150) + turm(250, 44, 200, SAND, "flat") + kirche(330, 210, 140, SAND, SLATE, "spire", "left", 62, 310) + modern(590, 160, 115, "#d6e0e8") + hochhaus(800, 84, 360, "#cfe0ef", True))
 
+reg("Kaltenkirchen", ["Kaltenkirchen", "Henstedt-Ulzburg", "Henstedt Ulzburg", "Henstedtulzburg", "Henstedt", "Ulzburg", "Götzberg", "Goetzberg", "Rhen", "Kattendorf", "Nützen", "Nuetzen", "Oersdorf", "Winsen (Holstein)", "Wakendorf II"], lambda: basis(225) + huegel(0, 520, 70) + kirche(30, 210, 140, BRICK, SLATE, "spire", "left", 60, 310) + modern(300, 170, 110, "#d6e0e8") + fachwerk(500, 2) + kirche(630, 160, 120, BRICK, ROOF_RED, "helm", "left", 52, 230) + muehle(830, 160))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
