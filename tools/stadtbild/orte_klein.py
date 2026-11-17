@@ -2,6 +2,7 @@
 import sys
 import stadtbild as sb, final
 from elemente import *
+from stadtbild import gable_house
 import staedte_101_200 as gross
 
 C = {}
@@ -48,6 +49,40 @@ def _sendemast(x, h=300):
 reg("KoenigsWusterhausen", ["Königs Wusterhausen", "Koenigs Wusterhausen", "Königs-Wusterhausen", "Zeesen", "Zernsdorf", "Deutsch Wusterhausen", "Wildau"], lambda: basis(220) + huegel(0, 420, 90) + _sendemast(130, 300) + schloss(260, 260, 120, "#f3e3b5", ROOF_RED, (), "helm", 54, 190) + kirche(600, 190, 135, BRICK, SLATE, "spire", "left", 58, 270) + fachwerk(830, 1))
 
 reg("IdarOberstein", ["Idar-Oberstein", "Idar Oberstein", "Idaroberstein", "Oberstein", "Idar", "Baumholder", "Rammelsbach", "Kusel", "Glantal"], lambda: basis(221) + burg(30, 260, 150, "#d9cfb8", 120, True) + huegel(320, 260, 120, "#c9c2b4") + kirche(370, 150, 105, WHITE, SLATE, "spire", "left", 46, 210) + fachwerk(620, 2) + modern(760, 150, 110, "#d6e0e8"))
+
+
+def _maibaum(x, h=340):
+    """Bayerischer Maibaum (weiß-blau gestreift, Zunftschilder, Kranz) – Aying."""
+    top_y = G - h
+    w = 12
+    out = rect(x - w / 2, top_y, w, h, "#ffffff", 2.5)
+    k = 0
+    yy = top_y + 10
+    while yy < G - 10:
+        out += poly([(x - w / 2, yy), (x + w / 2, yy - 10), (x + w / 2, yy - 2), (x - w / 2, yy + 8)], "#2f6db5", 0.8)
+        yy += 22
+        k += 1
+    for i, side in enumerate((-1, 1, -1, 1, -1, 1)):
+        sy = top_y + 70 + i * 38
+        out += line(x, sy, x + side * 34, sy, 2.5)
+        bx = x + side * 34 - (24 if side < 0 else 0)
+        out += rect(bx, sy + 2, 24, 18, "#f4ecdc", 2) + rect(bx + 6, sy + 6, 12, 10, ["#c9553d", "#6fae8c", "#e2b23a"][i % 3], 1.5)
+    out += f'<ellipse cx="{x}" cy="{top_y + 40}" rx="30" ry="9" fill="none" stroke="#3f8f3a" stroke-width="7"/>'
+    out += circle(x, top_y - 10, 15, "#6dbb63", 2.5)
+    return out
+
+
+def _brauerei(x):
+    """Brauerei mit Sudhaus und Schlot – Ayinger Brauerei."""
+    out = rect(x, G - 120, 160, 120, "#f4ecdc") + poly([(x - 5, G - 120), (x + 80, G - 175), (x + 165, G - 120)], ROOF_RED)
+    out += windows(x + 18, G - 100, 4, 2, 34, 42, 16, 24, arch=True)
+    out += rect(x + 175, G - 250, 26, 250, BRICK) + rect(x + 171, G - 258, 34, 10, BRICK_D, 2.5)
+    out += path(f"M{x+12},{G-60} q-6,-30 10,-36", "none", 0)
+    out += circle(x + 238, G - 34, 30, "#d08a45", 2.5) + rect(x + 208, G - 34, 60, 34, "#d08a45", 2.5)
+    return out
+
+
+reg("Aying", ["Aying", "Großhelfendorf", "Grosshelfendorf", "Dürrnhaar", "Duerrnhaar", "Brunnthal", "Hofolding", "Faistenhaar", "Otterloh", "Egmating"], lambda: basis(222) + huegel(0, 560, 80) + kirche(40, 190, 135, YELLOW, ROOF_RED, "helm", "right", 58, 270) + _maibaum(330, 340) + gable_house(410, 120, 110, WHITE, ROOF_RED) + _brauerei(560) + kirche(840, 110, 100, WHITE, ROOF_RED, "onion", "left", 44, 200))
 
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
