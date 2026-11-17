@@ -47,6 +47,8 @@ def _sendemast(x, h=300):
 
 reg("KoenigsWusterhausen", ["Königs Wusterhausen", "Koenigs Wusterhausen", "Königs-Wusterhausen", "Zeesen", "Zernsdorf", "Deutsch Wusterhausen", "Wildau"], lambda: basis(220) + huegel(0, 420, 90) + _sendemast(130, 300) + schloss(260, 260, 120, "#f3e3b5", ROOF_RED, (), "helm", 54, 190) + kirche(600, 190, 135, BRICK, SLATE, "spire", "left", 58, 270) + fachwerk(830, 1))
 
+reg("IdarOberstein", ["Idar-Oberstein", "Idar Oberstein", "Idaroberstein", "Oberstein", "Idar", "Baumholder", "Rammelsbach", "Kusel", "Glantal"], lambda: basis(221) + burg(30, 260, 150, "#d9cfb8", 120, True) + huegel(320, 260, 120, "#c9c2b4") + kirche(370, 150, 105, WHITE, SLATE, "spire", "left", 46, 210) + fachwerk(620, 2) + modern(760, 150, 110, "#d6e0e8"))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
