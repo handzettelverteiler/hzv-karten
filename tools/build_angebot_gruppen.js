@@ -598,6 +598,30 @@ function priceTable() {
         margins: { top: 100, bottom: 100, left: 100, right: 100 }, borders: { top: { style: BorderStyle.SINGLE, size: 8, color: "222222" } },
         children: [cellTxt(v, { bold: true, right: i >= 1, size: 20 })] })) }));
     });
+    // Optionale Erweiterungen (nicht in der Gesamtsumme)
+    if (Array.isArray(config.option_gruppen) && config.option_gruppen.length) {
+      const OR = [];
+      OR.push(new TableRow({ children: [new TableCell({ columnSpan: nCols, width: { size: totW, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "FFFFFF" },
+        borders: { top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }, left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }, right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" } },
+        margins: { top: 220, bottom: 80, left: 0, right: 0 }, children: [cellTxt(config.option_titel || "Optionale Erweiterung (nicht im Gesamtpreis enthalten)", { bold: true, color: "C81E1E", size: 22 })] })] }));
+      config.option_gruppen.forEach((g) => {
+        OR.push(new TableRow({ children: [new TableCell({ columnSpan: nCols, width: { size: totW, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "5A5A5A" },
+          margins: { top: 80, bottom: 80, left: 100, right: 100 }, children: [cellTxt(g.titel, { bold: true, color: "FFFFFF", size: 19 })] })] }));
+        g.areas.forEach((a, i) => OR.push(mkDataRow(a, i)));
+        const anf = g.areas.reduce((x, a) => x + (a.anfahrt ?? 35), 0);
+        OR.push(new TableRow({ children: [
+          new TableCell({ columnSpan: nCols - 1, width: { size: spanW, type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, children: [cellTxt(`An-/Abfahrt (${g.areas.length} PLZ-Regionen × 35 €)`, { italics: true })] }),
+          new TableCell({ width: { size: colWidths[nCols - 1], type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, shading: { type: ShadingType.CLEAR, fill: GREEN_BG }, children: [cellTxt(fmtEur(anf), { bold: true, right: true })] }) ] }));
+        const hb = g.areas.reduce((x, a) => x + a.hh_bewerbbar, 0), hg = g.areas.reduce((x, a) => x + (a.hh_gesamt || 0), 0), pr = g.areas.reduce((x, a) => x + a.preis_verteilung, 0) + anf;
+        const sv = [`Summe ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
+        const sw = [colWidths[0] + colWidths[1], colWidths[2], colWidths[3], colWidths[4], colWidths[5]];
+        OR.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 : undefined, width: { size: sw[i], type: WidthType.DXA },
+          shading: (i === 1 || i === 4) ? { type: ShadingType.CLEAR, fill: GREEN_BG } : { type: ShadingType.CLEAR, fill: "EDEDED" },
+          margins: { top: 80, bottom: 80, left: 100, right: 100 }, borders: { top: { style: BorderStyle.SINGLE, size: 8, color: "222222" } },
+          children: [cellTxt(v, { bold: true, right: i >= 1, size: 19 })] })) }));
+      });
+      globalThis.OPT_ROWS = OR;
+    }
   }
 
   const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
@@ -670,7 +694,7 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
         shading: { type: ShadingType.CLEAR, fill: GREEN_BG },
         children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(z.preis), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
     ],
-  })), totalRow] });
+  })), totalRow, ...(globalThis.OPT_ROWS || [])] });
 }
 
 const page4Alt = [
