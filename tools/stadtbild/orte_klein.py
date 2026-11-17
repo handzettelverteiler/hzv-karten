@@ -85,6 +85,8 @@ def _brauerei(x):
 reg("Aying", ["Aying", "Großhelfendorf", "Grosshelfendorf", "Dürrnhaar", "Duerrnhaar", "Brunnthal", "Hofolding", "Faistenhaar", "Otterloh", "Egmating"], lambda: basis(222) + huegel(0, 560, 80) + kirche(40, 190, 135, YELLOW, ROOF_RED, "helm", "right", 58, 270) + _maibaum(330, 340) + gable_house(410, 120, 110, WHITE, ROOF_RED) + _brauerei(560) + kirche(840, 110, 100, WHITE, ROOF_RED, "onion", "left", 44, 200))
 reg("Ebstorf", ["Ebstorf", "Bienenbüttel", "Bienenbuettel", "Wriedel", "Gerdau", "Hanstedt (Uelzen)", "Eimke", "Barum (Uelzen)", "Landkreis Uelzen"], lambda: basis(223) + huegel(0, 520, 80, "#c9b6d6") + kirche(30, 240, 140, BRICK, SLATE, "spire", "left", 60, 300) + fachwerk(330, 2) + kirche(470, 200, 120, BRICK, ROOF_RED, "helm", "right", 54, 240) + fachwerk(720, 2) + windrad(880, 200))
 
+reg("Fellbach", ["Fellbach", "Schmiden", "Oeffingen", "Fellbach-Schmiden", "Fellbach-Oeffingen"], lambda: basis(224) + weinberg(0, 330, 150) + turm(250, 44, 200, SAND, "flat") + kirche(330, 210, 140, SAND, SLATE, "spire", "left", 62, 310) + modern(590, 160, 115, "#d6e0e8") + hochhaus(800, 84, 360, "#cfe0ef", True))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
