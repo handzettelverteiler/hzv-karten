@@ -89,6 +89,7 @@ reg("Fellbach", ["Fellbach", "Schmiden", "Oeffingen", "Fellbach-Schmiden", "Fell
 
 reg("Kaltenkirchen", ["Kaltenkirchen", "Henstedt-Ulzburg", "Henstedt Ulzburg", "Henstedtulzburg", "Henstedt", "Ulzburg", "Götzberg", "Goetzberg", "Rhen", "Kattendorf", "Nützen", "Nuetzen", "Oersdorf", "Winsen (Holstein)", "Wakendorf II"], lambda: basis(225) + huegel(0, 520, 70) + kirche(30, 210, 140, BRICK, SLATE, "spire", "left", 60, 310) + modern(300, 170, 110, "#d6e0e8") + fachwerk(500, 2) + kirche(630, 160, 120, BRICK, ROOF_RED, "helm", "left", 52, 230) + muehle(830, 160))
 reg("HofheimTaunus", ["Hofheim am Taunus", "Hofheim", "Hofheim (Taunus)", "Hofheim a. Ts.", "Wallau", "Diedenbergen", "Marxheim", "Lorsbach", "Langenhain", "Wildsachsen"], lambda: basis(226) + huegel(0, 380, 140) + turm(150, 50, 230, "#b98a5a", "flat") + fachwerk(330, 2) + kirche(450, 200, 140, WHITE, SLATE, "helm", "left", 60, 290) + rathaus(700, 140, 120, YELLOW, "stepped") + fachwerk(850, 1))
+reg("Westerwald", ["Westerwald", "Selters (Westerwald)", "Selters", "Hachenburg", "Wirges", "Dierdorf", "Puderbach", "Altenkirchen", "Altenkirchen (Westerwald)", "Flammersfeld", "Ransbach-Baumbach", "Ransbach Baumbach"], lambda: basis(227) + huegel(0, 560, 120) + schloss(30, 300, 110, YELLOW, SLATE, (("helm", 0.0), ("helm", 1.0)), "helm", 48, 170) + fachwerk(370, 2) + kirche(500, 190, 135, WHITE, SLATE, "spire", "left", 58, 270) + windrad(770, 240) + windrad(890, 190))
 
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
