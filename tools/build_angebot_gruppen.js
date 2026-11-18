@@ -530,9 +530,10 @@ const page3bChildren = SONDER ? [] : [
 function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
   const hasAuflage = areas.some((a) => a.auflage != null);
-  const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), config.preis_spalte || "Preis"];
-  const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
-  const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
+  const AK = config.ankreuzen ? 1 : 0; // Ankreuz-Spalte vorne (Kunde wählt Orte selbst aus, Fahrschule Schmidt 18.11.2026)
+  const headerCells = [...(AK ? ["Auswahl"] : []), "PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), config.preis_spalte || "Preis"];
+  const colWidths = AK ? (hasAuflage ? [700, 900, 1900, 1450, 1350, 900, 1250, 1650] : [1000, 950, 2200, 1550, 1450, 950, 1900]) : (hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000]);
+  const keyCols = (hasAuflage ? [2, 5, 6] : [2, 5]).map((k) => k + AK);
   const ROW_PAD = (areas.length > 15 || config.gruppen) ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
   const LIGHT_ROW = "F7F7F7";
   const BORDER_LIGHT = { style: BorderStyle.SINGLE, size: 2, color: "E0E0E0" };
@@ -545,15 +546,15 @@ function priceTable() {
       verticalAlign: VerticalAlign.CENTER,
       margins: { top: 100, bottom: 100, left: 100, right: 100 },
       children: [new Paragraph({
-        alignment: i >= 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
-        children: [new TextRun({ text: t, bold: true, color: "FFFFFF", size: 19, font: FONT })],
+        alignment: (AK && i === 0) ? AlignmentType.CENTER : i >= 2 + AK ? AlignmentType.RIGHT : AlignmentType.LEFT,
+        children: [new TextRun({ text: t, bold: true, color: "FFFFFF", size: AK && i === 0 ? 16 : 19, font: FONT })],
       })],
     })),
   });
 
   const GR = Array.isArray(config.gruppen) ? config.gruppen : null;
   function mkDataRow(a, rowIdx) {
-    const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : (a.hh_gesamt_ca ? "ca. " : "") + fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
+    const vals = [...(AK ? ["☐"] : []), a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : (a.hh_gesamt_ca ? "ca. " : "") + fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), fmtEur(a.preis_verteilung)];
     const leer = a.auflage === 0; // feste Auflage: PLZ mit 0 Flyern grau (optional)
     const zebra = rowIdx % 2 === 1;
     return new TableRow({
@@ -568,8 +569,8 @@ function priceTable() {
           margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 },
           borders: { bottom: BORDER_LIGHT },
           children: [new Paragraph({
-            alignment: i >= 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
-            children: [new TextRun({ text: String(v), size: 19, font: FONT, bold: isKeyCol && !leer, color: leer ? "999999" : "222222" })],
+            alignment: (AK && i === 0) ? AlignmentType.CENTER : i >= 2 + AK ? AlignmentType.RIGHT : AlignmentType.LEFT,
+            children: [new TextRun({ text: String(v), size: (AK && i === 0) ? 30 : 19, font: (AK && i === 0) ? "Segoe UI Symbol" : FONT, bold: isKeyCol && !leer, color: leer ? "999999" : "222222" })],
           })],
         });
       }),
@@ -592,8 +593,8 @@ function priceTable() {
         new TableCell({ width: { size: colWidths[nCols - 1], type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, shading: { type: ShadingType.CLEAR, fill: GREEN_BG }, children: [cellTxt(fmtEur(anf), { bold: true, right: true })] }) ] }));
       const hb = ga.reduce((x, a) => x + a.hh_bewerbbar, 0), hg = ga.reduce((x, a) => x + (a.hh_gesamt || 0), 0), pr = ga.reduce((x, a) => x + a.preis_verteilung, 0) + anf;
       const sv = [`${config.summe_prefix || "Summe"} ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
-      const sw = [colWidths[0] + colWidths[1], colWidths[2], colWidths[3], colWidths[4], colWidths[5]];
-      dataRows.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 : undefined, width: { size: sw[i], type: WidthType.DXA },
+      const sw = [colWidths[0] + colWidths[1] + (AK ? colWidths[2] : 0), colWidths[2 + AK], colWidths[3 + AK], colWidths[4 + AK], colWidths[5 + AK]];
+      dataRows.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 + AK : undefined, width: { size: sw[i], type: WidthType.DXA },
         shading: (i === 1 || i === 4) ? { type: ShadingType.CLEAR, fill: GREEN_BG } : { type: ShadingType.CLEAR, fill: "EDEDED" },
         margins: { top: 100, bottom: 100, left: 100, right: 100 }, borders: { top: { style: BorderStyle.SINGLE, size: 8, color: "222222" } },
         children: [cellTxt(v, { bold: true, right: i >= 1, size: 20 })] })) }));
@@ -614,8 +615,8 @@ function priceTable() {
           new TableCell({ width: { size: colWidths[nCols - 1], type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, shading: { type: ShadingType.CLEAR, fill: GREEN_BG }, children: [cellTxt(fmtEur(anf), { bold: true, right: true })] }) ] }));
         const hb = g.areas.reduce((x, a) => x + a.hh_bewerbbar, 0), hg = g.areas.reduce((x, a) => x + (a.hh_gesamt || 0), 0), pr = g.areas.reduce((x, a) => x + a.preis_verteilung, 0) + anf;
         const sv = [`Summe ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
-        const sw = [colWidths[0] + colWidths[1], colWidths[2], colWidths[3], colWidths[4], colWidths[5]];
-        OR.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 : undefined, width: { size: sw[i], type: WidthType.DXA },
+        const sw = [colWidths[0] + colWidths[1] + (AK ? colWidths[2] : 0), colWidths[2 + AK], colWidths[3 + AK], colWidths[4 + AK], colWidths[5 + AK]];
+        OR.push(new TableRow({ children: sv.map((v, i) => new TableCell({ columnSpan: i === 0 ? 2 + AK : undefined, width: { size: sw[i], type: WidthType.DXA },
           shading: (i === 1 || i === 4) ? { type: ShadingType.CLEAR, fill: GREEN_BG } : { type: ShadingType.CLEAR, fill: "EDEDED" },
           margins: { top: 80, bottom: 80, left: 100, right: 100 }, borders: { top: { style: BorderStyle.SINGLE, size: 8, color: "222222" } },
           children: [cellTxt(v, { bold: true, right: i >= 1, size: 19 })] })) }));
@@ -650,6 +651,7 @@ function priceTable() {
 // Layout neu: An-/Abfahrt als eigene Zeile, Summe = Gesamtpreis inkl. Anfahrt (Anfahrt bleibt separat ausgewiesen)
 function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
   const anfahrtLabel = config.anfahrt_label || ((einePLZ || plzSet.length === 1) ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${plzSet.length} PLZ-Regionen × 35 €)`));
+  const AK = config.ankreuzen ? 1 : 0;
   const nLast = colWidths.length - 1;
   const spanW = colWidths.slice(0, nLast).reduce((s, w) => s + w, 0);
   const anfahrtRow = new TableRow({
@@ -664,14 +666,14 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
     ],
   });
   const totalVals = [config.total_label || "Gesamtpreis netto", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(endpreis)];
-  const totalWidths = [colWidths[0] + colWidths[1], ...colWidths.slice(2)];
-  const totalKey = keyCols.map((k) => k - 1);
+  const totalWidths = [colWidths[0] + colWidths[1] + (AK ? colWidths[2] : 0), ...colWidths.slice(2 + AK)];
+  const totalKey = keyCols.map((k) => k - 1 - AK);
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
       const isKeyCol = totalKey.includes(i);
       const isPreis = i === totalVals.length - 1;
       return new TableCell({
-        columnSpan: i === 0 ? 2 : undefined,
+        columnSpan: i === 0 ? 2 + AK : undefined,
         width: { size: totalWidths[i], type: WidthType.DXA },
         shading: isPreis ? { type: ShadingType.CLEAR, fill: RED } : isKeyCol ? { type: ShadingType.CLEAR, fill: GREEN_BG } : undefined,
         verticalAlign: VerticalAlign.CENTER,
