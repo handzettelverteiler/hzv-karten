@@ -351,6 +351,23 @@
   "altenkirchen": "Westerwald",
   "altenkirchenwesterwald": "Westerwald",
   "flammersfeld": "Westerwald",
-  "ransbachbaumbach": "Westerwald"
+  "ransbachbaumbach": "Westerwald",
+  "badvilbel": "Bad_Vilbel",
+  "dortelweil": "Bad_Vilbel",
+  "massenheim": "Bad_Vilbel",
+  "badvilbeldortelweil": "Bad_Vilbel",
+  "oebisfelde": "Oebisfelde",
+  "oebisfeldeweferlingen": "Oebisfelde",
+  "weferlingen": "Oebisfelde",
+  "velpke": "Oebisfelde",
+  "bahrdorf": "Oebisfelde",
+  "danndorf": "Oebisfelde",
+  "grafhorst": "Oebisfelde",
+  "ruehen": "Oebisfelde",
+  "grasleben": "Oebisfelde",
+  "mariental": "Oebisfelde",
+  "querenhorst": "Oebisfelde",
+  "grosstwuelpstedt": "Oebisfelde",
+  "bahrdorfvelpkeoebisfelde": "Oebisfelde"
  }
 }

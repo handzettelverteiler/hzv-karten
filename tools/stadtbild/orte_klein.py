@@ -91,6 +91,9 @@ reg("Kaltenkirchen", ["Kaltenkirchen", "Henstedt-Ulzburg", "Henstedt Ulzburg", "
 reg("HofheimTaunus", ["Hofheim am Taunus", "Hofheim", "Hofheim (Taunus)", "Hofheim a. Ts.", "Wallau", "Diedenbergen", "Marxheim", "Lorsbach", "Langenhain", "Wildsachsen"], lambda: basis(226) + huegel(0, 380, 140) + turm(150, 50, 230, "#b98a5a", "flat") + fachwerk(330, 2) + kirche(450, 200, 140, WHITE, SLATE, "helm", "left", 60, 290) + rathaus(700, 140, 120, YELLOW, "stepped") + fachwerk(850, 1))
 reg("Westerwald", ["Westerwald", "Selters (Westerwald)", "Selters", "Hachenburg", "Wirges", "Dierdorf", "Puderbach", "Altenkirchen", "Altenkirchen (Westerwald)", "Flammersfeld", "Ransbach-Baumbach", "Ransbach Baumbach"], lambda: basis(227) + huegel(0, 560, 120) + schloss(30, 300, 110, YELLOW, SLATE, (("helm", 0.0), ("helm", 1.0)), "helm", 48, 170) + fachwerk(370, 2) + kirche(500, 190, 135, WHITE, SLATE, "spire", "left", 58, 270) + windrad(770, 240) + windrad(890, 190))
 
+reg("Bad_Vilbel", ["Bad Vilbel", "Dortelweil", "Massenheim", "Gronau (Bad Vilbel)", "Bad Vilbel-Dortelweil", "Bad Vilbel-Massenheim", "Bad Vilbel-Heilsberg"], lambda: basis(228) + huegel(0, 420, 90) + burg(30, 260, 110, "#d9cfb8", 140, True) + kurhaus(330, 230, 100, WHITE) + kirche(600, 190, 135, SAND, SLATE, "spire", "left", 58, 270) + fachwerk(830, 2))
+reg("Oebisfelde", ["Oebisfelde", "Oebisfelde-Weferlingen", "Weferlingen", "Velpke", "Bahrdorf", "Danndorf", "Grafhorst", "Rühen", "Ruehen", "Grasleben", "Mariental", "Querenhorst", "Groß Twülpstedt", "Gross Twuelpstedt"], lambda: basis(229) + huegel(0, 560, 70) + burg(20, 280, 110, "#d9cfb8", 150, False) + fachwerk(330, 2) + kirche(460, 200, 135, BRICK, SLATE, "spire", "left", 60, 280) + muehle(720, 160) + windrad(880, 200))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
