@@ -582,13 +582,13 @@ function priceTable() {
     const cellTxt = (t, o = {}) => new Paragraph({ alignment: o.right ? AlignmentType.RIGHT : AlignmentType.LEFT, children: [new TextRun({ text: t, size: o.size || 19, font: FONT, bold: !!o.bold, italics: !!o.italics, color: o.color || "222222" })] });
     dataRows = [];
     GR.forEach((g) => {
-      const ga = areas.filter((a) => g.plz.includes(a.plz));
+      const ga = areas.filter((a) => (g.vg ? a.vg === g.vg : g.plz.includes(a.plz))); // g.vg: Gruppierung nach Verbandsgemeinde/Region statt PLZ-Liste (Fahrschule Schmidt 18.11.2026)
       dataRows.push(new TableRow({ children: [new TableCell({ columnSpan: nCols, width: { size: totW, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "12463C" },
         margins: { top: 90, bottom: 90, left: 100, right: 100 }, children: [cellTxt(g.titel, { bold: true, color: "FFFFFF", size: 20 })] })] }));
       ga.forEach((a, i) => dataRows.push(mkDataRow(a, i)));
       const anf = ga.reduce((x, a) => x + (a.anfahrt ?? 35), 0);
       dataRows.push(new TableRow({ children: [
-        new TableCell({ columnSpan: nCols - 1, width: { size: spanW, type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, children: [cellTxt(`An-/Abfahrt (${ga.length} PLZ-Regionen × 35 €)`, { italics: true })] }),
+        new TableCell({ columnSpan: nCols - 1, width: { size: spanW, type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, children: [cellTxt(`An-/Abfahrt (${ga.filter((a) => (a.anfahrt ?? 35) > 0).length} PLZ-Regionen × 35 €)`, { italics: true })] }),
         new TableCell({ width: { size: colWidths[nCols - 1], type: WidthType.DXA }, margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT }, shading: { type: ShadingType.CLEAR, fill: GREEN_BG }, children: [cellTxt(fmtEur(anf), { bold: true, right: true })] }) ] }));
       const hb = ga.reduce((x, a) => x + a.hh_bewerbbar, 0), hg = ga.reduce((x, a) => x + (a.hh_gesamt || 0), 0), pr = ga.reduce((x, a) => x + a.preis_verteilung, 0) + anf;
       const sv = [`${config.summe_prefix || "Summe"} ${g.kurz || g.titel}`, fmtHH(hb), fmtHH(hg), "", fmtEur(pr)];
