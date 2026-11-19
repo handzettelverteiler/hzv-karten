@@ -691,7 +691,7 @@ function optionBox() {
 const page4Neu = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
-    children: [new ImageRun({ data: iconPreis, type: "png", transformation: areas.length > 28 ? { width: 90, height: 90 } : { width: 150, height: 150 } })], // >28 Zeilen (Ortsteil-Aufschlüsselung): kleineres Icon, Tabelle bleibt auf einer Seite
+    children: [new ImageRun({ data: iconPreis, type: "png", transformation: areas.length > 24 ? { width: 90, height: 90 } : { width: 150, height: 150 } })], // >28 Zeilen (Ortsteil-Aufschlüsselung): kleineres Icon, Tabelle bleibt auf einer Seite
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
