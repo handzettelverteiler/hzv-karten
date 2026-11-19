@@ -533,7 +533,7 @@ function priceTable() {
   const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), "Preis"];
   const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
   const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
-  const ROW_PAD = areas.length > 15 ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
+  const ROW_PAD = areas.length > 28 ? 10 : areas.length > 15 ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
   const LIGHT_ROW = "F7F7F7";
   const BORDER_LIGHT = { style: BorderStyle.SINGLE, size: 2, color: "E0E0E0" };
 
@@ -683,7 +683,7 @@ function optionBox() {
 const page4Neu = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
-    children: [new ImageRun({ data: iconPreis, type: "png", transformation: { width: 150, height: 150 } })],
+    children: [new ImageRun({ data: iconPreis, type: "png", transformation: areas.length > 28 ? { width: 90, height: 90 } : { width: 150, height: 150 } })], // >28 Zeilen (Ortsteil-Aufschlüsselung): kleineres Icon, Tabelle bleibt auf einer Seite
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
