@@ -24,8 +24,9 @@ for k in ot:
 out = []
 for r in rows:
     name = r["gebiet"]
-    if "Innenstadt" in name:
-        g = P[r["plz"]].difference(allOT); ort = name.split("-")[0]
+    if "Innenstadt" in name or r.get("rest"):
+        # rest: Hauptort = PLZ-Flaeche minus alle benannten Ortsteile (auch ohne "Innenstadt" im Namen)
+        g = P[r["plz"]].difference(allOT); ort = r.get("ort") or name.split("-")[0]
     else:
         keys = by_name.get(name, [])
         # Ortsteil mit groesster Ueberlappung zur PLZ nehmen (gleichnamige Orte in Nachbarstaedten)
