@@ -710,6 +710,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .ot-label { background: rgba(255,255,255,.85); border: 0; box-shadow: none; font-size: 11px; font-weight: 700; color: #7A1010; padding: 1px 4px; border-radius: 3px; }
   .ot-label.off { color: #888; font-weight: 400; }
   .ot-label:before { display: none; }
+  #map.nolabels .ot-label { display: none; }
+  .zoomhint { display: none; }
+  @media (max-width: 760px) { .zoomhint { display: block; font-size: 12px; color: #666; margin: -6px 0 10px 0; } }
   .ot-label .pz { display: block; font-size: 9px; font-weight: 400; color: #555; text-align: center; line-height: 1.1; }
   .plz-label { background: #12463C; color: #fff; border: 0; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
   .plz-label:before { display: none; }
@@ -731,6 +734,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div class="eyebrow">Gebiete auswählen · Angebot 2611-105</div>
   <h1>Bruns Medienlogistik GmbH &ndash; Minden &amp; Porta Westfalica</h1>
   <div class="hint">Klicken Sie in der Karte oder in der Liste auf die Ortsteile, die Sie bewerben möchten. Haushalte und Preis rechnen sich sofort mit. Mit dem Button unten senden Sie uns Ihre Auswahl.</div>
+  <div class="zoomhint">Tipp: In die Karte hineinzoomen, dann erscheinen die Ortsteil-Namen.</div>
   <div class="summary">
     <div class="cap">Ihre Auswahl</div>
     <div class="row"><span>Gebiete</span><span class="val" id="sGeb">–</span></div>
@@ -770,6 +774,9 @@ DATA.areas.forEach(a => sel[a.id] = pre ? pre.split(',').includes(a.id) : !a.aus
 const map = L.map('map', {zoomSnap: 0.25});
 const B0 = L.latLngBounds([]); DATA.areas.forEach(a => a.polygons.forEach(r => r.forEach(([x, y]) => B0.extend([y, x]))));
 map.fitBounds(B0, {padding: [20, 20]});  // View zuerst setzen, sonst scheitern permanente Tooltips
+const Z0 = map.getZoom(), MOBIL = window.innerWidth < 760;
+function labelCheck() { document.getElementById('map').classList.toggle('nolabels', MOBIL && map.getZoom() < Z0 + 1); }
+map.on('zoomend', labelCheck);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18, attribution: '&copy; OpenStreetMap'}).addTo(map);
 const ON = {color: '#7A1010', weight: 1.2, fillColor: '#C81E1E', fillOpacity: 0.32, dashArray: null};
 const OFF = {color: '#888', weight: 1, fillColor: '#bbb', fillOpacity: 0.12, dashArray: '4 3'};
@@ -816,7 +823,9 @@ Object.entries(groups).forEach(([p, arr]) => {
   list.appendChild(g);
 });
 
-function toggle(id) { sel[id] = !sel[id]; refresh(); }
+let toastT;
+function toast(t) { const el = document.getElementById('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => el.style.display = 'none', 1600); }
+function toggle(id) { sel[id] = !sel[id]; refresh(); const a = DATA.areas.find(x => x.id === id); toast(a.gebiet + ' (' + a.plz + '): ' + (sel[id] ? 'ausgewählt' : 'abgewählt')); }
 document.getElementById('bAll').onclick = () => { DATA.areas.forEach(a => sel[a.id] = true); refresh(); };
 document.getElementById('bNone').onclick = () => { DATA.areas.forEach(a => sel[a.id] = false); refresh(); };
 
@@ -853,6 +862,7 @@ function refresh() {
   try { history.replaceState(null, '', location.pathname + '?' + (QS.get('shot') ? 'shot=1&' : '') + 'sel=' + ids.join(',')); } catch (e) {}
 }
 refresh();
+labelCheck();
 </script>
 </body>
 </html>
