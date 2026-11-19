@@ -96,6 +96,8 @@ reg("Oebisfelde", ["Oebisfelde", "Oebisfelde-Weferlingen", "Weferlingen", "Velpk
 
 reg("Burgstaedt", ["Burgstädt", "Burgstaedt", "Taura", "Mohsdorf", "Köthensdorf-Reitzenhain", "Koethensdorf-Reitzenhain"], lambda: basis(230) + huegel(0, 380, 120) + wasserturm(120, 70, 330, "#cfc6b2", "pyramid") + rathaus(330, 160, 125, YELLOW, "baroque") + kirche(540, 190, 140, WHITE, SLATE, "spire", "left", 58, 280) + burg(770, 170, 100, "#d9cfb8", 130))
 
+reg("LaufPegnitz", ["Lauf an der Pegnitz", "Lauf a.d. Pegnitz", "Lauf a. d. Pegnitz", "Heuchling", "Kotzenhof", "Rudolfshof"], lambda: basis(231) + huegel(0, 420, 90) + burg(20, 300, 110, "#d9cfb8", 150, False) + tor(360, 90, 210, "#e0cba0", "stepped") + rathaus(480, 150, 125, YELLOW, "stepped") + fachwerk(650, 2) + kirche(770, 160, 130, WHITE, SLATE, "spire", "left", 54, 260))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
