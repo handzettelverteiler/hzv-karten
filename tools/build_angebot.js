@@ -527,6 +527,10 @@ const page3bChildren = SONDER ? [] : [
 ];
 
 // ==================== SEITE 4: PREISÜBERSICHT ====================
+// Ankreuzliste (Stefan, 19.11.2026): vor jeder Preiszeile ein Kästchen ☐, damit der Kunde Gebiete/Ortsteile auswählen kann.
+// Standard an; "ankreuzen": false in der Config schaltet ab. Im PDF macht tools/pdf_ankreuzfelder.py daraus klickbare Formular-Kästchen.
+const ANKREUZEN = config.ankreuzen !== false;
+const ANKREUZ_TEXT = config.ankreuzen_text || "Sie möchten nur einen Teil verteilen lassen? Kreuzen Sie die gewünschten Gebiete einfach an – auch direkt im PDF – und senden Sie uns die Seite zurück. Wir berechnen den Preis dann nach Ihrer Auswahl (An-/Abfahrt je belieferter PLZ-Region).";
 function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
   const hasAuflage = areas.some((a) => a.auflage != null);
@@ -568,7 +572,10 @@ function priceTable() {
           borders: { bottom: BORDER_LIGHT },
           children: [new Paragraph({
             alignment: i >= 2 ? AlignmentType.RIGHT : AlignmentType.LEFT,
-            children: [new TextRun({ text: String(v), size: 19, font: FONT, bold: isKeyCol && !leer, color: leer ? "999999" : "222222" })],
+            children: [
+              ...(ANKREUZEN && i === 0 ? [new TextRun({ text: "\u2610 ", size: 16, font: "Segoe UI Symbol", color: "444444" })] : []),
+              new TextRun({ text: String(v), size: 19, font: FONT, bold: isKeyCol && !leer, color: leer ? "999999" : "222222" }),
+            ],
           })],
         });
       }),
@@ -662,7 +669,7 @@ const page4Alt = [
   p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
-  p(config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
+  p(config.teilmengen_text || (ANKREUZEN ? ANKREUZ_TEXT : `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`), { after: 0 }),
 ];
 
 // ==================== SEITE 5 (Layout neu): PREISÜBERSICHT ====================
@@ -694,8 +701,8 @@ const page4Neu = [
   p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 280, before: 120 }),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   ...optionBox(),
-  p(opt ? (config.teilmengen_text_neu || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)
-        : (config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`),
+  p(opt ? (config.teilmengen_text_neu || (ANKREUZEN ? ANKREUZ_TEXT : `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`))
+        : (config.teilmengen_text || (ANKREUZEN ? ANKREUZ_TEXT : `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)),
     { before: opt ? 240 : 0, after: 0, size: 21, color: "444444" }),
 ];
 const page4Children = LAYOUT === "alt" ? page4Alt : page4Neu;
