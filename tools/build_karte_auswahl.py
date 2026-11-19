@@ -60,16 +60,17 @@ __LEAFLET_CSS__
   .it { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 13px; border-top: 1px solid #f2f1ee; cursor: pointer; }
   .it:hover { background: #FBFAF8; }
   .it .nm { flex: 1; }
-  .it .hh { color: #666; font-size: 12px; min-width: 62px; text-align: right; }
-  .it .pr { font-weight: 700; min-width: 70px; text-align: right; }
+  .it .hh { color: #666; font-size: 12px; min-width: 56px; text-align: right; white-space: nowrap; }
+  .it .pr { font-weight: 700; min-width: 66px; text-align: right; white-space: nowrap; }
   .it.off .nm, .it.off .pr { color: #aaa; font-weight: 400; }
-  .it .tag { font-size: 10px; color: #12463C; background: #E3F1EC; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+  .it .tag { font-size: 10px; color: #12463C; background: #E3F1EC; border-radius: 4px; padding: 1px 5px; }
   input[type=checkbox] { width: 16px; height: 16px; accent-color: #C81E1E; cursor: pointer; flex-shrink: 0; }
   .footer-note { font-size: 11px; color: #999; margin-top: 14px; line-height: 1.5; }
   #map { flex: 1; height: 100%; }
   .ot-label { background: rgba(255,255,255,.85); border: 0; box-shadow: none; font-size: 11px; font-weight: 700; color: #7A1010; padding: 1px 4px; border-radius: 3px; }
   .ot-label.off { color: #888; font-weight: 400; }
   .ot-label:before { display: none; }
+  .ot-label .pz { display: block; font-size: 9px; font-weight: 400; color: #555; text-align: center; line-height: 1.1; }
   .plz-label { background: #12463C; color: #fff; border: 0; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
   .plz-label:before { display: none; }
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 9px 14px; border-radius: 6px; font-size: 13px; z-index: 9999; display: none; }
@@ -132,7 +133,7 @@ const all = L.featureGroup().addTo(map);
 DATA.areas.forEach(a => {
   const ll = a.polygons.map(r => r.map(([x, y]) => [y, x]));
   const lyr = L.polygon(ll, sel[a.id] ? ON : OFF).addTo(all);
-  lyr.bindTooltip(a.gebiet, {permanent: true, direction: 'center', className: 'ot-label' + (sel[a.id] ? '' : ' off')});
+  lyr.bindTooltip(a.gebiet + '<span class="pz">' + a.plz + '</span>', {permanent: true, direction: 'center', className: 'ot-label' + (sel[a.id] ? '' : ' off')});
   lyr.on('click', () => toggle(a.id));
   lyr.on('mouseover', () => lyr.setStyle({weight: 2.5}));
   lyr.on('mouseout', () => lyr.setStyle({weight: sel[a.id] ? ON.weight : OFF.weight}));
@@ -140,10 +141,12 @@ DATA.areas.forEach(a => {
 });
 Object.entries(DATA.plz).forEach(([p, rings]) => {
   const l = L.polygon(rings.map(r => r.map(([x, y]) => [y, x])), {color: '#12463C', weight: 2.2, fill: false, interactive: false}).addTo(map);
-  // PLZ-Schild an den noerdlichsten Punkt der PLZ, damit es die Ortsteil-Namen nicht verdeckt
-  let top = rings[0][0]; rings[0].forEach(pt => { if (pt[1] > top[1]) top = pt; });
-  L.marker([top[1], top[0]], {opacity: 0, interactive: false}).addTo(map)
-    .bindTooltip('PLZ ' + p, {permanent: true, direction: 'top', offset: [0, -2], className: 'plz-label'});
+  // PLZ-Schild: Position aus DATA.plz_label (vom Generator berechnet, moeglichst weit weg von den Ortsteil-Namen)
+  if (DATA.plz_schilder) {  // optional: eigene PLZ-Schilder (Standard: PLZ steht klein unter jedem Ortsteil-Namen)
+    const lp = (DATA.plz_label || {})[p] || [l.getBounds().getCenter().lng, l.getBounds().getCenter().lat];
+    L.marker([lp[1], lp[0]], {opacity: 0, interactive: false}).addTo(map)
+      .bindTooltip('PLZ ' + p, {permanent: true, direction: 'center', className: 'plz-label'});
+  }
 });
 
 // Liste je PLZ
@@ -158,7 +161,7 @@ Object.entries(groups).forEach(([p, arr]) => {
   g.appendChild(h);
   arr.forEach(a => {
     const it = document.createElement('div'); it.className = 'it'; it.id = 'it-' + a.id;
-    const tag = a.satz <= 98 ? '<span class="tag">Innenstadt-Preis</span>' : '';
+    const tag = a.satz <= 98 ? '<br><span class="tag">Innenstadt-Preis</span>' : '';
     it.innerHTML = '<input type="checkbox"><span class="nm">' + a.gebiet + tag + '</span><span class="hh">' + fmtHH(a.hh) + ' HH</span><span class="pr">' + fmtEur(a.preis) + '</span>';
     it.addEventListener('click', e => { toggle(a.id); e.preventDefault(); });
     it.addEventListener('mouseenter', () => layers[a.id].setStyle({weight: 3}));
@@ -211,6 +214,38 @@ refresh();
 """
 
 
+def plz_label_punkte(data):
+    """Je PLZ einen Punkt im Inneren, moeglichst weit weg von den Ortsteil-Beschriftungen (Schwerpunkte) und vom Rand."""
+    from shapely.geometry import Polygon, Point
+    cents = []
+    for ar in data["areas"]:
+        polys = [Polygon(r) for r in ar["polygons"] if len(r) > 3]
+        if polys:
+            big = max(polys, key=lambda q: q.area)
+            cents.append(big.centroid)  # Leaflet setzt Tooltips 'center' etwa auf den Schwerpunkt
+    out = {}
+    for plz, rings in data["plz"].items():
+        P = Polygon(rings[0]).buffer(0)
+        minx, miny, maxx, maxy = P.bounds
+        best, bestd = None, -1
+        n = 40
+        for i in range(n + 1):
+            for j in range(n + 1):
+                pt = Point(minx + (maxx - minx) * i / n, miny + (maxy - miny) * j / n)
+                if not P.contains(pt):
+                    continue
+                edge = P.exterior.distance(pt)
+                if edge < 0.004:
+                    continue
+                d = min([((c.x - pt.x) / 2.6) ** 2 + (c.y - pt.y) ** 2 for c in cents] + [(edge * 0.8) ** 2])  # Schilder sind breit: x-Abstand weniger gewichten
+                if d > bestd:
+                    best, bestd = pt, d
+        if best is None:
+            best = P.representative_point()
+        out[plz] = [round(best.x, 5), round(best.y, 5)]
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True)
@@ -222,6 +257,8 @@ def main():
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
     a = ap.parse_args()
     data = json.load(open(a.input, encoding="utf-8"))
+    if "plz_label" not in data:
+        data["plz_label"] = plz_label_punkte(data)
     css = open(os.path.join(a.leaflet_dir, "leaflet.css"), encoding="utf-8").read()
     js = open(os.path.join(a.leaflet_dir, "leaflet.js"), encoding="utf-8").read()
     import re

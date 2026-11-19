@@ -469,6 +469,7 @@ const page2Neu = [
   bullet(config.verteiler_text || "Ausschließlich erwachsene Verteiler, bezahlt nach dem gesetzlichen Mindestlohn."),
   bullet(config.nachweis_bullet || "Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
   ...(kartenLink ? [bullet("Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
+  ...(config.auswahl_link ? [bullet("Gebiete selbst auswählen – Preis rechnet sich live mit, Auswahl per E-Mail an uns:"), linkPara(config.auswahl_link, { after: 60, size: 19 })] : []), // config.auswahl_link: Auswahlkarte (tools/build_karte_auswahl.py)
   para([run("Gut zu wissen", { bold: true, size: 22, color: "555555" })], { before: 280, after: 100 }),
   ...(Array.isArray(config.gut_zu_wissen) ? config.gut_zu_wissen.map((t) => smallBullet(t)) : [
   smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
@@ -530,7 +531,7 @@ const page3bChildren = SONDER ? [] : [
 // Ankreuzliste (Stefan, 19.11.2026): vor jeder Preiszeile ein Kästchen ☐, damit der Kunde Gebiete/Ortsteile auswählen kann.
 // Standard an; "ankreuzen": false in der Config schaltet ab. Im PDF macht tools/pdf_ankreuzfelder.py daraus klickbare Formular-Kästchen.
 const ANKREUZEN = config.ankreuzen !== false;
-const ANKREUZ_TEXT = config.ankreuzen_text || "Sie möchten nur einen Teil verteilen lassen? Kreuzen Sie die gewünschten Gebiete einfach an – auch direkt im PDF – und senden Sie uns die Seite zurück. Wir berechnen den Preis dann nach Ihrer Auswahl (An-/Abfahrt je belieferter PLZ-Region).";
+const ANKREUZ_TEXT = config.ankreuzen_text || (config.auswahl_link ? "Sie möchten nur einen Teil verteilen lassen? Wählen Sie die Gebiete bequem online in unserer Auswahlkarte aus (Link auf Seite 2) oder kreuzen Sie sie hier an – auch direkt im PDF – und senden Sie uns die Seite zurück. Wir berechnen den Preis dann nach Ihrer Auswahl." : null) || "Sie möchten nur einen Teil verteilen lassen? Kreuzen Sie die gewünschten Gebiete einfach an – auch direkt im PDF – und senden Sie uns die Seite zurück. Wir berechnen den Preis dann nach Ihrer Auswahl (An-/Abfahrt je belieferter PLZ-Region).";
 function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
   const hasAuflage = areas.some((a) => a.auflage != null);
