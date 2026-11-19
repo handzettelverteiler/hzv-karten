@@ -94,6 +94,8 @@ reg("Westerwald", ["Westerwald", "Selters (Westerwald)", "Selters", "Hachenburg"
 reg("Bad_Vilbel", ["Bad Vilbel", "Dortelweil", "Massenheim", "Gronau (Bad Vilbel)", "Bad Vilbel-Dortelweil", "Bad Vilbel-Massenheim", "Bad Vilbel-Heilsberg"], lambda: basis(228) + huegel(0, 420, 90) + burg(30, 260, 110, "#d9cfb8", 140, True) + kurhaus(330, 230, 100, WHITE) + kirche(600, 190, 135, SAND, SLATE, "spire", "left", 58, 270) + fachwerk(830, 2))
 reg("Oebisfelde", ["Oebisfelde", "Oebisfelde-Weferlingen", "Weferlingen", "Velpke", "Bahrdorf", "Danndorf", "Grafhorst", "Rühen", "Ruehen", "Grasleben", "Mariental", "Querenhorst", "Groß Twülpstedt", "Gross Twuelpstedt"], lambda: basis(229) + huegel(0, 560, 70) + burg(20, 280, 110, "#d9cfb8", 150, False) + fachwerk(330, 2) + kirche(460, 200, 135, BRICK, SLATE, "spire", "left", 60, 280) + muehle(720, 160) + windrad(880, 200))
 
+reg("Burgstaedt", ["Burgstädt", "Burgstaedt", "Taura", "Mohsdorf", "Köthensdorf-Reitzenhain", "Koethensdorf-Reitzenhain"], lambda: basis(230) + huegel(0, 380, 120) + wasserturm(120, 70, 330, "#cfc6b2", "pyramid") + rathaus(330, 160, 125, YELLOW, "baroque") + kirche(540, 190, 140, WHITE, SLATE, "spire", "left", 58, 280) + burg(770, 170, 100, "#d9cfb8", 130))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
