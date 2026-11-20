@@ -789,7 +789,7 @@ FD.optionen.forEach((o, i) => {
   else optionBlocks.push(new Paragraph({ spacing: { before: 200, after: 0 }, children: [] }));
   optionBlocks.push(specLine(o.titel, { bold: true }));
   (o.specs || []).forEach(sp => optionBlocks.push(specLine(sp)));
-  optionBlocks.push(p(o.druckverfahren || "", { before: 120, after: 120 }));
+  if (o.druckverfahren !== "") optionBlocks.push(p(o.druckverfahren || "", { before: 120, after: 120 })); else optionBlocks.push(p("", { before: 0, after: 40, size: 8 }));
   const fdPreis = o.preis ?? (FD.preise || [])[i];
   // Tausenderpunkt + ",- Euro" wie bei der Anfahrt (sonst "1066.- Euro")
   const fdPreisTxt = typeof fdPreis === "number" ? `${fmtHH(fdPreis)},- Euro` : `${fdPreis}.- Euro`;
