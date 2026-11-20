@@ -128,6 +128,20 @@ DATA.areas.forEach(a => sel[a.id] = pre ? pre.split(',').includes(a.id) : !a.aus
 
 const map = L.map('map', {zoomSnap: 0.25});
 const B0 = L.latLngBounds([]); DATA.areas.forEach(a => a.polygons.forEach(r => r.forEach(([x, y]) => B0.extend([y, x]))));
+// Kundenstandort (Stefan, 20.11.2026: auch in der Auswahlkarte wie in der Uebersichtskarte)
+if (CFG.standort && CFG.standort.lat) {
+  const K = CFG.standort;
+  B0.extend([K.lat, K.lon]);
+  const nameTag = K.name ? '<div style="margin-top:3px;background:#C81E1E;color:#fff;font:bold 11px Arial;padding:2px 7px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.35)">' + K.name + '</div>' : '';
+  const html = '<div style="display:flex;flex-direction:column;align-items:center">'
+    + '<svg width="46" height="52" viewBox="0 0 46 52" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))">'
+    + '<path d="M23 51 L15 40 H6 A4 4 0 0 1 2 36 V6 A4 4 0 0 1 6 2 H40 A4 4 0 0 1 44 6 V36 A4 4 0 0 1 40 40 H31 Z" fill="#C81E1E" stroke="#fff" stroke-width="2"/>'
+    + '<path d="M23 8 L37 20 H33 V34 H13 V20 H9 Z" fill="#fff"/>'
+    + '<rect x="20" y="25" width="6" height="9" fill="#C81E1E"/><rect x="14.5" y="22" width="4" height="4" fill="#C81E1E"/><rect x="27.5" y="22" width="4" height="4" fill="#C81E1E"/>'
+    + '</svg>' + nameTag + '</div>';
+  L.marker([K.lat, K.lon], {icon: L.divIcon({html: html, className: 'kunde-marker', iconSize: [170, 80], iconAnchor: [85, 51]}), zIndexOffset: 1000, interactive: !!K.popup})
+    .addTo(map).bindPopup(K.popup || '');
+}
 map.fitBounds(B0, {padding: [20, 20]});  // View zuerst setzen, sonst scheitern permanente Tooltips
 const Z0 = map.getZoom(), MOBIL = window.innerWidth < 760;
 function labelCheck() { document.getElementById('map').classList.toggle('nolabels', MOBIL && map.getZoom() < Z0 + 1); }
@@ -264,6 +278,9 @@ def main():
     ap.add_argument("--angebotsnr", default="")
     ap.add_argument("--kunde", default="")
     ap.add_argument("--mail", default="info@handzettelverteiler.de")
+    ap.add_argument("--kunde-standort", default="", help="Kundenstandort 'lat,lon' als Marker (wie build_karte.py)")
+    ap.add_argument("--kunde-name", default="", help="Beschriftung unter dem Kunden-Marker")
+    ap.add_argument("--kunde-popup", default="", help="Popup-Text (HTML) beim Klick auf den Marker")
     ap.add_argument("--leaflet-dir", default="/tmp/leaflet_pkg/node_modules/leaflet/dist")
     a = ap.parse_args()
     data = json.load(open(a.input, encoding="utf-8"))
@@ -274,6 +291,9 @@ def main():
     import re
     plain = re.sub(r"<[^>]+>", "", a.title).replace("&amp;", "&").replace("&ndash;", "–")
     cfg = {"nr": a.angebotsnr, "kunde": a.kunde, "mail": a.mail}
+    if a.kunde_standort:
+        lat, lon = [float(x) for x in a.kunde_standort.split(",")]
+        cfg["standort"] = {"lat": lat, "lon": lon, "name": a.kunde_name, "popup": a.kunde_popup}
     html = (TEMPLATE.replace("__LEAFLET_CSS__", css).replace("__LEAFLET_JS__", js)
             .replace("__TITLE_PLAIN__", plain).replace("__TITLE__", a.title)
             .replace("__ANGEBOTSNR__", f" · Angebot {a.angebotsnr}" if a.angebotsnr else "")
