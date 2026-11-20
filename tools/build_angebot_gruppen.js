@@ -699,6 +699,10 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
   })), totalRow, ...(globalThis.OPT_ROWS || [])] });
 }
 
+// Hinweis unter der Preistabelle (Stefan, 20.11.2026 – Kunde fragte nach der Differenz HH gesamt / HH bewerbbar).
+// Standard bei jedem Angebot; eigener Text: "keine_werbung_hinweis": "...", abschalten: "keine_werbung_hinweis": false
+const KW_HINWEIS = config.keine_werbung_hinweis === false ? null : (config.keine_werbung_hinweis || "Die Differenz zwischen „HH gesamt“ und „HH bewerbbar“ sind Haushalte mit dem Hinweis „Keine Werbung“ am Briefkasten – dort werfen wir nicht ein, und Sie bezahlen sie nicht.");
+
 const page4Alt = [
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
@@ -710,7 +714,8 @@ const page4Alt = [
   }),
   p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise:`, { after: 200 }),
   priceTable(),
-  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 200, before: 120 }),
+  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 60, before: 120 }),
+  ...(KW_HINWEIS ? [p(KW_HINWEIS, { italics: true, color: GREY, size: 18, after: 200 })] : []),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   p(einePLZ ? `Für die An-/Abfahrt berechnen wir einmalig ${anfahrtGesamt},- Euro (alle Ortsteile liegen in PLZ ${plzListe}).` : (config.anfahrt_text || `Für die An-/Abfahrt berechnen wir je Verteil-PLZ insgesamt 35,- Euro (bei ${areas.length} PLZ-Regionen zusammen ${fmtHH(areas.reduce((s, a) => s + (a.anfahrt ?? 35), 0))},- Euro).`), { after: 200 }),
   p(config.teilmengen_text || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`, { after: 0 }),
@@ -742,7 +747,8 @@ const page4Neu = [
   }),
   p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise – An-/Abfahrt bereits eingerechnet:`, { after: 200 }),
   priceTable(),
-  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 280, before: 120 }),
+  p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 60, before: 120 }),
+  ...(KW_HINWEIS ? [p(KW_HINWEIS, { italics: true, color: GREY, size: 18, after: 280 })] : []),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
   ...optionBox(),
   p(opt ? (config.teilmengen_text_neu || `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)
