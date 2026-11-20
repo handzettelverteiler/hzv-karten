@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Baut auswahl.json fuer tools/build_karte_auswahl.py.
---rows: Angebots-areas (je Ortsteil: plz, id, gebiet, hh_bewerbbar, preis_verteilung); gebiet "…Innenstadt…" = PLZ minus benannte Ortsteile
+--rows: Angebots-areas (je Ortsteil: plz, id, gebiet, hh_bewerbbar, preis_verteilung); gebiet "…Innenstadt…" = PLZ minus benannte Ortsteile;
+  optional "ganz": true = ganze PLZ-Flaeche, "ortsteil": OSM-Name fuer die Suche, wenn gebiet abweicht
 --ortsteile: Ausgabe von decode.py ({"Stadt|Ortsteil": [ring,...]})
 --stadt-je-plz: JSON {"32457": "Porta Westfalica"} fuer PLZ, deren Ortsteile unter einer anderen Stadt stehen (Standard: erste Stadt im Ortsteil-Schluessel, der passt)
 """
@@ -24,11 +25,14 @@ for k in ot:
 out = []
 for r in rows:
     name = r["gebiet"]
-    if "Innenstadt" in name or r.get("rest"):
+    if r.get("ganz"):
+        # ganz: Zeile deckt die ganze PLZ ab (eine Zeile je PLZ)
+        g = P[r["plz"]]; ort = r.get("ort") or name.split(" (")[0]
+    elif "Innenstadt" in name or r.get("rest"):
         # rest: Hauptort = PLZ-Flaeche minus alle benannten Ortsteile (auch ohne "Innenstadt" im Namen)
         g = P[r["plz"]].difference(allOT); ort = r.get("ort") or name.split("-")[0]
     else:
-        keys = by_name.get(name, [])
+        keys = by_name.get(r.get("ortsteil") or name, [])  # ortsteil: OSM-Name, wenn gebiet abweicht (z. B. "Lechhausen (Nord)")
         # Ortsteil mit groesster Ueberlappung zur PLZ nehmen (gleichnamige Orte in Nachbarstaedten)
         k = max(keys, key=lambda kk: ot[kk].intersection(P[r["plz"]]).area)
         g = ot[k].intersection(P[r["plz"]]); ort = k.split("|")[0]
