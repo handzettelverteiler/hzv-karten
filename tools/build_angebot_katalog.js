@@ -460,7 +460,7 @@ const page2Neu = [
   bullet("Seit über 20 Jahren zuverlässig im Einsatz."),
   bullet("Ausschließlich erwachsene Verteiler, bezahlt nach dem gesetzlichen Mindestlohn."),
   bullet("Stichprobendokumentation und/oder Fotos nach jeder Verteilung."),
-  ...(kartenLink ? [bullet("Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
+  ...(kartenLink ? [bullet(config.karten_link_text || "Ihr Verteilgebiet als interaktive Karte zum Zoomen:"), linkPara(kartenLink, { after: 60, size: 19 })] : []),
   para([run("Gut zu wissen", { bold: true, size: 22, color: "555555" })], { before: 280, after: 100 }),
   smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
   smallBullet("Wo kein Zugang besteht, erfolgt kein Einwurf – etwa bei verschlossenen Häusern, wenn nach Klingeln niemand öffnet, bei unzugänglichen Briefkästen oder Grundstücken mit „Vorsicht Hund“."),
@@ -503,7 +503,7 @@ const page3bChildren = [
   stadtIllustrationPara(true),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { after: 240 },
-    children: [new TextRun({ text: `Beispiel: PLZ-Region ${bArea.plz} – ${bArea.gebiet}`, bold: true, color: RED, size: 32, font: FONT })],
+    children: [new TextRun({ text: config.beispiel_titel || `Beispiel: PLZ-Region ${bArea.plz} – ${bArea.gebiet}`, bold: true, color: RED, size: 32, font: FONT })],
   }),
   p(
     config.beispiel_text ||
@@ -668,9 +668,9 @@ function kCell(text, w, o = {}) {
     children: [new Paragraph({ alignment: o.align || AlignmentType.LEFT, keepNext: !!o.keepNext,
       children: [new TextRun({ text: String(text), bold: !!o.bold, italics: !!o.italics, size: o.size || 16, font: FONT, color: o.color || "222222" })] })] });
 }
-const KW = (() => { const fixed = [420, 700, 2560, 980, 940, 640]; const rest = 10100 - fixed.reduce((s, w) => s + w, 0); const pw = Math.floor(rest / KLASSEN.length); return [...fixed, ...KLASSEN.map((_, i) => i === KLASSEN.length - 1 ? rest - pw * (KLASSEN.length - 1) : pw)]; })();
+const KW = (() => { const fixed = config.katalog_breiten || [420, 700, 2560, 980, 940, 640]; const rest = 10100 - fixed.reduce((s, w) => s + w, 0); const pw = Math.floor(rest / KLASSEN.length); return [...fixed, ...KLASSEN.map((_, i) => i === KLASSEN.length - 1 ? rest - pw * (KLASSEN.length - 1) : pw)]; })();
 function kHeader() {
-  const h = ["☐", "PLZ", "Gebiet", "HH bew.", "HH ges.", "Quote", ...KLASSEN];
+  const h = [config.katalog_kopf_wahl || "✓", "PLZ", "Gebiet", "HH bew.", "HH ges.", "Quote", ...KLASSEN];
   return new TableRow({ tableHeader: true, cantSplit: true, children: h.map((t, i) => kCell(t, KW[i], { fill: RED, color: "FFFFFF", bold: true, size: 15, pad: 70, align: i >= 3 ? AlignmentType.RIGHT : (i === 0 ? AlignmentType.CENTER : AlignmentType.LEFT), borders: NO_BORDERS })) });
 }
 function katalogTabelle(g, gi) {
@@ -718,11 +718,11 @@ function katalogTeil() {
   out.push(uebersichtTabelle());
   (config.katalog_hinweise || []).forEach((t, i) => out.push(smallBullet(t)));
   GRUPPEN.forEach((g, gi) => {
-    out.push(new Paragraph({ pageBreakBefore: true, spacing: { after: 120 }, children: [run(`Auswahlliste ${g}`, { bold: true, color: RED, size: 28 })] }));
+    out.push(new Paragraph({ pageBreakBefore: config.katalog_umbruch === false ? gi === 0 : true, keepNext: true, spacing: { before: (config.katalog_umbruch === false && gi > 0) ? 320 : 0, after: 120 }, children: [run(`Auswahlliste ${g}`, { bold: true, color: RED, size: config.katalog_umbruch === false ? 24 : 28 })] }));
     if (gi === 0 && config.auswahl_intro) out.push(p(config.auswahl_intro, { size: 19, color: "444444", after: 140 }));
     out.push(katalogTabelle(g, gi));
   });
-  out.push(p("Haushaltszahlen sind auf volle 50 gerundet. ☐ = zum Ankreuzen Ihrer Auswahl je Aktion.", { italics: true, color: GREY, size: 17, before: 160, after: 0 }));
+  out.push(p(config.katalog_fussnote || "Haushaltszahlen sind auf volle 50 gerundet. Kästchen = zum Ankreuzen Ihrer Auswahl je Aktion.", { italics: true, color: GREY, size: 17, before: 160, after: 0 }));
   return out;
 }
 const page4Neu = [
