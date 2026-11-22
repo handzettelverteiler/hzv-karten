@@ -15,7 +15,7 @@ URL-Parameter: ?shot=1 (Sidebar aus), ?shot=1&plz=83301 (eine PLZ blau, Zoom)
 """
 import argparse, json
 
-FARBEN = ["#C81E1E", "#1F6FB2", "#2E8B57", "#D17A00", "#7B3FA0", "#00838F", "#8D6E63"]
+FARBEN = ["#C81E1E", "#1F6FB2", "#2E8B57", "#D17A00", "#7B3FA0", "#00838F", "#8D6E63", "#AD1457", "#558B2F", "#455A64"]
 
 TEMPLATE = r"""<!DOCTYPE html>
 <html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +31,7 @@ h1{margin:0 0 8px;font-size:18px;line-height:1.3}.lede{font-size:13px;color:#555
 .sum{background:#12463C;color:#fff;border-radius:8px;padding:14px;margin-bottom:12px}.sum .cap{font-size:12px;opacity:.8;margin-bottom:6px}
 .sum .row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}.sum .row.big{font-size:15px;font-weight:700;border-top:1px solid rgba(255,255,255,.3);margin-top:4px;padding-top:6px}
 .sum .note{font-size:11px;opacity:.75;margin-top:6px;line-height:1.4}
+.ziel{margin-top:8px;font-size:12px;line-height:1.4}.ziel .bar{height:7px;background:rgba(255,255,255,.25);border-radius:4px;overflow:hidden;margin-bottom:4px}.ziel .bar i{display:block;height:100%;width:0;background:#9BE15D}.ziel.over .bar i{background:#FFB74D}
 .btn{display:block;width:100%;text-align:center;border:0;border-radius:6px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:none}
 .btn.w{background:#fff;color:#12463C}.btn.g{background:#eee;color:#333}
 .kreis{border:1px solid #e5e2dd;border-radius:8px;margin-bottom:8px;overflow:hidden}
@@ -57,6 +58,7 @@ body.shot aside{display:none}body.shot .leaflet-control-zoom{display:none}
 <div id="sPreise"></div>
 <div class="row"><span>An-/Abfahrt (35 € je PLZ)</span><span id="sAnf">0 €</span></div>
 <div class="row big" id="sTotRow" style="display:none"><span>Gesamt inkl. An-/Abfahrt</span><span id="sTot">0 €</span></div>
+<div class="ziel" id="sZiel" style="display:none"><div class="bar"><i id="sZielBar"></i></div><div id="sZielTxt"></div></div>
 <div class="note">__NOTE__</div>
 <a class="btn w" id="mail" href="#">Auswahl per E-Mail senden</a>
 <button class="btn g" id="clear">Auswahl leeren</button></div>
@@ -65,7 +67,7 @@ body.shot aside{display:none}body.shot .leaflet-control-zoom{display:none}
 </aside><div id="map"></div></div>
 <script>__LEAFLET_JS__</script>
 <script>
-const ANR='__ANR__', KPOS=__KPOS__, PRESEL=__PRESEL__;
+const ANR='__ANR__', KPOS=__KPOS__, PRESEL=__PRESEL__, ZIEL=__ZIEL__;
 const DATA=__DATA__, KLASSEN=__KLASSEN__, FARBEN=__FARBEN__, MAIL='__MAIL__', KUNDE='__KUNDE__';
 const QS=new URLSearchParams(location.search), SHOT=QS.get('shot')==='1';
 let HL=QS.get('plz')||'__HIGHLIGHT_PLZ__'; if(HL.indexOf('__')===0) HL='';
@@ -99,7 +101,10 @@ function upd(){const A=DATA.filter(a=>sel.has(a.plz));
  document.getElementById('sPreise').innerHTML=KLASSEN.map((k,i)=>`<div class="row big"><span>Verteilung ${k}</span><span>${fmtE(A.reduce((s,a)=>s+a.preise[i],0))}</span></div>`).join('');
  document.getElementById('sAnf').textContent=fmtE(A.reduce((s,a)=>s+a.anfahrt,0));
  if(KLASSEN.length===1){document.getElementById('sTotRow').style.display='';document.getElementById('sTot').textContent=fmtE(A.reduce((s,a)=>s+a.preise[0]+a.anfahrt,0));}
- const body='Guten Tag,\n\nfür unsere nächste Verteilung wählen wir folgende PLZ-Regionen ('+A.length+' PLZ, '+fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0))+' Haushalte):\n\n'+A.map(a=>a.plz+' '+a.gebiet).join('\n')+(KLASSEN.length>1?'\n\nProspektgewicht: ___ g':'')+'\n\nWunschzeitraum: ___\n\nViele Grüße\n'+KUNDE;
+ if(ZIEL>0){const hh=A.reduce((s,a)=>s+a.hh_bewerbbar,0), z=document.getElementById('sZiel'); z.style.display='';
+  z.classList.toggle('over',hh>ZIEL); document.getElementById('sZielBar').style.width=Math.min(100,hh/ZIEL*100)+'%';
+  document.getElementById('sZielTxt').textContent=hh===0?'Ihre Auflage: '+fmtHH(ZIEL)+' Flyer – wählen Sie passende Gebiete.':(hh<=ZIEL?'Ihre '+fmtHH(ZIEL)+' Flyer: noch '+fmtHH(ZIEL-hh)+' frei':'Auswahl liegt '+fmtHH(hh-ZIEL)+' Haushalte über Ihren '+fmtHH(ZIEL)+' Flyern – wir verteilen dann anteilig oder Sie erhöhen die Auflage.');}
+ const body='Guten Tag,\n\nfür unsere nächste Verteilung wählen wir folgende PLZ-Regionen ('+A.length+' PLZ, '+fmtHH(A.reduce((s,a)=>s+a.hh_bewerbbar,0))+' Haushalte):\n\n'+A.map(a=>a.plz+' '+a.gebiet).join('\n')+(KLASSEN.length>1?'\n\nProspektgewicht: ___ g':'')+(ZIEL>0?'\n\nAuflage: '+fmtHH(ZIEL)+' Flyer':'')+'\n\nWunschzeitraum: ___\n\nViele Grüße\n'+KUNDE;
  document.getElementById('mail').href='mailto:'+MAIL+'?subject='+encodeURIComponent((ANR?'Angebot '+ANR+' – ':'')+'Gebietsauswahl Verteilung '+KUNDE)+'&body='+encodeURIComponent(body);}
 const kEl=document.getElementById('kreise');
 kreise.forEach(k=>{const A=DATA.filter(a=>a.kreis===k); const d=document.createElement('div'); d.className='kreis'+(kreise.length===1?' open':'');
@@ -132,6 +137,7 @@ def main():
     ap.add_argument("--kunde-standort", default=""); ap.add_argument("--kunde-name", default=""); ap.add_argument("--kunde-popup", default="")
     ap.add_argument("--alle-vorwaehlen", action="store_true", help="alle PLZ beim Öffnen ausgewählt (Kunde wählt ab)")
     ap.add_argument("--highlight-plz", default=""); ap.add_argument("--hide-sidebar", action="store_true")
+    ap.add_argument("--ziel", type=int, default=0, help="gewünschte Auflage des Kunden: Fortschrittsbalken in der Summenbox + Auflage im Mailtext")
     a = ap.parse_args()
     data = json.load(open(a.input, encoding="utf-8"))
     keep = ["plz", "gebiet", "kreis", "hh_bewerbbar", "hh_gesamt", "quote", "preise", "anfahrt", "geometry"]
@@ -143,7 +149,7 @@ def main():
         "__TITLE_PLAIN__": a.title.replace("&ndash;", "-"), "__TITLE__": a.title, "__LEDE__": a.lede,
         "__SIDEBAR_DISPLAY__": "none" if a.hide_sidebar else "block", "__STAND__": a.stand,
         "__KLASSEN__": json.dumps(a.klassen, ensure_ascii=False), "__FARBEN__": json.dumps(FARBEN),
-        "__ANR__": a.angebotsnr, "__NOTE__": a.note, "__PRESEL__": "true" if a.alle_vorwaehlen else "false",
+        "__ANR__": a.angebotsnr, "__ZIEL__": str(a.ziel), "__NOTE__": a.note, "__PRESEL__": "true" if a.alle_vorwaehlen else "false",
         "__KPOS__": json.dumps({"lat": float(a.kunde_standort.split(",")[0]), "lon": float(a.kunde_standort.split(",")[1]), "name": a.kunde_name, "popup": a.kunde_popup}, ensure_ascii=False) if a.kunde_standort else "null",
         "__MAIL__": a.mail, "__KUNDE__": a.kunde.replace("'", "\\'"), "__HIGHLIGHT_PLZ__": a.highlight_plz,
     }
