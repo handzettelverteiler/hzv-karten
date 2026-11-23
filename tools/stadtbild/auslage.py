@@ -19,9 +19,9 @@ def base(src):
     d.polygon([(930, top(930)), (1060, top(1060)), (1060, bot(1060)), (930, bot(930))], fill=(184, 219, 235))
     return im
 
-def theke():
+def theke(slug=""):
     st = f'stroke="{L}" stroke-width="4" stroke-linejoin="round"'
-    g = f'<path d="M987,418 L979,600 L1028,600 L1019,418" fill="#dddcd8" stroke="{L}" stroke-width="3.5"/>'           # Fernsehturm-Schaft hinter der Theke
+    g = '' if slug != 'Berlin' else f'<path d="M987,418 L979,600 L1028,600 L1019,418" fill="#dddcd8" stroke="{L}" stroke-width="3.5"/>'           # Fernsehturm-Schaft hinter der Theke
     g += f'<rect x="925" y="618" width="300" height="232" fill="{WOOD}" {st}/>'
     for x in (945, 1080):
         g += f'<rect x="{x}" y="645" width="120" height="180" rx="6" fill="{PANEL}" stroke="{L}" stroke-width="3"/>'
@@ -42,8 +42,8 @@ def theke():
     g += f.check(1180, 478, 24)
     return g
 
-def scene():
-    g = theke()
+def scene(slug=""):
+    g = theke(slug)
     fig = s.strich(CX, BLUE, BLUE_D, hand_to=(1232, 606), elbow=(1252, 530))
     i = fig.index(f'<path d="M{CX-30},246')
     fig = fig[:i] + fig[fig.index('/>', i) + 2:]
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     os.makedirs(fn.OUT, exist_ok=True)
     for slug in sys.argv[1:]:
         src = os.path.join("/home/claude/hzv-karten/staedte", f"Stadt_{slug}.jpg")
-        fn.compose(base(src), scene(), f"Stadt_{slug}_Auslage.jpg"); print(slug)
+        fn.compose(base(src), scene(slug), f"Stadt_{slug}_Auslage.jpg"); print(slug)
