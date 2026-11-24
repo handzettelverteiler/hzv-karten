@@ -1,5 +1,4 @@
 {
- "_vorlage": "Standard-Angebot B2B-Dialogpost (Firmenadressen-Postkarten-Mailing), erstmals 2611-135 RR42 (24.11.2026), Basis Angebot Mind Square 24.08.2026. Kopieren, Kunde/Nr./Datum/Selektion/Preise anpassen, mit tools/build_angebot.js bauen (typ sonder, flyerdruck false). Bilder: post_illustration.png + postkarte_schema.png aus dem Mind-Square-PDF (liegen unter tools/vorlagen/b2b/). Preisstaffel bis zur Freigabe durch Stefan prüfen.",
  "typ": "sonder",
  "layout": "neu",
  "angebotsnummer": "2611-135",
@@ -52,7 +51,7 @@
   ],
   [
    "Versandtermin",
-   "nach Ihrem Wunsch – wir stimmen ihn direkt mit Ihnen ab"
+   "nach Absprache – wir stimmen den voraussichtlichen Termin direkt mit Ihnen ab"
   ],
   [
    "Nachweis",
@@ -74,11 +73,11 @@
   ],
   [
    "Beauftragen und Druckdaten senden",
-   "Eine kurze Antwort per E-Mail genügt. Danach senden Sie uns die Druckdaten Ihrer Postkarte – wir prüfen sie kostenlos auf Post-Tauglichkeit."
+   "Eine kurze Antwort per E-Mail genügt. Danach senden Sie uns druckfähige PDF-Daten Ihrer Postkarte – wir prüfen sie kostenlos auf Post-Tauglichkeit. Mehrere Motive? Bitte je Version eine eindeutige Nummer (mind. 6 pt) ins Druckbild setzen."
   ],
   [
-   "Druck und Adressierung",
-   "Wir drucken Ihre Karten, bringen die Firmenanschriften auf, sortieren portooptimiert und kündigen die Sendung bei der Deutschen Post an."
+   "Vorkasse, Druck und Adressierung",
+   "Nach Zahlungseingang (spätestens 7 Werktage vor Produktionsbeginn) drucken wir Ihre Karten, bringen die Firmenanschriften auf, sortieren portooptimiert und kündigen die Sendung bei der Deutschen Post an."
   ],
   [
    "Einlieferung und Zustellung",
@@ -207,26 +206,34 @@
    ]
   },
   {
-   "titel": "Ergänzende Bedingungen für Dialogpost-Mailings",
+   "titel": "Ergänzende Bedingungen für Print-Mailings",
    "bloecke": [
     {
      "typ": "text",
-     "text": "Für dieses Mailing gelten unsere Allgemeinen Geschäftsbedingungen (siehe Anhang) mit folgenden Ergänzungen, die bei Abweichungen vorgehen:"
+     "text": "Für dieses Mailing gelten unsere Allgemeinen Geschäftsbedingungen (siehe Anhang) mit folgenden Ergänzungen, die bei Abweichungen vorgehen:",
+     "after": 100
     },
     {
      "typ": "bullets",
+     "size": 18,
      "items": [
-      "Die HZV handzettelverteiler GmbH übernimmt Adressbereitstellung, Druck, Konfektionierung, Koordination und Einlieferung des Mailings. Die Zustellung selbst erbringt die Deutsche Post AG; dafür gelten deren AGB und Beförderungsbedingungen.",
-      "Unsere Leistung ist erfüllt, sobald die vollständigen und vorschriftsgemäßen Sendungen gegen Einlieferungsbeleg an die Deutsche Post übergeben sind. Für Verzögerungen, Verluste oder Fehlzustellungen im Zustellprozess der Post haften wir nicht.",
-      "Die Firmenadressen werden ausschließlich für den einmaligen Versand dieses Mailings gemietet und dem Auftraggeber nicht übergeben. Jede weitere Nutzung ist untersagt; daraus entstehende Vertragsstrafen und Schäden trägt der Auftraggeber. Adressen von Firmen, die auf das Mailing reagieren, darf der Auftraggeber frei nutzen.",
-      "Firmenadressen unterliegen einer natürlichen Fluktuation (Umzug, Geschäftsaufgabe). Einzelne unzustellbare Sendungen sind daher übliche Streuverluste und kein Mangel.",
-      "Der Auftraggeber ist für Inhalt und Gestaltung der Karte verantwortlich (vgl. § 7 AGB). Werden Format-, Gewichts- oder Inhaltsvorgaben der Deutschen Post aufgrund der gelieferten Druckdaten nicht eingehalten, trägt der Auftraggeber entstehende Mehrkosten (z. B. höheres Porto).",
-      "Ändert die Deutsche Post das Porto über die bereits berücksichtigte Erhöhung zum 01.01.2027 hinaus, dürfen wir die Differenz weitergeben.",
-      "Die Rechnung stellen wir nach Auftragserteilung; der Gesamtbetrag ist vor Druck und Einlieferung fällig."
+      "Leistung: Druck, Adressierung, Konfektionierung und Einlieferung erbringen wir gemeinsam mit unserem spezialisierten Produktionspartner. Die Zustellung erbringt die Deutsche Post AG nach ihren AGB und Beförderungsbedingungen.",
+      "Vertragsschluss: Der Auftrag kommt mit unserer schriftlichen Auftragsbestätigung zustande und steht unter dem Vorbehalt der Papierverfügbarkeit. Werden wir trotz rechtzeitiger Bestellung von unseren Lieferanten nicht beliefert, können wir zurücktreten; bereits geleistete Zahlungen erstatten wir unverzüglich.",
+      "Preise: Die Preise gelten für die angebotenen Auftragsdaten (Menge, Format, Papier, Selektion). Ändern sich diese oder erhöht die Deutsche Post das Porto über die berücksichtigte Erhöhung zum 01.01.2027 hinaus, passen wir den Preis entsprechend an.",
+      "Zahlung: Der Gesamtbetrag ist per Vorkasse fällig, spätestens 7 Werktage vor Produktionsbeginn. Vor Zahlungseingang beginnt die Produktion nicht.",
+      "Termine: Produktions- und Versandtermine sind voraussichtliche Termine. Höhere Gewalt, Streik, Betriebs- oder Verkehrsstörungen und Rohstoff- oder Papiermangel – auch bei unseren Lieferanten – verlängern die Fristen um die Dauer der Behinderung. Bei leicht fahrlässig verursachter Verzögerung ist unsere Haftung auf 5 % des Auftragswerts begrenzt.",
+      "Verschiebung: Verschiebt der Auftraggeber den Versand nach Druckfreigabe um mehr als zwei Wochen, können wir Lagergeld von 0,5 % des Auftragswerts je angefangenem Monat berechnen, höchstens 5 %.",
+      "Druckdaten: Druckfähige PDF-Daten (4/4-farbig, Euroskala, 2 mm Beschnitt) stellt der Auftraggeber. Bei mehreren Motiven ist je Version eine eindeutige Nummer (mind. 6 pt) im Druckbild anzubringen. Vom Auftraggeber gestellte Daten und Listen sichert er selbst; dafür haften wir nur bei Vorsatz und grober Fahrlässigkeit.",
+      "Qualität und Mängel: Es gelten die Qualitätsnormen des ProzessStandard Offsetdruck (PSO); Farb- und Maßabweichungen in diesem Rahmen sowie unerhebliche Abweichungen sind kein Mangel. Mängel am Druck sind spätestens 7 Werktage nach Einlieferung schriftlich anzuzeigen. Bei berechtigten Mängeln leisten wir nach unserer Wahl Nachbesserung oder Preisnachlass; eine Neuherstellung schulden wir nicht.",
+      "Erfüllung: Unsere Leistung ist erfüllt und die Gefahr geht über, sobald die Sendungen gegen Einlieferungsbeleg an die Deutsche Post übergeben sind. Für Verzögerungen, Verluste oder Fehlzustellungen im Zustellprozess der Post haften wir nicht.",
+      "Adressen: Die Firmenadressen werden ausschließlich für den einmaligen Versand dieses Mailings gemietet und dem Auftraggeber nicht übergeben. Jede weitere Nutzung ist untersagt; daraus entstehende Vertragsstrafen und Schäden trägt der Auftraggeber. Adressen von Firmen, die auf das Mailing reagieren, darf der Auftraggeber frei nutzen. Einzelne unzustellbare Sendungen (Umzug, Geschäftsaufgabe) sind übliche Streuverluste und kein Mangel.",
+      "Inhalt: Der Auftraggeber ist für Inhalt und Gestaltung der Karte verantwortlich (vgl. § 7 AGB) und stellt uns von Ansprüchen Dritter frei. Bei Zweifeln an der Rechtmäßigkeit der Inhalte dürfen wir die Ausführung verweigern. Mehrkosten durch nicht eingehaltene Vorgaben der Deutschen Post (z. B. höheres Porto) trägt der Auftraggeber."
      ]
     }
    ]
   }
  ],
- "vorlauf_text": "Damit wir Selektion, Druck und die Ankündigung bei der Deutschen Post optimal planen können, beauftragen Sie uns bitte möglichst 20 Werktage vor dem gewünschten Versandtermin. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – in dringenden Fällen können wir auch kurzfristiger reagieren."
+ "vorlauf_text": "Damit wir Papier, Druck und die Ankündigung bei der Deutschen Post rechtzeitig einplanen können, beauftragen Sie uns bitte möglichst 20 Werktage vor dem gewünschten Versandtermin. Der Auftrag steht unter dem Vorbehalt der Papierverfügbarkeit, die wir mit der Auftragsbestätigung prüfen. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – in dringenden Fällen können wir auch kurzfristiger reagieren.",
+ "zahlung_text": "Die Rechnung stellen wir nach der Auftragserteilung aus. Der Gesamtbetrag ist per Vorkasse fällig, spätestens 7 Werktage vor Produktionsbeginn. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.",
+ "_vorlage": "Standard-Angebot B2B-Dialogpost (Firmenadressen-Postkarten-Mailing), erstmals 2611-135 RR42 (24.11.2026), Basis Angebot Mind Square 24.08.2026. Kopieren, Kunde/Nr./Datum/Selektion/Preise anpassen, mit tools/build_angebot.js bauen (typ sonder, flyerdruck false). Bilder: post_illustration.png + postkarte_schema.png aus dem Mind-Square-PDF (liegen unter tools/vorlagen/b2b/). Preisstaffel bis zur Freigabe durch Stefan prüfen. Bedingungen-Seite und Zahlung (Vorkasse 7 WT vor Produktion) an die AGB von Schneider Direktmarketing (Produktionspartner, Stand 2017) angepasst – Stefan 24.11.2026."
 }

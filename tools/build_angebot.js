@@ -888,7 +888,7 @@ const page6Neu = [
   p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot${angebotsNr ? " " + angebotsNr : ""}“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und ${config.zeitraum_wort || "Verteilzeitraum"} anschließend schriftlich.`, { after: 200 }),
   p(config.vorlauf_text || `Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
   kontaktBox(),
-  p(`Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }),
+  p(config.zahlung_text || `Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }), // config.zahlung_text: z. B. Vorkasse x Werktage vor Produktion (B2B-Dialogpost, Schneider-AGB)
   p(`Dieses Angebot ist gültig bis ${gueltigBis}.`, { bold: true, after: 380 }),
   p("Lieber klassisch? Sie können diese Seite auch unterschrieben zurücksenden.", { size: 19, color: GREY, after: 420 }),
   new Paragraph({
