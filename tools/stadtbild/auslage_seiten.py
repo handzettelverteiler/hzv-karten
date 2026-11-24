@@ -74,11 +74,24 @@ def pin(x, y, n=None, s=1.0):
     return g + '</g>'
 
 
-def figur(cx, hand_to, elbow, flyer=True, cap=True):
-    fig = s.strich(cx, BLUE, BLUE_D, hand_to=hand_to, elbow=elbow)
+def figur(cx, hand_to, elbow, cap=True, walk=False, arm2=None, daumen=False, extra="", lean=0):
+    """Strichmännchen mit Pose: walk = Schrittstellung, arm2 = Punkte des zweiten Arms (statt Taschenarm),
+    daumen = Daumen hoch an arm2, extra = Dinge in der Hand (drehen mit), lean = Neigung in Grad um die Füße."""
+    fig = s.strich(cx, BLUE, BLUE_D, hand_to=hand_to, elbow=elbow, walk=walk)
     i = fig.index(f'<path d="M{cx-30},246')
     fig = fig[:i] + fig[fig.index('/>', i) + 2:]
-    g = fig + bc.brauen(cx) + (bc.cap_schraeg(cx) if cap else "")
+    if arm2:
+        old = f'<path d="M{cx+58},440 L{cx+96},520 L{cx+120},560"'
+        j = fig.index(old)
+        d = "M" + " L".join(f"{x},{y}" for x, y in arm2)
+        fig = fig[:j] + f'<path d="{d}"' + fig[j + len(old):]
+        if daumen:
+            hx, hy = arm2[-1]
+            fig += (f'<circle cx="{hx}" cy="{hy}" r="14" fill="#fff" stroke="{L}" stroke-width="3.5"/>'
+                    f'<rect x="{hx-6}" y="{hy-36}" width="13" height="28" rx="6.5" fill="#fff" stroke="{L}" stroke-width="3.5"/>')
+    g = fig + bc.brauen(cx) + (bc.cap_schraeg(cx) if cap else "") + extra
+    if lean:
+        g = f'<g transform="rotate({lean} {cx} 836)">' + g + '</g>'
     return g
 
 
@@ -114,8 +127,9 @@ def strategie():
     g += f.check(1000, 236, 24)
     # Figur mit Flyerstapel
     cx = 1330
-    g += figur(cx, (1228, 560), (1240, 500))
-    g += bc.ihr_flyer(1204, 512, -6) + bc.ihr_flyer(1214, 518, 4) + bc.hand_greift(1232, 560, 0, 0.8)
+    g += figur(cx, (1206, 520), (1236, 470), walk=True, lean=-4,
+               arm2=[(cx + 58, 440), (cx + 104, 500), (cx + 150, 470)],
+               extra=bc.ihr_flyer(1182, 472, -12) + bc.ihr_flyer(1194, 478, -2) + bc.hand_greift(1210, 520, -10, 0.8))
     g += f.bubble(1060, 96, 500, "Viele Lokationen auf engem Raum!", 25)
     return render(g, "Auslage_Strategie.jpg")
 
@@ -157,8 +171,8 @@ def poster():
     g += f.check(x + 300, top + 200, 26)
     # Figur mit Tesafilm-Rolle, Hand am Poster
     cx = 1330
-    g += figur(cx, (1012, 548), (1180, 590))
-    g += f'<circle cx="1004" cy="540" r="22" fill="#eaf6ff" stroke="{L}" stroke-width="4"/><circle cx="1004" cy="540" r="10" fill="#fff" stroke="{L}" stroke-width="3"/>'
+    tape = f'<circle cx="1026" cy="470" r="22" fill="#eaf6ff" stroke="{L}" stroke-width="4"/><circle cx="1026" cy="470" r="10" fill="#fff" stroke="{L}" stroke-width="3"/>'
+    g += figur(cx, (1034, 476), (1170, 470), walk=True, lean=-7, extra=tape)
     g += f.bubble(1000, 96, 560, "Mit Erlaubnis – direkt angebracht!", 25)
     return render(g, "Auslage_Poster.jpg")
 
@@ -198,8 +212,9 @@ def nachweis():
     g += '</g>'
     g += f.check(1240, 450, 26)
     cx = 1330
-    g += figur(cx, (1214, 560), (1250, 520))
-    g += bc.hand_greift(1216, 560, 0, 0.8)
+    g += figur(cx, (1214, 560), (1250, 520), lean=3,
+               arm2=[(cx + 58, 440), (cx + 118, 392), (cx + 126, 330)], daumen=True,
+               extra=bc.hand_greift(1216, 560, 0, 0.8))
     g += f.bubble(1000, 96, 560, "Gestempelt &amp; dokumentiert!", 25)
     return render(g, "Auslage_Nachweis.jpg")
 
