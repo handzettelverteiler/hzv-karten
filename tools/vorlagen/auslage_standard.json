@@ -1,0 +1,315 @@
+{
+ "_vorlage": "Standard-Angebot Auslagenverteilung (Stefan 24.11.2026, Basis: Angebot Publix gGmbH 17.08.2026 + 2611-132 mű Berlin). Kopieren, <...> ersetzen, mit tools/build_angebot.js bauen. Regeln: Staffel 50-1000 Lokationen 275-4.510 EUR ohne Anfahrt; Posteraushang optional = Paketpreis +10 %, Hinweis realistisch nur 10-15 % der Lokationen, Verteiler haben Tesafilm; unter der Karte: 50 Lokationen = ein Bezirk/Stadtteil; Illustrationen staedte/auslage/ (Strategie, Poster, Nachweis) IMMER oben auf den Zusatzseiten, Nachweis-Seite zusätzlich Stempel-Foto; Flyerdruck A5/A4/DIN lang je 1.000 (WMD x 1,3). Poster-Seite + Poster-Spalte/-Zeilen weglassen, wenn kein Posteraushang gewünscht.",
+ "typ": "sonder",
+ "angebotsnummer": "<JJMM-NN>",
+ "angebotsdatum": "<TT.MM.JJJJ>",
+ "gueltig_bis": "<TT.MM.JJJJ + 3 Monate>",
+ "kunde": {
+  "name": "<Firma laut Impressum>",
+  "zusatz": [
+   "z. Hd. <Ansprechpartner>"
+  ],
+  "strasse": "<Straße>",
+  "ort": "<PLZ Ort>"
+ },
+ "stadt": "<Stadt>",
+ "werbemittel": "Flyer",
+ "areas": [],
+ "stadt_illustration": "/home/claude/hzv-karten/staedte/Stadt_<Slug>_Auslage.jpg",
+ "map_image": "<Karten-Screenshot (Chrome, ?shot=1)>",
+ "karten_titel": "Einzugsgebiete Berlin",
+ "karten_text": "Ihre Wunschgebiete: <Gebiete>. Die Punkte zeigen beispielhaft die Quartiere mit hoher Lokationsdichte, in denen unsere Verteiler unterwegs sind. Die genauen Schwerpunkte stimmen wir gern mit Ihnen ab.",
+ "karten_link": "<https://handzettelverteiler.github.io/hzv-karten/...>",
+ "endpreis": 302.5,
+ "intro": "vielen Dank für Ihr Interesse an einer zielgerichteten Flyerverteilung mit Posteraushang in <Stadt>. Wir bringen Ihre Werbung direkt dorthin, wo das Leben pulsiert – in hochfrequentierte Quartiere in <Gebiete>. Das Wichtigste sehen Sie hier, alle Details zu Ablauf und Preisen auf den folgenden Seiten.",
+ "blick_rows": [
+  [
+   "Leistung",
+   "Auslage Ihrer Flyer + Aushang Ihrer Poster in Cafés, Bars, Geschäften und Kulturorten"
+  ],
+  [
+   "Verteilgebiet",
+   "<Stadt>: <Gebiete>"
+  ],
+  [
+   "Einstiegspaket",
+   "50 Lokationen / ca. 1.000 Flyer: 275,00 € netto"
+  ],
+  [
+   "Mit Posteraushang",
+   "302,50 € netto",
+   {
+    "bold": true,
+    "red": true,
+    "size": 30,
+    "zusatz": "  Paketpreis + 10 %",
+    "hervorheben": true
+   }
+  ],
+  [
+   "Größere Pakete",
+   "bis 1.000 Lokationen – siehe Preisübersicht"
+  ],
+  [
+   "Zeitraum",
+   "nach Ihrem Wunschtermin – wir stimmen ihn direkt mit Ihnen ab"
+  ],
+  [
+   "Nachweis",
+   "Stempel, Visitenkarte oder Notiz je Lokation"
+  ],
+  [
+   "Beauftragung",
+   "Kurze Antwort per E-Mail genügt",
+   {
+    "bold": true
+   }
+  ]
+ ],
+ "materialien_text": "Ihre Flyer können im Format DIN A6 bis DIN A5 sein. Senden Sie uns Flyer und Poster einfach zu – die Lieferanschrift teilen wir Ihnen nach Auftragserteilung mit. Bitte nennen Sie uns kurz das Format Ihrer Poster. Oder Sie lassen die Flyer bequem über uns drucken – das Angebot dazu finden Sie weiter hinten.",
+ "schritte": [
+  [
+   "Beauftragen",
+   "Eine kurze Antwort per E-Mail genügt. Wir bestätigen Ihnen Auftrag und Zeitraum schriftlich."
+  ],
+  [
+   "Flyer und Poster anliefern",
+   "Sie senden uns Flyer und Poster an die Lieferanschrift aus der Auftragsbestätigung – oder wir drucken die Flyer für Sie."
+  ],
+  [
+   "Auslage und Aushang",
+   "Unsere Verteiler fragen vor Ort persönlich nach, legen Ihre Flyer aus und bringen Ihre Poster bei Erlaubnis direkt mit Tesafilm an."
+  ],
+  [
+   "Nachweis",
+   "Jede Lokation wird dokumentiert – per Stempel, Visitenkarte oder schriftlicher Notiz."
+  ]
+ ],
+ "nachweis_bullet": "Dokumentation jeder Lokation per Stempel, Visitenkarte oder Notiz.",
+ "gut_zu_wissen": [
+  "Posteraushang: Erfahrungsgemäß erlauben realistisch nur 10–15 % der Lokationen einen Aushang, da viele Inhaber Poster ablehnen. Wir fragen an jeder Lokation nach.",
+  "Pro Standort kalkulieren wir im Schnitt mit 20 Flyern und passen die Menge flexibel an die Gegebenheiten vor Ort an.",
+  "Ihr Werbemittel steht für sich – es wird nicht in Zeitungsstapeln oder zwischen fremden Werbebeilagen versteckt.",
+  "Wir achten auf einen passenden Branchenmix ohne direkten Wettbewerb zu Ihrem Angebot."
+ ],
+ "extra_seiten": [
+  {
+   "titel": "Unsere Strategie: Maximale Sichtbarkeit durch Hotspot-Belegung",
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Anstatt feste Routen von Punkt A zu Punkt B abzufahren, konzentrieren sich unsere Verteiler auf ballungsnahe Zonen mit hoher Lokationsdichte. Wir steuern gezielt Stadtbereiche an, in denen viele potenzielle Auslageorte auf engem Raum liegen. Das garantiert Ihnen eine organische Streuung und eine hohe Sichtbarkeit bei minimalem Streuverlust."
+    },
+    {
+     "typ": "text",
+     "text": "Ein Auszug aus dem typischen Branchenmix vor Ort: gastronomische Betriebe (Hotels, Restaurants, Cafés, Bars, Bäckereien), Gesundheits- und Lifestyle-Einrichtungen (Apotheken, Solarien, Yoga-Studios) sowie der vielfältige Einzelhandel, Kulturstätten, Kunsthandel oder Reisebüros. Entscheidend ist für uns: Die Mischung passt und es besteht kein direkter Wettbewerb zu Ihrem Angebot."
+    },
+    {
+     "typ": "heading",
+     "text": "Ablauf & Qualitätssicherung"
+    },
+    {
+     "typ": "bullets",
+     "items": [
+      "Persönliche Absprache: Wir fragen vor Ort aktiv nach, ob Ihre Flyer ausgelegt werden dürfen. Das schafft Akzeptanz bei den Inhabern und schützt Ihre Werbemittel vor vorzeitiger Entsorgung.",
+      "Flexible Mengensteuerung: Pro Standort kalkulieren wir im Schnitt mit 20 Exemplaren. Wir passen die Menge jedoch flexibel an die Gegebenheiten vor Ort an.",
+      "Transparenter Nachweis: Wo immer möglich, sichern wir uns einen Stempel oder eine Visitenkarte der Lokation. Andernfalls wird der Standort für Ihre Auswertung schriftlich festgehalten.",
+      "Formate: Der Flyer hat das Format von DIN A6 bis DIN A5."
+     ]
+    },
+    {
+     "typ": "heading",
+     "text": "Ihre Vorteile auf einen Blick"
+    },
+    {
+     "typ": "text",
+     "text": "Diese Form der Verteilung ist ideal für Events, Ausstellungen, Kurse, Couponaktionen und Produktwerbung. Durch unseren Fokus auf belebte Quartiere erreichen Sie Ihre Zielgruppe in einem entspannten Umfeld (Freizeit, Shopping, Gastronomie). Das Wichtigste: Wir verteilen Ihre Flyer exklusiv."
+    }
+   ],
+   "bild": "/home/claude/hzv-karten/staedte/auslage/Auslage_Strategie.jpg",
+   "bild_max": [
+    440,
+    240
+   ]
+  },
+  {
+   "titel": "Posteraushang (Zusatzleistung)",
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Auf Wunsch fragen unsere Verteiler bei jeder besuchten Lokation zusätzlich nach, ob Ihr Poster aufgehängt werden darf. Die Verteiler haben Tesafilm dabei – bei Erlaubnis wird das Poster direkt vor Ort angebracht."
+    },
+    {
+     "typ": "box",
+     "titel": "Bitte beachten Sie",
+     "zeilen": [
+      "Erfahrungsgemäß lassen sich realistisch nur bei 10–15 % der besuchten Lokationen Poster aufhängen, da Inhaber einen Posteraushang häufig ablehnen.",
+      "Beispiel: Beim Einstiegspaket mit 50 Lokationen sind das erfahrungsgemäß ca. 5–8 Poster. Für alle 50 Poster wären rechnerisch ca. 350–500 besuchte Lokationen nötig.",
+      "Ausgehängte Poster werden wie die Flyer-Lokationen dokumentiert."
+     ]
+    },
+    {
+     "typ": "heading",
+     "text": "Preis"
+    },
+    {
+     "typ": "text",
+     "text": "Für den zusätzlichen Posteraushang berechnen wir einen Aufpreis von 10 % auf den jeweiligen Paketpreis der Auslagenverteilung (siehe Preisübersicht)."
+    }
+   ],
+   "bild": "/home/claude/hzv-karten/staedte/auslage/Auslage_Poster.jpg",
+   "bild_max": [
+    440,
+    240
+   ]
+  },
+  {
+   "titel": "Beispiel Nachweise",
+   "bild": "/home/claude/hzv-karten/staedte/auslage/Auslage_Nachweis.jpg",
+   "bild_max": [
+    440,
+    240
+   ],
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Sie sehen hier ein Beispiel einer Verteilung aus der Vergangenheit. Die Verteiler versuchen überall einen Stempel zu erhalten. Dort, wo wir keinen bekommen oder kein Stempel vorhanden ist, schreiben wir die Lokation auf oder nehmen eine Visitenkarte mit."
+    },
+    {
+     "typ": "bild",
+     "pfad": "/home/claude/hzv-karten/staedte/auslage/Nachweis_Beispiel_Stempel.png",
+     "max": [
+      330,
+      430
+     ]
+    }
+   ]
+  },
+  {
+   "titel": "Preisübersicht",
+   "bild": "/root/.claude/skills/synced/c3077b85-28ea-42b8-8c7c-8552519f6e8a_498e9bce-73ce-48be-8e0b-a3da8ec827b4/hzv-angebot/assets/icon_preisuebersicht.png",
+   "bild_max": [
+    200,
+    160
+   ],
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Für die Verteilung wie oben beschrieben berechnen wir folgende Preise (netto):"
+    },
+    {
+     "typ": "tabelle",
+     "kopf": [
+      "Anzahl Lokationen",
+      "Anzahl Flyer",
+      "Preis Auslage",
+      "mit Posteraushang (+10 %)"
+     ],
+     "breiten": [
+      2300,
+      2300,
+      2600,
+      2900
+     ],
+     "rechts_ab": 2,
+     "gruen": [
+      3
+     ],
+     "zeilen": [
+      [
+       "50",
+       "1.000",
+       "275,00 €",
+       "302,50 €"
+      ],
+      [
+       "100",
+       "2.000",
+       "510,00 €",
+       "561,00 €"
+      ],
+      [
+       "150",
+       "3.000",
+       "755,00 €",
+       "830,50 €"
+      ],
+      [
+       "200",
+       "4.000",
+       "995,00 €",
+       "1.094,50 €"
+      ],
+      [
+       "250",
+       "5.000",
+       "1.220,00 €",
+       "1.342,00 €"
+      ],
+      [
+       "300",
+       "6.000",
+       "1.452,00 €",
+       "1.597,20 €"
+      ],
+      [
+       "400",
+       "8.000",
+       "1.890,00 €",
+       "2.079,00 €"
+      ],
+      [
+       "500",
+       "10.000",
+       "2.310,00 €",
+       "2.541,00 €"
+      ],
+      [
+       "600",
+       "12.000",
+       "2.695,00 €",
+       "2.964,50 €"
+      ],
+      [
+       "700",
+       "14.000",
+       "3.150,00 €",
+       "3.465,00 €"
+      ],
+      [
+       "800",
+       "16.000",
+       "3.610,00 €",
+       "3.971,00 €"
+      ],
+      [
+       "900",
+       "18.000",
+       "3.690,00 €",
+       "4.059,00 €"
+      ],
+      [
+       "1.000",
+       "20.000",
+       "4.510,00 €",
+       "4.961,00 €"
+      ]
+     ]
+    },
+    {
+     "typ": "text",
+     "text": "In den aufgeführten Beträgen sind folgende Kosten enthalten: Tourenplanung, Wartezeiten, Laufwege, Fahrtwege, Parkgebühren und das Reporting der einzelnen Lokationen, in denen ausgelegt werden durfte. Die Lokationen, die wir besucht haben, in denen aber keine Erlaubnis zur Auslage erteilt wurde, sind mit einkalkuliert."
+    }
+   ]
+  }
+ ],
+ "flyerdruck": {
+  "auflage": 1000,
+  "preise": [
+   32,
+   52,
+   67
+  ]
+ },
+ "karten_text_unten": "Hinweis: Bei einer Verteilung von „nur“ 50 Lokationen wird in einem Bezirk bzw. Stadtteil von <Stadt> verteilt. Eine Verteilung über mehrere Bezirke/Stadtteile ist mit den größeren Paketen möglich."
+}

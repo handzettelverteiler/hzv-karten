@@ -754,6 +754,9 @@ const extraSeitenChildren = [];
     else if (b.typ === "hinweis") extraSeitenChildren.push(p(b.text, { italics: true, color: GREY, size: 18, before: 100, after: b.after ?? 160 }));
     else if (b.typ === "tabelle") { extraSeitenChildren.push(extraTabelle(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
     else if (b.typ === "box") { extraSeitenChildren.push(extraBox(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
+    // typ "bild": zusätzliches Bild im Seitentext, z. B. Stempel-Foto unter der Illustration (Auslage-Nachweise, Stefan 24.11.2026)
+    else if (b.typ === "bild") { const bp2 = resolvePath(b.pfad); const bd2 = img(bp2); const [mw2, mh2] = b.max || [380, 420];
+      extraSeitenChildren.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: b.before ?? 80, after: b.after ?? 160 }, children: [new ImageRun({ data: bd2, type: imgType(bp2), transformation: fit(bd2, mw2, mh2) })] })); }
   });
 });
 
