@@ -1,0 +1,232 @@
+{
+ "_vorlage": "Standard-Angebot B2B-Dialogpost (Firmenadressen-Postkarten-Mailing), erstmals 2611-135 RR42 (24.11.2026), Basis Angebot Mind Square 24.08.2026. Kopieren, Kunde/Nr./Datum/Selektion/Preise anpassen, mit tools/build_angebot.js bauen (typ sonder, flyerdruck false). Bilder: post_illustration.png + postkarte_schema.png aus dem Mind-Square-PDF (liegen unter tools/vorlagen/b2b/). Preisstaffel bis zur Freigabe durch Stefan prüfen.",
+ "typ": "sonder",
+ "layout": "neu",
+ "angebotsnummer": "2611-135",
+ "angebotsdatum": "24.11.2026",
+ "gueltig_bis": "24.02.2027",
+ "kunde": {
+  "name": "RR42 UG (haftungsbeschränkt)",
+  "zusatz": [
+   "z. Hd. Herrn Robin Jüngerich"
+  ],
+  "strasse": "Marienstraße 4",
+  "ort": "31832 Springe"
+ },
+ "stadt": "Deutschland",
+ "werbemittel": "Postkarten",
+ "areas": [],
+ "endpreis": 5735,
+ "flyerdruck": false,
+ "stadt_illustration": "/home/claude/hzv-karten/tools/vorlagen/b2b/post_illustration.png",
+ "map_image": "/home/claude/hzv-karten/tools/vorlagen/b2b/postkarte_schema.png",
+ "karten_titel": "Ihre Mailing-Postkarte",
+ "karten_text": "So ist die Anschriftseite Ihrer Postkarte im Dialogpost-Format aufgebaut. Frankierzone, Anschrift und Codierzone setzen wir nach den Vorgaben der Deutschen Post – Sie gestalten den freien Bereich und die komplette Rückseite.",
+ "karten_text_unten": "Postkarte DIN A6 quer (14,8 × 10,5 cm) · 250 g/m² · matt · beidseitig farbig",
+ "ablauf_titel": "So läuft Ihr B2B-Mailing",
+ "zeitraum_wort": "Versandtermin",
+ "intro": "vielen Dank für Ihre Anfrage. Sie möchten 5.000 Unternehmen gezielt nach Mitarbeiterzahl ansprechen – ideal dafür ist ein adressiertes Postkarten-Mailing per Dialogpost: Ihre Karte landet persönlich adressiert bei der Firma, ohne Streuverluste. Wir übernehmen alles von der Adressauswahl über den Druck bis zur Einlieferung bei der Post.",
+ "blick_rows": [
+  [
+   "Leistung",
+   "Adressiertes B2B-Postkarten-Mailing per Dialogpost (Deutsche Post) – Komplettservice"
+  ],
+  [
+   "Zielgruppe",
+   "5.000 Firmenadressen, selektiert nach Mitarbeiterzahl – auf Wunsch zusätzlich nach Branche und Region"
+  ],
+  [
+   "Gesamtpreis",
+   "5.735,00 € netto",
+   {
+    "bold": true,
+    "red": true,
+    "size": 30,
+    "zusatz": "  inkl. Adressen, Druck, Porto und Einlieferung",
+    "hervorheben": true
+   }
+  ],
+  [
+   "Werbemittel",
+   "Postkarte DIN A6, 250 g/m², matt, beidseitig farbig – Druck durch uns"
+  ],
+  [
+   "Versandtermin",
+   "nach Ihrem Wunsch – wir stimmen ihn direkt mit Ihnen ab"
+  ],
+  [
+   "Nachweis",
+   "Einlieferungsbeleg der Deutschen Post, auf Wunsch zusätzlich Kontrolladressen"
+  ],
+  [
+   "Beauftragung",
+   "Kurze Antwort per E-Mail genügt",
+   {
+    "bold": true
+   }
+  ]
+ ],
+ "materialien_text": "Sie senden uns die Druckdaten für Vorder- und Rückseite der Postkarte (DIN A6, 14,8 × 10,5 cm, zzgl. 2 mm Beschnitt) als PDF. Auf der Anschriftseite ist der linke Bereich frei gestaltbar, die Rückseite komplett. Druck, Adressierung und Einlieferung übernehmen wir.",
+ "schritte": [
+  [
+   "Zielgruppe festlegen",
+   "Sie nennen uns Ihre Wunsch-Selektion (Mitarbeiterzahl, ggf. Branche und Region). Wir zählen vorab kostenlos, wie viele passende Firmen es gibt, und stimmen die Auswahl mit Ihnen ab."
+  ],
+  [
+   "Beauftragen und Druckdaten senden",
+   "Eine kurze Antwort per E-Mail genügt. Danach senden Sie uns die Druckdaten Ihrer Postkarte – wir prüfen sie kostenlos auf Post-Tauglichkeit."
+  ],
+  [
+   "Druck und Adressierung",
+   "Wir drucken Ihre Karten, bringen die Firmenanschriften auf, sortieren portooptimiert und kündigen die Sendung bei der Deutschen Post an."
+  ],
+  [
+   "Einlieferung und Zustellung",
+   "Wir liefern das Mailing als Dialogpost bei der Deutschen Post ein. Sie erhalten den Einlieferungsbeleg – die Zustellung erfolgt in der Regel innerhalb weniger Werktage."
+  ]
+ ],
+ "verteiler_text": "Zustellung durch die Deutsche Post – bundesweit, an jede Firmenanschrift Ihrer Selektion.",
+ "nachweis_bullet": "Einlieferungsbeleg der Deutschen Post; auf Wunsch nehmen wir zusätzlich einige Ihrer eigenen Adressen als Kontrolladressen mit auf – so sehen Sie selbst, wann Ihre Karte ankommt.",
+ "gut_zu_wissen": [
+  "Die Firmenadressen stammen aus geprüften B2B-Adressquellen und werden ausschließlich für den einmaligen Versand Ihres Mailings gemietet. Eine weitere Nutzung der Adressen (z. B. Abschreiben, erneuter Versand) ist nicht gestattet und kann hohe Vertragsstrafen auslösen.",
+  "Antworten aus dem Mailing gehören Ihnen: Firmen, die auf Ihre Karte reagieren, dürfen Sie selbstverständlich weiter betreuen.",
+  "Tipp: Ein QR-Code oder eine eigene Landingpage auf der Karte macht den Erfolg Ihres Mailings messbar.",
+  "Dialogpost darf ausschließlich für werbliche Inhalte genutzt werden; Rechnungen oder individuelle Schreiben sind ausgeschlossen. Wir prüfen Ihre Druckdaten vorab auf die Vorgaben der Post."
+ ],
+ "extra_seiten": [
+  {
+   "titel": "Ihre Zielgruppe: Firmen nach Mitarbeiterzahl",
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Sie möchten Unternehmen nach ihrer Mitarbeiterzahl ansprechen. So treffen Sie genau die Firmengröße, für die Ihr Angebot gemacht ist – und vermeiden Streuverluste bei Kleinstbetrieben oder Konzernen, die Sie nicht erreichen wollen."
+    },
+    {
+     "typ": "heading",
+     "text": "Mögliche Selektionen"
+    },
+    {
+     "typ": "bullets",
+     "items": [
+      "Mitarbeiterzahl nach Größenklassen, z. B. 10–19, 20–49, 50–99, 100–249, 250–499 oder ab 500 Beschäftigte",
+      "Branche (z. B. Industrie, IT, Handel, Dienstleistung, Gesundheitswesen) nach Wirtschaftszweig",
+      "Region: bundesweit, einzelne Bundesländer, PLZ-Gebiete oder Umkreis um einen Standort",
+      "Weitere Merkmale wie Umsatzgröße oder Rechtsform – sprechen Sie uns an",
+      "Wo in den Daten vorhanden, adressieren wir auf Wunsch direkt an die Geschäftsführung"
+     ]
+    },
+    {
+     "typ": "box",
+     "titel": "Kostenlose Vorab-Zählung",
+     "zeilen": [
+      "Bevor Sie sich festlegen, zählen wir kostenlos, wie viele Firmen Ihrer Wunsch-Selektion entsprechen. Ergibt Ihre Auswahl mehr oder weniger als 5.000 Adressen, passen wir Selektion oder Stückzahl gemeinsam mit Ihnen an – die Preise für andere Mengen finden Sie in der Preisübersicht.",
+      "Auf Wunsch schließen wir Ihre Bestandskunden aus, damit diese nicht angeschrieben werden – senden Sie uns dazu einfach eine Liste."
+     ]
+    },
+    {
+     "typ": "heading",
+     "text": "Datenschutz"
+    },
+    {
+     "typ": "text",
+     "text": "Postwerbung an Unternehmen ist auf Grundlage des berechtigten Interesses (Art. 6 Abs. 1 lit. f DSGVO) zulässig. Wir sagen Ihnen, welcher kurze Hinweis zur Herkunft der Adresse auf die Karte gehört – so ist Ihr Mailing auch rechtlich sauber."
+    }
+   ]
+  },
+  {
+   "titel": "Preisübersicht",
+   "bild": "/root/.claude/skills/synced/c3077b85-28ea-42b8-8c7c-8552519f6e8a_498e9bce-73ce-48be-8e0b-a3da8ec827b4/hzv-angebot/assets/icon_preisuebersicht.png",
+   "bild_max": [
+    200,
+    160
+   ],
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Für Ihr Postkarten-Mailing wie beschrieben berechnen wir folgende Komplettpreise (netto):"
+    },
+    {
+     "typ": "tabelle",
+     "kopf": [
+      "Anzahl Firmenadressen",
+      "Leistung",
+      "Komplettpreis netto"
+     ],
+     "breiten": [
+      2600,
+      4700,
+      2800
+     ],
+     "rechts_ab": 2,
+     "gruen": [
+      2
+     ],
+     "zeilen": [
+      [
+       "2.500",
+       "Kleinere Selektion / Testlauf",
+       "3.845,00 €"
+      ],
+      [
+       "5.000",
+       "Ihre Anfrage",
+       "5.735,00 €"
+      ],
+      [
+       "7.500",
+       "Erweiterte Selektion",
+       "7.365,00 €"
+      ],
+      [
+       "10.000",
+       "Große Selektion",
+       "8.915,00 €"
+      ]
+     ]
+    },
+    {
+     "typ": "heading",
+     "text": "Im Preis enthalten",
+     "before": 120
+    },
+    {
+     "typ": "bullets",
+     "items": [
+      "Bereitstellung der selektierten Firmenadressen zur einmaligen Nutzung inkl. kostenloser Vorab-Zählung",
+      "Druck der Postkarten DIN A6, 250 g/m², matt, beidseitig farbig",
+      "Prüfung Ihrer Druckdaten auf die Vorgaben der Deutschen Post",
+      "Adressierung, Datenübernahme und Portooptimierung",
+      "Porto Dialogpost Karte – die Portoerhöhung der Deutschen Post zum 01.01.2027 ist bereits berücksichtigt",
+      "Konfektionierung, Ankündigung und Einlieferung bei der Deutschen Post inkl. Einlieferungsbeleg"
+     ]
+    },
+    {
+     "typ": "hinweis",
+     "text": "Ergibt die Selektion eine Zwischenmenge, berechnen wir den Preis anteilig zwischen den Staffelstufen. Größere Mengen, andere Formate (z. B. Maxi-Postkarte DIN lang) oder die Gestaltung Ihrer Karte durch uns bieten wir Ihnen gern auf Anfrage an."
+    }
+   ]
+  },
+  {
+   "titel": "Ergänzende Bedingungen für Dialogpost-Mailings",
+   "bloecke": [
+    {
+     "typ": "text",
+     "text": "Für dieses Mailing gelten unsere Allgemeinen Geschäftsbedingungen (siehe Anhang) mit folgenden Ergänzungen, die bei Abweichungen vorgehen:"
+    },
+    {
+     "typ": "bullets",
+     "items": [
+      "Die HZV handzettelverteiler GmbH übernimmt Adressbereitstellung, Druck, Konfektionierung, Koordination und Einlieferung des Mailings. Die Zustellung selbst erbringt die Deutsche Post AG; dafür gelten deren AGB und Beförderungsbedingungen.",
+      "Unsere Leistung ist erfüllt, sobald die vollständigen und vorschriftsgemäßen Sendungen gegen Einlieferungsbeleg an die Deutsche Post übergeben sind. Für Verzögerungen, Verluste oder Fehlzustellungen im Zustellprozess der Post haften wir nicht.",
+      "Die Firmenadressen werden ausschließlich für den einmaligen Versand dieses Mailings gemietet und dem Auftraggeber nicht übergeben. Jede weitere Nutzung ist untersagt; daraus entstehende Vertragsstrafen und Schäden trägt der Auftraggeber. Adressen von Firmen, die auf das Mailing reagieren, darf der Auftraggeber frei nutzen.",
+      "Firmenadressen unterliegen einer natürlichen Fluktuation (Umzug, Geschäftsaufgabe). Einzelne unzustellbare Sendungen sind daher übliche Streuverluste und kein Mangel.",
+      "Der Auftraggeber ist für Inhalt und Gestaltung der Karte verantwortlich (vgl. § 7 AGB). Werden Format-, Gewichts- oder Inhaltsvorgaben der Deutschen Post aufgrund der gelieferten Druckdaten nicht eingehalten, trägt der Auftraggeber entstehende Mehrkosten (z. B. höheres Porto).",
+      "Ändert die Deutsche Post das Porto über die bereits berücksichtigte Erhöhung zum 01.01.2027 hinaus, dürfen wir die Differenz weitergeben.",
+      "Die Rechnung stellen wir nach Auftragserteilung; der Gesamtbetrag ist vor Druck und Einlieferung fällig."
+     ]
+    }
+   ]
+  }
+ ],
+ "vorlauf_text": "Damit wir Selektion, Druck und die Ankündigung bei der Deutschen Post optimal planen können, beauftragen Sie uns bitte möglichst 20 Werktage vor dem gewünschten Versandtermin. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – in dringenden Fällen können wir auch kurzfristiger reagieren."
+}
