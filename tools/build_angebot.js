@@ -504,6 +504,8 @@ const page3Children = [
     alignment: AlignmentType.CENTER,
     children: [new ImageRun({ data: mapImage, type: imgType(mapImagePath), transformation: fit(mapImage, 600, 470) })],
   }),
+  // config.karten_text_unten: Hinweis unter der Karte (z. B. Auslage: 50 Lokationen = ein Bezirk, Stefan 24.11.2026)
+  ...(config.karten_text_unten ? [p(config.karten_text_unten, { align: AlignmentType.CENTER, before: 200, after: 0, bold: true })] : []),
 ];
 
 // ==================== SEITE 4: BEISPIEL PLZ-REGION (Hochformat) ====================
