@@ -33,3 +33,15 @@ dann `python3 tools/ortsteile/auswahl_daten.py --rows rows.json --ortsteile orts
 und `python3 tools/build_karte_auswahl.py --input auswahl.json …`.
 
 „Innenstadt“-Zeilen (Post fasst die Kernstadt so zusammen) = PLZ-Fläche minus alle benannten Ortsteile.
+
+## Test 24.11.2026: Grenzen direkt aus POSTAKTUELL (Stefan: „gerne testen“)
+
+- Tab **Ortsteile**: liefert nur eine Tabelle (PLZ, Gemeinde, Ortsteil, Haushalte) – **keine Polygone**. Nützlich, weil jede
+  Ortschaft ihrer Gemeinde zugeordnet ist (z. B. 04838: Mörtitz → Doberschütz) – besser als der Tooltip im PLZ-Tab.
+- Tab **Zustellbezirke** (Umkreisselektion um eine Adresse, Radius-Schieber oder Auflage): liefert echte
+  **MultiPolygone je Zustellbezirk** (z. B. 04838-05 … 04838-08) in `map.getFeatures()` (EPSG:3857), Eigenschaft `name` =
+  Bezirk, `description` = Bewerbbare HH, HH ohne Werbung, INSGESAMT und Straßenliste. Test Torgauer Str. 1, Eilenburg, 1 km:
+  4 Bezirke, 3.355 bew. HH.
+- Folgerung: Für Kernstädte/Umkreis-Angebote können Karte und Haushalte exakt aus den Post-Zustellbezirken kommen
+  (Koordinaten per `ol.proj.toLonLat` umrechnen, kodieren wie oben, per get_page_text übernehmen). Für Dörfer bleibt
+  Nominatim/Voronoi die Näherung, bis die Bezirke ganzer PLZ abgefragt werden (Radius groß genug wählen).
