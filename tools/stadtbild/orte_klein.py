@@ -113,6 +113,8 @@ reg("Hoevelhof", ["Hövelhof", "Hoevelhof", "Hövelriege", "Hoevelriege", "Riege
 
 reg("Pattensen", ["Pattensen", "Schulenburg (Leine)", "Schulenburg Leine", "Jeinsen", "Hüpede", "Huepede", "Koldingen", "Hemmingen", "Arnum", "Hemmingen-Westerfeld", "Hiddestorf", "Devese", "Harkenbleck", "Wilkenburg"], lambda: basis(245) + huegel(0, 420, 110) + burg(20, 300, 110, "#d9cfb8", 160) + kirche(400, 200, 140, BRICK, SLATE, "spire", "left", 60, 310) + rathaus(660, 140, 120, WHITE, "stepped") + fachwerk(830, 2))
 
+reg("Seenplatte", ["Penzlin", "Möllenhagen", "Moellenhagen", "Waren (Müritz)", "Waren Müritz", "Waren", "Penzlin Möllenhagen Waren", "Mecklenburgische Seenplatte", "Seenplatte"], lambda: basis(246) + huegel(0, 930, 70, "#c9d8e6") + huegel(0, 380, 120) + burg(20, 300, 110, "#e6dcc4", 150) + kirche(380, 210, 145, BRICK, SLATE, "spire", "left", 64, 340) + fachwerk(650, 2) + kirche(780, 150, 120, BRICK, ROOF_RED, "pyramid", "right", 54, 250))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
