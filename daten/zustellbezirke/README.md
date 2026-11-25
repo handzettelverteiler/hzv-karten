@@ -19,10 +19,13 @@ Format je Datei: GeoJSON-FeatureCollection, ein Feature (MultiPolygon) je Bezirk
 | Potsdam (ganze Stadt ohne Nordortsteile 14476) | 14467, 14469, 14471, 14473, 14478, 14480, 14482 | 58 | 58.759 | 105.415 | 2026-11-25 | `potsdam.geojson` |
 | Köln (Innenstadt + Deutz) | 50667, 50668, 50670, 50672, 50674, 50676, 50677, 50678, 50679 | 45 | 47.340 | 105.199 | 2026-11-25 | `koeln.geojson` |
 | Augsburg (Innenstadt) | 86150, 86152, 86153 | 20 | 11.564 | 38.948 | 2026-11-25 | `augsburg.geojson` |
+| Düsseldorf (Altstadt/Stadtmitte/Friedrichstadt/Unterbilk/Pempelfort/Derendorf-Süd) | 40210, 40211, 40212, 40213, 40215, 40217, 40219, 40477, 40479 | 32 | 38.134 | 72.880 | 2026-11-25 | `duesseldorf.geojson` |
+| Burgstädt + Umkreis 6 km (Mühlau, Hartmannsdorf, Taura, Claußnitz, Penig u. a., Nachbar-PLZ nur teilweise) | 09217 (+ 09228, 09232, 09236, 09241, 09247, 09249, 09306, 09322, 09328) | 22 | 13.380 | 16.942 | 2026-11-25 | `burgstaedt.geojson` |
+| Ispringen + Umkreis 3 km (Pforzheim-West/Nord, Ersingen, Nachbar-PLZ nur teilweise) | 75228 (+ 75172, 75177, 75179, 75236) | 18 | 11.759 | 22.294 | 2026-11-25 | `ispringen.geojson` |
 
 **Stand:** Rangfolge nach Häufigkeit in `angebote_register.csv` + `anfragen_log.csv`: Berlin, Hamburg, München, Potsdam, Köln, Augsburg, …
 Berlin/Hamburg/München sind zu groß für einen Lauf (Berlin ≈ 190 PLZ). Lauf 24.11.2026: jeweils die innerste Kernstadt (PLZ oben) vollständig.
-Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Nächste Läufe: Düsseldorf, Burgstädt, Ispringen, Möllenhagen/Penzlin/Waren, Aying … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
+Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Nächste Läufe: Möllenhagen/Penzlin/Waren, Aying, Neckarsulm, Leipzig, Wiesbaden … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
 
 ## Abgleich mit Haushalts-Vorrat (`daten/haushalte_plz_vorrat.csv`, Stand 06.11.2026)
 
@@ -68,6 +71,22 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 86150 | Augsburg | 7 | 3724 | 3537 | +5.3 % | 13159 | 12708 | +3.5 % |
 | 86152 | Augsburg | 5 | 2984 | 3846 | -22.4 % | 10204 | 12532 | -18.6 % ⚠ |
 | 86153 | Augsburg | 8 | 4856 | 4298 | +13.0 % | 15585 | 13623 | +14.4 % ⚠ |
+| 40210 | Düsseldorf | 1 | 1195 | 3075 | -61.1 % | 2029 | 5286 | -61.6 % ⚠ |
+| 40211 | Düsseldorf | 5 | 5117 | 4201 | +21.8 % | 11253 | 9883 | +13.9 % ⚠ |
+| 40212 | Düsseldorf | 2 | 924 | 1035 | -10.7 % | 1740 | 1923 | -9.5 % ⚠ |
+| 40213 | Düsseldorf | 4 | 2927 | 2133 | +37.2 % | 6708 | 5354 | +25.3 % ⚠ |
+| 40215 | Düsseldorf | 5 | 7783 | 7504 | +3.7 % | 12704 | 11990 | +6.0 % ⚠ |
+| 40217 | Düsseldorf | 2 | 2702 | 4113 | -34.3 % | 5117 | 7764 | -34.1 % ⚠ |
+| 40219 | Düsseldorf | 5 | 6070 | 3929 | +54.5 % | 13378 | 8974 | +49.1 % ⚠ |
+| 40477 | Düsseldorf | 4 | 6471 | 7651 | -15.4 % | 10729 | 13096 | -18.1 % ⚠ |
+| 40479 | Düsseldorf | 4 | 4945 | 4357 | +13.5 % | 9222 | 7996 | +15.3 % ⚠ |
+| 09217 | Burgstädt | 8 | 5502 | 5118 | +7.5 % | 7003 | 6506 | +7.6 % ⚠ |
+| 75228 | Ispringen | 5 | 2654 | 2036 | +30.4 % | 4383 | 3276 | +33.8 % ⚠ |
+
+Lauf 25.11. (2): Düsseldorf (9 PLZ) summiert 72.880 HH ges. vs. Vorrat 72.266 (+0,8 %) – PLZ-Abweichungen wieder durch die
+Stützpunkt-Nummerierung. Vorratswerte 09217/75228 aus den Projekt-Nachträgen (19.11./23.11.); 75228-Bezirke reichen in
+Pforzheimer Randlagen hinein (+34 %), 09217 enthält Ortsteile (+8 %). 09247-46 hat 0 bewerbbare HH. Beim Dekodieren wurden
+degenerierte Mini-Ringe (3 Punkte) verworfen (40215-32, 40217-15).
 
 **Wichtig (Lauf 25.11.):** Das PLZ-Präfix im Bezirksnamen (z. B. 50677-05) ist die Nummerierung des Zustellstützpunkts und deckt sich
 nicht immer mit der PLZ der Straßen im Bezirk (50677-05 enthält z. B. Severinstr./Chlodwigplatz = 50678). Deshalb die großen Abweichungen
