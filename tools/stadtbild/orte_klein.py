@@ -117,6 +117,27 @@ reg("Seenplatte", ["Penzlin", "Möllenhagen", "Moellenhagen", "Waren (Müritz)",
 
 reg("Prenzlau", ["Prenzlau", "Gramzow", "Nordwestuckermark", "Uckermark", "Röpersdorf", "Roepersdorf", "Dedelow", "Warnitz", "Schenkenberg", "Fürstenwerder", "Fuerstenwerder"], lambda: basis(247) + huegel(0, 930, 60, "#c9d8e6") + tor(20, 90, 230, BRICK, "spire") + dom(170, 260, 170, BRICK, 330, 62, "spire") + fachwerk(520, 2) + kirche(660, 170, 125, BRICK, SLATE, "pyramid", "left", 56, 260) + windrad(870, 210))
 
+def _hebewerk(x, w=300, h=230):
+    """Schiffshebewerk Henrichenburg (Waltrop): zwei Backsteintürme mit Stahlfachwerk-Brücke, Trog darunter."""
+    tw = 50
+    out = rect(x, G - h, tw, h, BRICK) + rect(x + w - tw, G - h, tw, h, BRICK)
+    out += poly([(x - 6, G - h), (x + tw / 2, G - h - 34), (x + tw + 6, G - h)], SLATE)
+    out += poly([(x + w - tw - 6, G - h), (x + w - tw / 2, G - h - 34), (x + w + 6, G - h)], SLATE)
+    by = G - h + 20
+    out += rect(x + tw, by, w - 2 * tw, 34, "#7f9bb3")
+    n = 6
+    for k in range(n):
+        x1 = x + tw + k * (w - 2 * tw) / n
+        x2 = x + tw + (k + 1) * (w - 2 * tw) / n
+        out += line(x1, by + 34, x2, by, 2.5)
+    out += rect(x + tw, G - 70, w - 2 * tw, 40, "#9fc3df")
+    for k in range(1, 4):
+        xx = x + tw + k * (w - 2 * tw) / 4
+        out += line(xx, by + 34, xx, G - 70, 2.5)
+    return out
+
+reg("Waltrop", ["Waltrop", "Oberwiese", "Leveringhausen", "Holthausen", "Lippe", "Brockenscheidt"], lambda: basis(248) + huegel(0, 930, 50, "#c9d8e6") + foerderturm(30, 240) + kirche(230, 200, 140, BRICK, SLATE, "spire", "left", 60, 320) + _hebewerk(500, 300, 230) + gable_house(840, 90, 100, BRICK, ROOF_RED))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
