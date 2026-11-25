@@ -709,6 +709,14 @@ const page4Neu = [
   p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 60, before: 120 }),
   ...(KW_HINWEIS ? [p(KW_HINWEIS, { italics: true, color: GREY, size: 18, after: 280 })] : []),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
+  // Option rutscht bei langen Tabellen auf die Folgeseite -> dort ebenfalls Preis-Icon + "Preisübersicht" darüber (Stefan, 25.11.2026, 2611-138)
+  // Steuerung: "option_neue_seite": true/false; Standard automatisch ab 9 Tabellenzeilen
+  ...((opt && (config.option_neue_seite ?? areas.length >= 9)) ? [
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, pageBreakBefore: true,
+      children: [new ImageRun({ data: iconPreis, type: "png", transformation: { width: 150, height: 150 } })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 },
+      children: [new TextRun({ text: "Preisübersicht", bold: true, color: RED, size: 32, font: FONT })] }),
+  ] : []),
   ...optionBox(),
   p(opt ? (config.teilmengen_text_neu || (ANKREUZEN ? ANKREUZ_TEXT : `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`))
         : (config.teilmengen_text || (ANKREUZEN ? ANKREUZ_TEXT : `Möchten Sie weniger ${werbemittel} verteilen lassen, wird der Preis dem Anteil nach berechnet.`)),
