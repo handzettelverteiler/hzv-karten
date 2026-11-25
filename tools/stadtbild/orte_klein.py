@@ -111,6 +111,8 @@ reg("Randersacker", ["Randersacker", "Lindelbach", "Theilheim", "Eibelstadt", "G
 reg("Germering", ["Germering", "Unterpfaffenhofen", "Germering-Unterpfaffenhofen", "Harthaus", "Nebel", "Puchheim", "Gilching", "Gauting"], lambda: basis(243) + huegel(0, 930, 40, "#c9d8e6") + kirche(30, 200, 140, WHITE, ROOF_RED, "onion", "left", 58, 290) + modern(300, 240, 120, "#e8edf2") + kirche(580, 170, 120, WHITE, SLATE, "spire", "right", 54, 260) + hochhaus(820, 70, 230, "#cfe0ef"))
 reg("Hoevelhof", ["Hövelhof", "Hoevelhof", "Hövelriege", "Hoevelriege", "Riege", "Espeln", "Staumühle", "Staumuehle", "Senne"], lambda: basis(244) + huegel(0, 930, 60, "#d8c3d6") + schloss(20, 280, 110, WHITE, SLATE, (("helm", 0.5),), None, 50, 190) + fachwerk(350, 2) + kirche(480, 210, 145, BRICK, SLATE, "spire", "left", 62, 330) + windrad(750, 230) + windrad(850, 180))
 
+reg("Pattensen", ["Pattensen", "Schulenburg (Leine)", "Schulenburg Leine", "Jeinsen", "Hüpede", "Huepede", "Koldingen", "Hemmingen", "Arnum", "Hemmingen-Westerfeld", "Hiddestorf", "Devese", "Harkenbleck", "Wilkenburg"], lambda: basis(245) + huegel(0, 420, 110) + burg(20, 300, 110, "#d9cfb8", 160) + kirche(400, 200, 140, BRICK, SLATE, "spire", "left", 60, 310) + rathaus(660, 140, 120, WHITE, "stepped") + fachwerk(830, 2))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
