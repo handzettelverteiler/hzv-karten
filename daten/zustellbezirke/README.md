@@ -22,10 +22,13 @@ Format je Datei: GeoJSON-FeatureCollection, ein Feature (MultiPolygon) je Bezirk
 | Düsseldorf (Altstadt/Stadtmitte/Friedrichstadt/Unterbilk/Pempelfort/Derendorf-Süd) | 40210, 40211, 40212, 40213, 40215, 40217, 40219, 40477, 40479 | 32 | 38.134 | 72.880 | 2026-11-25 | `duesseldorf.geojson` |
 | Burgstädt + Umkreis 6 km (Mühlau, Hartmannsdorf, Taura, Claußnitz, Penig u. a., Nachbar-PLZ nur teilweise) | 09217 (+ 09228, 09232, 09236, 09241, 09247, 09249, 09306, 09322, 09328) | 22 | 13.380 | 16.942 | 2026-11-25 | `burgstaedt.geojson` |
 | Ispringen + Umkreis 3 km (Pforzheim-West/Nord, Ersingen, Nachbar-PLZ nur teilweise) | 75228 (+ 75172, 75177, 75179, 75236) | 18 | 11.759 | 22.294 | 2026-11-25 | `ispringen.geojson` |
+| Waren (Müritz) + Penzlin + Möllenhagen (ganze PLZ inkl. Ortsteile) | 17192, 17217, 17219 | 25 | 18.011 | 21.006 | 2026-11-26 | `moellenhagen_penzlin_waren.geojson` |
+| Aying + Brunnthal + Egmating + Höhenkirchen-Siegertsbrunn (ganze PLZ) | 85635, 85649, 85653, 85658 | 18 | 7.248 | 12.814 | 2026-11-26 | `aying.geojson` |
+| Wiesbaden (Innenstadt-Ring: Mitte, Nordost, Rheingauviertel, Südost, Westend, Klarenthal, Dichterviertel) | 65183, 65185, 65187, 65189, 65193, 65195, 65197 | 49 | 34.243 | 83.058 | 2026-11-26 | `wiesbaden.geojson` |
 
 **Stand:** Rangfolge nach Häufigkeit in `angebote_register.csv` + `anfragen_log.csv`: Berlin, Hamburg, München, Potsdam, Köln, Augsburg, …
 Berlin/Hamburg/München sind zu groß für einen Lauf (Berlin ≈ 190 PLZ). Lauf 24.11.2026: jeweils die innerste Kernstadt (PLZ oben) vollständig.
-Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Nächste Läufe: Möllenhagen/Penzlin/Waren, Aying, Neckarsulm, Leipzig, Wiesbaden … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
+Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Nächste Läufe: Neckarsulm, Leipzig, Mönchengladbach, Wuppertal … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
 
 ## Abgleich mit Haushalts-Vorrat (`daten/haushalte_plz_vorrat.csv`, Stand 06.11.2026)
 
@@ -82,11 +85,33 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 40479 | Düsseldorf | 4 | 4945 | 4357 | +13.5 % | 9222 | 7996 | +15.3 % ⚠ |
 | 09217 | Burgstädt | 8 | 5502 | 5118 | +7.5 % | 7003 | 6506 | +7.6 % ⚠ |
 | 75228 | Ispringen | 5 | 2654 | 2036 | +30.4 % | 4383 | 3276 | +33.8 % ⚠ |
+| 17192 | Waren (Müritz) | 19 | 14290 | 14304 | -0.1 % | 16869 | 16876 | -0.0 % |
+| 17217 | Penzlin | 4 | 2579 | 2493 | +3.4 % | 2887 | 2797 | +3.2 % |
+| 17219 | Möllenhagen | 2 | 1142 | 1118 | +2.1 % | 1250 | 1224 | +2.1 % |
+| 85635 | Höhenkirchen-Siegertsbrunn | 5 | 2544 | 2937 | -13.4 % | 4728 | 5573 | -15.2 % ⚠ |
+| 85649 | Brunnthal | 6 | 2207 | 1814 | +21.7 % | 3696 | 2851 | +29.6 % ⚠ |
+| 85653 | Aying | 5 | 1659 | 1742 | -4.8 % | 3119 | 3241 | -3.8 % |
+| 85658 | Egmating | 2 | 838 | 827 | +1.3 % | 1271 | 1259 | +1.0 % |
+| 65183 | Wiesbaden | 7 | 5529 | 5529 | +0.0 % | 11444 | 11444 | +0.0 % |
+| 65185 | Wiesbaden | 6 | 4512 | 4205 | +7.3 % | 12392 | 11480 | +7.9 % ⚠ |
+| 65187 | Wiesbaden | 5 | 3398 | 5975 | -43.1 % | 9193 | 13792 | -33.3 % ⚠ |
+| 65189 | Wiesbaden | 7 | 4046 | 3147 | +28.6 % | 11829 | 10037 | +17.9 % ⚠ |
+| 65193 | Wiesbaden | 11 | 3526 | 3526 | +0.0 % | 10188 | 10188 | +0.0 % |
+| 65195 | Wiesbaden | 6 | 5215 | 5065 | +3.0 % | 11673 | 11383 | +2.5 % |
+| 65197 | Wiesbaden | 7 | 8017 | 9447 | -15.1 % | 16339 | 18936 | -13.7 % ⚠ |
 
 Lauf 25.11. (2): Düsseldorf (9 PLZ) summiert 72.880 HH ges. vs. Vorrat 72.266 (+0,8 %) – PLZ-Abweichungen wieder durch die
 Stützpunkt-Nummerierung. Vorratswerte 09217/75228 aus den Projekt-Nachträgen (19.11./23.11.); 75228-Bezirke reichen in
 Pforzheimer Randlagen hinein (+34 %), 09217 enthält Ortsteile (+8 %). 09247-46 hat 0 bewerbbare HH. Beim Dekodieren wurden
 degenerierte Mini-Ringe (3 Punkte) verworfen (40215-32, 40217-15).
+
+Lauf 26.11.: Vorratswerte 17192/17217/17219 aus dem Projekt-Nachtrag 25.11., 85635/85649/85653/85658 aus dem Nachtrag 17.11.
+Waren/Penzlin/Möllenhagen passt über die 3 PLZ auf +0,5 % (HH ges.), Aying-Gruppe über die 4 PLZ auf -0,9 % – Einzel-PLZ-Abweichungen
+(85635 vs. 85649) wieder durch die Stützpunkt-Nummerierung. Nicht gespeichert: Nachbar-Bezirke anderer PLZ (u. a. 17194-19, 83626-22,
+85625-35, Ottobrunn 85521, Biebrich 65203, 65191, 65199). **Wiesbaden ist noch nicht vollständig:** über die 7 PLZ -4,8 % (83.058 vs. 87.260
+HH ges.); vermutlich fehlen Bezirke am Rand von 65187 (Nummern 65187-41…45?) und 65197 (65197-32…36?). Weitere Abfragen scheiterten an
+nicht gefundenen Adressen (Dotzheimer Str. 150, Hollerbornstr. 10, Graf-von-Galen-Str. 30, Akazienstr. 1) bzw. lieferten keine neuen Bezirke
+(Schiersteiner Str. 50) – im nächsten Lauf mit anderen Mittelpunkten ergänzen. Straßenlisten in diesen drei Dateien als JSON-Liste.
 
 **Wichtig (Lauf 25.11.):** Das PLZ-Präfix im Bezirksnamen (z. B. 50677-05) ist die Nummerierung des Zustellstützpunkts und deckt sich
 nicht immer mit der PLZ der Straßen im Bezirk (50677-05 enthält z. B. Severinstr./Chlodwigplatz = 50678). Deshalb die großen Abweichungen
@@ -109,3 +134,10 @@ für Karten, Teilgebiete und Umkreis-Angebote. 86153-99 (Willy-Brandt-Platz) hat
   (ein `await` im javascript_tool friert ein). `ol` ist nicht global → EPSG:3857 per Formel umrechnen.
 - Potsdam: 4 km um Rathaus bzw. Konrad-Wolf-Allee liefen ohne Hänger (je ~35 s). Köln/Augsburg: 2 km ~30 s, danach 1-km-Randabfragen ohne neue Bezirke.
 - Seitentext: Body-Kinder vorübergehend aus dem DOM nehmen und nur ein `<pre>` zeigen, sonst liest get_page_text ein verstecktes Formular.
+
+## Hinweise zur Abfrage (Lauf 26.11.2026)
+
+- Radius 10 km liefert „Für Ihre Suche wurden keine Ergebnisse gefunden“; 8 km geht auf dem Land (~10 s). Die Fehlermeldung kommt auch, wenn die
+  Adresse nicht gefunden wird (z. B. „Markt 1, 17217 Penzlin“ statt „Am Markt“, „Schlossplatz“ statt „Schloßplatz“ in Wiesbaden).
+  Zuverlässig: eine Straße aus der Straßenliste eines schon geholten Bezirks als Mittelpunkt nehmen (so Möllenhagen über „Rumpshagener Weg“/„Kraaser Str.“).
+- `get_page_text` macht aus Tabs Leerzeichen → Felder im `<pre>` mit „ ¦ “ trennen, Ringe mit Leerzeichen (kommt in Polylines nicht vor).
