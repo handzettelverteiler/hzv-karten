@@ -25,10 +25,13 @@ Format je Datei: GeoJSON-FeatureCollection, ein Feature (MultiPolygon) je Bezirk
 | Waren (Müritz) + Penzlin + Möllenhagen (ganze PLZ inkl. Ortsteile) | 17192, 17217, 17219 | 25 | 18.011 | 21.006 | 2026-11-26 | `moellenhagen_penzlin_waren.geojson` |
 | Aying + Brunnthal + Egmating + Höhenkirchen-Siegertsbrunn (ganze PLZ) | 85635, 85649, 85653, 85658 | 18 | 7.248 | 12.814 | 2026-11-26 | `aying.geojson` |
 | Wiesbaden (Innenstadt-Ring: Mitte, Nordost, Rheingauviertel, Südost, Westend, Klarenthal, Dichterviertel) | 65183, 65185, 65187, 65189, 65193, 65195, 65197 | 49 | 34.243 | 83.058 | 2026-11-26 | `wiesbaden.geojson` |
+| Neckarsulm (ganze PLZ inkl. Amorbach, Obereisesheim, Dahenfeld) + Untereisesheim | 74172, 74257 | 20 | 11.663 | 16.210 | 2026-11-26 | `neckarsulm.geojson` |
+| Leipzig (Zentrum, Zentrum-Ost/-Nord/-Süd/-West, Südvorstadt) | 04103, 04105, 04107, 04109, 04275 | 34 | 21.068 | 67.758 | 2026-11-26 | `leipzig.geojson` |
+| Mönchengladbach (Gladbach-Mitte, Eicken/Westend, Ost/Lürrip) | 41061, 41063, 41065 | 23 | 32.313 | 44.186 | 2026-11-26 | `moenchengladbach.geojson` |
 
 **Stand:** Rangfolge nach Häufigkeit in `angebote_register.csv` + `anfragen_log.csv`: Berlin, Hamburg, München, Potsdam, Köln, Augsburg, …
 Berlin/Hamburg/München sind zu groß für einen Lauf (Berlin ≈ 190 PLZ). Lauf 24.11.2026: jeweils die innerste Kernstadt (PLZ oben) vollständig.
-Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Nächste Läufe: Neckarsulm, Leipzig, Mönchengladbach, Wuppertal … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
+Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Lauf 26.11. (2): Neckarsulm, Leipzig (Innenstadt), Mönchengladbach (Gladbach-Mitte). Nächste Läufe: Wiesbaden-Lücke (65187/65197), Wuppertal, Paderborn/Hövelhof, Höchberg/Randersacker, Salzgitter … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
 
 ## Abgleich mit Haushalts-Vorrat (`daten/haushalte_plz_vorrat.csv`, Stand 06.11.2026)
 
@@ -99,6 +102,16 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 65193 | Wiesbaden | 11 | 3526 | 3526 | +0.0 % | 10188 | 10188 | +0.0 % |
 | 65195 | Wiesbaden | 6 | 5215 | 5065 | +3.0 % | 11673 | 11383 | +2.5 % |
 | 65197 | Wiesbaden | 7 | 8017 | 9447 | -15.1 % | 16339 | 18936 | -13.7 % ⚠ |
+| 74172 | Neckarsulm | 17 | 10036 | 10163 | -1.2 % | 14143 | 14389 | -1.7 % |
+| 74257 | Untereisesheim | 3 | 1627 | 1627 | +0.0 % | 2067 | 2067 | +0.0 % |
+| 04103 | Leipzig | 6 | 5129 | 5037 | +1.8 % | 15788 | 15705 | +0.5 % |
+| 04105 | Leipzig | 6 | 4211 | 4259 | -1.1 % | 13317 | 13190 | +1.0 % |
+| 04107 | Leipzig | 4 | 3804 | 3975 | -4.3 % | 10392 | 10960 | -5.2 % ⚠ |
+| 04109 | Leipzig | 10 | 3160 | 3014 | +4.8 % | 11946 | 11504 | +3.8 % |
+| 04275 | Leipzig | 8 | 4764 | 4383 | +8.7 % | 16315 | 15538 | +5.0 % ⚠ |
+| 41061 | Mönchengladbach | 6 | 8823 | 11753 | -24.9 % | 12775 | 16937 | -24.6 % ⚠ |
+| 41063 | Mönchengladbach | 8 | 10078 | 9018 | +11.8 % | 14110 | 12375 | +14.0 % ⚠ |
+| 41065 | Mönchengladbach | 9 | 13412 | 12816 | +4.7 % | 17301 | 16364 | +5.7 % ⚠ |
 
 Lauf 25.11. (2): Düsseldorf (9 PLZ) summiert 72.880 HH ges. vs. Vorrat 72.266 (+0,8 %) – PLZ-Abweichungen wieder durch die
 Stützpunkt-Nummerierung. Vorratswerte 09217/75228 aus den Projekt-Nachträgen (19.11./23.11.); 75228-Bezirke reichen in
@@ -112,6 +125,10 @@ Waren/Penzlin/Möllenhagen passt über die 3 PLZ auf +0,5 % (HH ges.), Aying-Gru
 HH ges.); vermutlich fehlen Bezirke am Rand von 65187 (Nummern 65187-41…45?) und 65197 (65197-32…36?). Weitere Abfragen scheiterten an
 nicht gefundenen Adressen (Dotzheimer Str. 150, Hollerbornstr. 10, Graf-von-Galen-Str. 30, Akazienstr. 1) bzw. lieferten keine neuen Bezirke
 (Schiersteiner Str. 50) – im nächsten Lauf mit anderen Mittelpunkten ergänzen. Straßenlisten in diesen drei Dateien als JSON-Liste.
+
+Lauf 26.11. (2): Neckarsulm über beide PLZ -1,5 % (vermutlich fehlt nur Bezirk 74172-01), Leipzig über die 5 PLZ +1,3 %,
+Mönchengladbach über die 3 PLZ -3,3 % (41061 hat nur 6 Bezirke mit eigenem Präfix; Teile von 41061 laufen vermutlich unter 41068/41069,
+die nicht gespeichert sind). Vorratswerte 74172 aus dem Nachtrag 02.11., 74257 aus dem Nachtrag 11.11.
 
 **Wichtig (Lauf 25.11.):** Das PLZ-Präfix im Bezirksnamen (z. B. 50677-05) ist die Nummerierung des Zustellstützpunkts und deckt sich
 nicht immer mit der PLZ der Straßen im Bezirk (50677-05 enthält z. B. Severinstr./Chlodwigplatz = 50678). Deshalb die großen Abweichungen
@@ -141,3 +158,7 @@ für Karten, Teilgebiete und Umkreis-Angebote. 86153-99 (Willy-Brandt-Platz) hat
   Adresse nicht gefunden wird (z. B. „Markt 1, 17217 Penzlin“ statt „Am Markt“, „Schlossplatz“ statt „Schloßplatz“ in Wiesbaden).
   Zuverlässig: eine Straße aus der Straßenliste eines schon geholten Bezirks als Mittelpunkt nehmen (so Möllenhagen über „Rumpshagener Weg“/„Kraaser Str.“).
 - `get_page_text` macht aus Tabs Leerzeichen → Felder im `<pre>` mit „ ¦ “ trennen, Ringe mit Leerzeichen (kommt in Polylines nicht vor).
+- **Portal-Sperre nach einigen Abfragen je Seitensitzung** (Lauf 26.11. (2) bestätigt): Nach ca. 5–10 Abfragen kommt auch für bekannte
+  Adressen nur noch „keine Ergebnisse“. Seite neu laden und Zustellbezirke-Reiter wieder öffnen, dann geht es weiter (vermutlich auch der Grund
+  für die Wiesbaden-Lücke). Die Hilfsfunktionen liegen als Code in `localStorage.__hzv` der Portal-Seite → nach dem Neuladen `eval(localStorage.__hzv)`.
+- Hausnummer muss es geben: Übernimmt das Portal die Adresse ohne Nummer ins Feld (z. B. „Lürriper Straße“), wurde sie nicht gefunden → andere Nummer.
