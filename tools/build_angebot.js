@@ -681,6 +681,26 @@ const page4Alt = [
 ];
 
 // ==================== SEITE 5 (Layout neu): PREISÜBERSICHT ====================
+// Roter Hinweiskasten „Gut zu wissen, bevor Sie beauftragen“ auf der Abschlussseite jedes Standardangebots (Stefan, 26.11.2026 –
+// bei Reklamationen belegbar vorab informiert). Config: "hinweis_box": false (aus) oder Array eigener Punkte.
+function hinweisBox() {
+  if (config.hinweis_box === false) return [];
+  const punkte = Array.isArray(config.hinweis_box) ? config.hinweis_box : [
+    "Eine Verteilung an 100 % der Haushalte ist nicht möglich. Geschuldet ist die Belieferung von mindestens 85 % der erreichbaren Haushalte je Verteilbezirk (AGB § 3).",
+    "Unser Verteilnachweis besteht aus Stichproben (Kontrolllisten und/oder Fotos) – ein lückenloser Nachweis für jeden Briefkasten ist nicht möglich.",
+    "Wir schulden die Verteilung, nicht einen bestimmten Werbeerfolg, Umsatz oder Rücklauf.",
+    "Einzelne nicht belieferte Adressen sind übliche Streuverluste und kein Mangel.",
+  ];
+  return [new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: [10100], rows: [new TableRow({ children: [new TableCell({
+    width: { size: 10100, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "FDECEC" },
+    margins: { top: 140, bottom: 140, left: 220, right: 220 },
+    borders: { top: { style: BorderStyle.SINGLE, size: 8, color: RED }, bottom: { style: BorderStyle.SINGLE, size: 8, color: RED }, right: { style: BorderStyle.SINGLE, size: 8, color: RED }, left: { style: BorderStyle.SINGLE, size: 36, color: RED } },
+    children: [
+      para([run("Gut zu wissen, bevor Sie beauftragen", { bold: true, color: RED, size: 23 })], { after: 80 }),
+      ...punkte.map((t) => smallBullet(t)),
+    ],
+  })] })] }), new Paragraph({ spacing: { after: 240 }, children: [] })];
+}
 function optionBox() {
   if (!opt) return [];
   const mitFlyer = flyerGesamt + (opt.plus_flyer || 0), mitPreis = Math.round((endpreis + (opt.plus_preis || 0)) * 100) / 100;
@@ -901,6 +921,7 @@ const page6Neu = [
   }),
   p(`Antworten Sie einfach auf unsere E-Mail mit „Ja, wir beauftragen das Angebot${angebotsNr ? " " + angebotsNr : ""}“ und Ihrem Wunschzeitraum. Eine Unterschrift ist nicht nötig: Wir bestätigen Ihnen Auftrag und ${config.zeitraum_wort || "Verteilzeitraum"} anschließend schriftlich.`, { after: 200 }),
   p(config.vorlauf_text || `Damit wir alles rechtzeitig einplanen können, beauftragen Sie uns bitte spätestens 10 Werktage vor dem gewünschten Verteilzeitraum. Soll es schneller gehen? Nennen Sie uns Ihren Wunschtermin – wir versuchen, ihn möglich zu machen.`, { after: 280 }),
+  ...(SONDER ? [] : hinweisBox()),
   kontaktBox(),
   p(config.zahlung_text || `Die Rechnung stellen wir nach der Auftragserteilung aus, die Zahlung ist vor Beginn der Verteilung fällig. Alle Preise verstehen sich zuzüglich der gesetzlichen Mehrwertsteuer.`, { before: 280, after: 160 }), // config.zahlung_text: z. B. Vorkasse x Werktage vor Produktion (B2B-Dialogpost, Schneider-AGB)
   p(`Dieses Angebot ist gültig bis ${gueltigBis}.`, { bold: true, after: 380 }),
