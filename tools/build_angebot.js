@@ -342,7 +342,7 @@ const page2Alt = [
   bullet("Falls ein Grundstück den Hinweis „Vorsicht Hund“ aufweist, werfen wir nicht ein, sofern wir dieses Grundstück betreten müssen, um den Briefkasten zu erreichen."),
   bullet("Wir führen keine Selektion nach Haustypen durch."),
   bullet("In Kleinstsiedlungen unter 150 bewerbbaren Haushalten, Gewerbegebieten, Industriegebieten und Kleingartenanlagen erfolgt keine Verteilung."),
-  bullet("Insgesamt erreichen wir ca. 90 % der Haushalte im Verteilgebiet."),
+  bullet("Insgesamt erreichen wir mindestens 85 % der erreichbaren Haushalte im Verteilgebiet."),
   heading("Hinweis zur Verteilung", { before: 340 }),
   p(
     `Trotz größter Sorgfalt bei der Verteilung können wir keine Garantie für eine 100-prozentige Erreichung aller Briefkästen geben. Faktoren wie Zugänglichkeit, individuelle Gegebenheiten oder das Verhalten der Empfänger (z. B. Wegwerfen ohne Lesen, Nichtlesen, Nichtleerung des Briefkastens) können die Verteilung beeinflussen.`,
@@ -475,7 +475,7 @@ const page2Neu = [
   smallBullet("Briefkästen mit „Keine Werbung“ respektieren wir. Diese Haushalte sind aus den bewerbbaren Haushalten bereits herausgerechnet – Sie bezahlen sie nicht."),
   smallBullet("Wo kein Zugang besteht, erfolgt kein Einwurf – etwa bei verschlossenen Häusern, wenn nach Klingeln niemand öffnet, bei unzugänglichen Briefkästen oder Grundstücken mit „Vorsicht Hund“."),
   smallBullet("Gewerbe- und Industriegebiete, Kleingartenanlagen und Kleinstsiedlungen unter 150 Haushalten werden nicht beliefert; eine Auswahl nach Haustypen ist nicht möglich."),
-  smallBullet("Wir beliefern in jedem Verteilbezirk mindestens 90 % der erreichbaren Haushalte. Alle Einzelheiten regeln unsere AGB am Ende dieses Angebots."),
+  smallBullet("Wir beliefern in jedem Verteilbezirk mindestens 85 % der erreichbaren Haushalte. Alle Einzelheiten regeln unsere AGB am Ende dieses Angebots."),
   ]),
 ];
 const page1Children = LAYOUT === "alt" ? page1Alt : page1Neu;
@@ -761,6 +761,12 @@ const extraSeitenChildren = [];
     else if (b.typ === "bullets") b.items.forEach((t) => extraSeitenChildren.push(smallBullet(t, { size: b.size || 21 })));
     else if (b.typ === "hinweis") extraSeitenChildren.push(p(b.text, { italics: true, color: GREY, size: 18, before: 100, after: b.after ?? 160 }));
     else if (b.typ === "tabelle") { extraSeitenChildren.push(extraTabelle(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
+    else if (b.typ === "warnbox") { // roter Hinweiskasten "Gut zu wissen, bevor Sie beauftragen" (Stefan, 26.11.2026)
+      extraSeitenChildren.push(new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: [10100], rows: [new TableRow({ children: [new TableCell({
+        width: { size: 10100, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "FDECEC" }, margins: { top: 140, bottom: 140, left: 240, right: 240 },
+        borders: { top: { style: BorderStyle.SINGLE, size: 12, color: RED }, bottom: { style: BorderStyle.SINGLE, size: 12, color: RED }, right: { style: BorderStyle.SINGLE, size: 12, color: RED }, left: { style: BorderStyle.SINGLE, size: 36, color: RED } },
+        children: [para([run(b.titel || "Gut zu wissen, bevor Sie beauftragen", { bold: true, color: RED, size: 22 })], { after: 80 }), ...(b.items || []).map((t) => new Paragraph({ spacing: { after: 50 }, bullet: { level: 0 }, children: [run(t, { size: 19, color: "333333" })] }))] })] })] }));
+      extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
     else if (b.typ === "box") { extraSeitenChildren.push(extraBox(b)); extraSeitenChildren.push(new Paragraph({ spacing: { after: b.after ?? 160 }, children: [] })); }
     // typ "bild": zusätzliches Bild im Seitentext, z. B. Stempel-Foto unter der Illustration (Auslage-Nachweise, Stefan 24.11.2026)
     else if (b.typ === "bild") { const bp2 = resolvePath(b.pfad); const bd2 = img(bp2); const [mw2, mh2] = b.max || [380, 420];
@@ -910,7 +916,7 @@ const page6Children = LAYOUT === "alt" ? page6Alt : page6Neu;
 
 // ==================== AGB (Stand Oktober 2026, 18 Paragraphen, 2 Seiten zweispaltig) ====================
 // Quelle: Doc "HZV AGB – Prüfung & Neuentwurf 2026" (Stefan, 21.10.2026). Text nur hier ändern.
-const AGB_STAND = "Oktober 2026";
+const AGB_STAND = "26.11.2026";
 const agbParas = [
   ["§ 1 Geltungsbereich", [
     "(1) Diese AGB gelten für alle Verträge der HZV handzettelverteiler GmbH (nachfolgend „HZV“) über die Verteilung von Werbemitteln und damit verbundene Leistungen wie Gestaltung, Druck und Lagerung.",
@@ -931,7 +937,7 @@ const agbParas = [
     "c) Gewerbe- und Industriegebiete, Kleingartenanlagen, Einzelgehöfte sowie Häuser außerhalb zusammenhängender Wohngebiete;",
     "d) Grundstücke, deren Betreten verboten oder unzumutbar ist (z. B. wegen frei laufender Hunde oder fehlender sicherer Zuwegung).",
     "Briefkästen von Büros, Praxen und Geschäften innerhalb von Wohngebieten werden mitbeliefert. Sieht eine Hausverwaltung eine Ablagestelle für Werbemittel vor, kann die Abgabe dort erfolgen.",
-    "(4) Die Leistung ist ordnungsgemäß erbracht, wenn in jedem Verteilbezirk mindestens 90 % der erreichbaren Haushalte beliefert wurden. Verteilbezirk ist die kleinste in Auftragsbestätigung oder Verteilplan ausgewiesene Gebietseinheit (z. B. Postleitzahl oder Teilgebiet).",
+    "(4) Die Leistung ist ordnungsgemäß erbracht, wenn in jedem Verteilbezirk mindestens 85 % der erreichbaren Haushalte beliefert wurden. Verteilbezirk ist die kleinste in Auftragsbestätigung oder Verteilplan ausgewiesene Gebietseinheit (z. B. Postleitzahl oder Teilgebiet).",
     "(5) Einzelne nicht belieferte Adressen, die sich nicht in einem zusammenhängenden Straßenabschnitt häufen, sind übliche Streuverluste und kein Mangel.",
     "(6) Ist die bestellte oder angelieferte Stückzahl geringer als die Zahl der erreichbaren Haushalte, bestimmt HZV die ausgelassenen Teilflächen; dies ist kein Mangel.",
     "(7) HZV darf Subunternehmer einsetzen und haftet für sie wie für eigene Mitarbeiter. In der Regel verteilt HZV jeden Auftrag einzeln. In einzelnen Teilgebieten darf HZV Werbemittel mehrerer Auftraggeber gemeinsam verteilen; ein Ausschluss von Wettbewerbern derselben Branche gilt nur, wenn er in Textform vereinbart ist.",
