@@ -144,6 +144,36 @@ reg("Landau", ["Landau", "Landau in der Pfalz", "Landau Pfalz", "Landau (Pfalz)"
 reg("Aindling", ["Aindling", "Affing", "Rehling", "Affing Aindling Rehling", "Todtenweis", "Petersdorf", "Gebenhofen", "Mühlhausen (Affing)", "Muehlhausen", "Bergen (Affing)", "Stotzard", "Pichl"], lambda: basis(252) + huegel(0, 930, 60) + kirche(50, 200, 140, WHITE, ROOF_RED, "onion", "left", 60, 300) + schloss(330, 300, 110, WHITE, ROOF_RED, (("onion", 0.0), ("onion", 1.0)), None, 46, 170) + kirche(720, 150, 120, WHITE, ROOF_RED, "spire", "left", 50, 240) + tree(905, 60))
 reg("Neufahrn", ["Neufahrn", "Neufahrn bei Freising", "Neufahrn b. Freising", "Eching", "Mintraching", "Massenhausen", "Fürholzen", "Fuerholzen", "Hetzenhausen", "Giggenhausen", "Dietersheim", "Unterschleißheim", "Unterschleissheim"], lambda: basis(253) + huegel(0, 930, 40, "#c9d8e6") + kirche(50, 210, 145, WHITE, ROOF_RED, "onion", "left", 60, 300) + modern(330, 200, 110, "#e8edf2") + kirche(580, 170, 120, WHITE, SLATE, "spire", "left", 54, 260) + tree(800, 70) + tree(870, 60))
 
+def _schaufelradbagger(x, w=330, h=170):
+    """Tagebau-Schaufelradbagger (generisch): Schaufelrad am Ausleger, Raupenunterwagen, Gegenausleger."""
+    out = huegel(x - 20, w + 40, 40, "#d8c49a")
+    out += rect(x + 90, G - 34, 160, 26, "#6b6b6b") + rect(x + 120, G - 80, 100, 46, "#e2a93b")
+    out += line(x + 170, G - 80, x + 170, G - h, 5) + line(x + 170, G - h, x + 40, G - 110, 4) + line(x + 170, G - h, x + w - 10, G - 90, 4)
+    out += line(x + 120, G - 70, x + 40, G - 110, 6, "#e2a93b") + line(x + 220, G - 70, x + w - 10, G - 90, 6, "#e2a93b")
+    out += circle(x + 40, G - 110, 48, "#e2a93b", 4)
+    for k in range(8):
+        import math
+        a = k * math.pi / 4
+        out += line(x + 40, G - 110, x + 40 + 48 * math.cos(a), G - 110 + 48 * math.sin(a), 2.5)
+    out += rect(x + w - 30, G - 100, 40, 30, "#8a8a8a")
+    return out
+
+def _giesshalle(x, w=260, h=130):
+    """Sayner Hütte: Gießhalle mit Glas-Giebelfront (Basilika-Form aus Gusseisen)."""
+    out = rect(x, G - h + 30, w, h - 30, "#e6e2da") + poly([(x - 4, G - h + 30), (x + w / 2, G - h - 30), (x + w + 4, G - h + 30)], "#6b7a8f")
+    out += rect(x + w * 0.3, G - h - 10, w * 0.4, h + 10, "#cfe3f3") + poly([(x + w * 0.3 - 4, G - h - 10), (x + w / 2, G - h - 50), (x + w * 0.7 + 4, G - h - 10)], "#6b7a8f")
+    for k in range(1, 5):
+        xx = x + w * 0.3 + k * w * 0.4 / 5
+        out += line(xx, G - h - 10, xx, G, 2)
+    out += windows(x + 14, G - h + 50, 2, 1, 26, 0, 14, 40, arch=True) + windows(x + w * 0.72 + 6, G - h + 50, 2, 1, 26, 0, 14, 40, arch=True)
+    return out
+
+reg("Niederzier", ["Niederzier", "Huchem-Stammeln", "Huchem Stammeln", "Oberzier", "Ellen", "Hambach", "Krauthausen", "Selhausen", "Selgersdorf", "Merzenich", "Morschenich"], lambda: basis(254) + huegel(0, 930, 40, "#c9d8e6") + burg(30, 240, 40, "#e6dcc4", 110) + kirche(360, 190, 140, WHITE, SLATE, "spire", "left", 58, 280) + _schaufelradbagger(600, 320, 170))
+reg("Andernach", ["Andernach", "Namedy", "Eich", "Kell", "Miesenheim", "Kretz", "Plaidt", "Saffig", "Weißenthurm", "Weissenthurm", "Kruft", "Nickenich", "Urmitz", "Kettig"], lambda: basis(255) + turm(30, 74, 260, "#d9cfb8", "flat") + dom(210, 200, 160, "#e6dcc4", 290, 56, "helm", SLATE, True) + tor(560, 100, 200, "#d9cfb8", "stepped") + fachwerk(720, 2) + tree(880, 60))
+reg("Hueckelhoven", ["Hückelhoven", "Hueckelhoven", "Ratheim", "Baal", "Doveren", "Hilfarth", "Brachelen", "Millich", "Kleingladbach", "Rurich", "Altmyhl", "Wassenberg", "Erkelenz"], lambda: basis(256) + huegel(0, 330, 120, "#a9c79a") + foerderturm(380, 250) + kirche(620, 190, 140, BRICK, SLATE, "spire", "left", 60, 320) + fachwerk(840, 1))
+reg("Lahnstein", ["Lahnstein", "Oberlahnstein", "Niederlahnstein", "Friedland", "Braubach", "Fachbach"], lambda: basis(257) + burg(30, 280, 140, "#e6dcc4", 140) + schloss(390, 200, 110, "#efe6d2", SLATE, (("spire", 0.0),), None, 50, 200) + turm(650, 56, 210, "#d9cfb8", "spire") + fachwerk(760, 3))
+reg("Bendorf", ["Bendorf", "Sayn", "Bendorf-Sayn", "Mülhofen", "Muelhofen", "Stromberg", "Vallendar", "Weitersburg", "Höhr-Grenzhausen", "Hoehr-Grenzhausen"], lambda: basis(258) + burg(30, 240, 150, "#d9cfb8", 120, True) + schloss(330, 260, 110, "#efe6d2", SLATE, (("spire", 0.0), ("flat", 1.0)), None, 46, 190) + _giesshalle(660, 260, 130))
+
 if __name__ == "__main__":
     for slug in sys.argv[1:] or list(C):
         sb.STAEDTE[slug] = C[slug][1]
