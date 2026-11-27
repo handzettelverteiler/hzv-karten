@@ -30,10 +30,13 @@ Format je Datei: GeoJSON-FeatureCollection, ein Feature (MultiPolygon) je Bezirk
 | Mönchengladbach (Gladbach-Mitte, Eicken/Westend, Ost/Lürrip) | 41061, 41063, 41065 | 23 | 32.313 | 44.186 | 2026-11-26 | `moenchengladbach.geojson` |
 | Wuppertal (Elberfeld: Mitte, Nordstadt, Ostersbaum, Arrenberg/Zoo, Südstadt; Barmen: Mitte, Unterbarmen, Rott, Heckinghausen-West; Ränder 42109/42113/42277 nur teilweise) | 42103, 42105, 42107, 42115, 42117, 42119, 42275, 42281, 42283, 42285, 42287, 42289 (+ 42109, 42113, 42277 teilweise) | 69 | 81.936 | 115.324 | 2026-11-27 | `wuppertal.geojson` |
 | Kassel (Mitte, Vorderer Westen, Wehlheiden/Südstadt, Nord-Holland, Wesertor/Fasanenhof; Ränder 34123/34128/34130 nur teilweise) | 34117, 34119, 34121, 34125, 34127 (+ 34123, 34128, 34130 teilweise) | 42 | 33.019 | 65.607 | 2026-11-27 | `kassel.geojson` |
+| Paderborn (Innenstadt komplett; 33100/33102 nur Kernstadt ohne Ortsteile wie Dahl, Benhausen, Neuenbeken) + Hövelhof (ganze PLZ) | 33098, 33161 (+ 33100, 33102 teilweise) | 53 | 32.123 | 55.593 | 2026-11-27 | `paderborn_hoevelhof.geojson` |
+| Höchberg + Randersacker (Hauptorte; Randbezirke/Lindelbach evtl. unter Würzburger Präfix) | 97204, 97236 | 9 | 3.311 | 5.889 | 2026-11-27 | `hoechberg_randersacker.geojson` |
+| Salzgitter-Bad (inkl. Ortsteile Gitter, Hohenrode, Bad-Ost/-West, Ringelheim-Teile) | 38259 | 16 | 11.538 | 14.810 | 2026-11-27 | `salzgitter.geojson` |
 
 **Stand:** Rangfolge nach Häufigkeit in `angebote_register.csv` + `anfragen_log.csv`: Berlin, Hamburg, München, Potsdam, Köln, Augsburg, …
 Berlin/Hamburg/München sind zu groß für einen Lauf (Berlin ≈ 190 PLZ). Lauf 24.11.2026: jeweils die innerste Kernstadt (PLZ oben) vollständig.
-Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Lauf 26.11. (2): Neckarsulm, Leipzig (Innenstadt), Mönchengladbach (Gladbach-Mitte). Lauf 27.11.: Wiesbaden-Lücke (+65197-25), Wuppertal (Elberfeld + Barmen), Kassel (Kernstadt). Nächste Läufe: Paderborn/Hövelhof, Höchberg/Randersacker, Salzgitter … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
+Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Lauf 26.11. (2): Neckarsulm, Leipzig (Innenstadt), Mönchengladbach (Gladbach-Mitte). Lauf 27.11.: Wiesbaden-Lücke (+65197-25), Wuppertal (Elberfeld + Barmen), Kassel (Kernstadt). Lauf 27.11. (2): Paderborn/Hövelhof, Höchberg/Randersacker, Salzgitter-Bad. Nächste Läufe: Höchberg/Randersacker, Salzgitter … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
 
 ## Abgleich mit Haushalts-Vorrat (`daten/haushalte_plz_vorrat.csv`, Stand 06.11.2026)
 
@@ -137,6 +140,13 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 34127 | Kassel | 6 | 7218 | 8543 | -15.5 % | 11713 | 13823 | -15.3 % ⚠ |
 | 34128 | Kassel (teilw.) | 1 | 1152 | 6619 | -82.6 % | 1671 | 10451 | -84.0 % ⚠ |
 | 34130 | Kassel (teilw.) | 2 | 1645 | 2749 | -40.2 % | 3323 | 5614 | -40.8 % ⚠ |
+| 33098 | Paderborn | 12 | 8824 | 8898 | -0.8 % | 18418 | 18436 | -0.1 % |
+| 33100 | Paderborn (Kernstadt-Teil) | 14 | 7402 | 11843 | -37.5 % | 12030 | 18195 | -33.9 % ⚠ |
+| 33102 | Paderborn (Kernstadt-Teil) | 15 | 9743 | 13894 | -29.9 % | 16845 | 23070 | -27.0 % ⚠ |
+| 33161 | Hövelhof | 12 | 6154 | 6139 | +0.2 % | 8300 | 8351 | -0.6 % |
+| 97204 | Höchberg | 7 | 2379 | 3112 | -23.6 % | 4128 | 5361 | -23.0 % ⚠ |
+| 97236 | Randersacker | 2 | 932 | 1215 | -23.3 % | 1761 | 2134 | -17.5 % ⚠ |
+| 38259 | Salzgitter-Bad | 16 | 11538 | 11995 | -3.8 % | 14810 | 15442 | -4.1 % |
 
 Lauf 25.11. (2): Düsseldorf (9 PLZ) summiert 72.880 HH ges. vs. Vorrat 72.266 (+0,8 %) – PLZ-Abweichungen wieder durch die
 Stützpunkt-Nummerierung. Vorratswerte 09217/75228 aus den Projekt-Nachträgen (19.11./23.11.); 75228-Bezirke reichen in
@@ -164,6 +174,13 @@ die nach Stützpunkt-Präfix zu Dotzheim/Biebrich zählen – nicht gespeichert 
 (26.517). Abfragepunkte: Herzogstr. 10, Johannes-Rau-Platz 1, Friedrich-Ebert-Str. 150 (42117), Hünefeldstr. 20 (je 2 km); „Kothener Straße 50“ wurde
 nicht gefunden. **Kassel:** 34117+34119+34121 zusammen 32.992 vs. 34.031 (-3,1 %; 34121 exakt), 34125/34127 zu ~85 %. Abfragepunkte: Obere Königsstr. 8,
 Friedrich-Ebert-Str. 100 (34119), Holländische Str. 50 (je 2 km, je ~20 s). Vorratswerte vom 06.11.
+
+Lauf 27.11. (2): **Paderborn** 33098 (Innenstadt) vollständig (-0,1 %), Hövelhof 33161 vollständig (-0,6 %, 5 km um Schloßstr. 14). 33100/33102 nur die
+Kernstadt-Bezirke (Abfragen Marienplatz 1, Driburger Str. 50, Riemekestr. 100, je 2 km); es fehlen die äußeren Ortsteile (33100: Dahl, Benhausen,
+Neuenbeken u. a.; 33102: Rand Richtung Elsen/Wewer) – daher -27 bis -34 %. Nicht gespeichert: 33129 Delbrück (2 Bezirke). **Höchberg** 97204 -23 %
+(7 Bezirke, 3 km um Hauptstr. 58) und **Randersacker** 97236 -17,5 % (2 Bezirke, 3 km um Maingasse 9; Lindelbach fehlt vermutlich): die fehlenden
+Haushalte liegen wohl in Bezirken mit Würzburger Präfix (97082/97084/97074, nicht gespeichert). **Salzgitter-Bad** 38259 -4,1 % (16 Bezirke, 3 km + 6 km um
+Kniestedter Str.). Nicht gespeichert: 38229, 38275, 38704, 97218, 97297. Vorratswerte 06.11. bzw. 97204/97236 aus dem Nachtrag 16.11.
 
 **Wichtig (Lauf 25.11.):** Das PLZ-Präfix im Bezirksnamen (z. B. 50677-05) ist die Nummerierung des Zustellstützpunkts und deckt sich
 nicht immer mit der PLZ der Straßen im Bezirk (50677-05 enthält z. B. Severinstr./Chlodwigplatz = 50678). Deshalb die großen Abweichungen
