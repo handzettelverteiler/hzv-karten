@@ -24,14 +24,16 @@ Format je Datei: GeoJSON-FeatureCollection, ein Feature (MultiPolygon) je Bezirk
 | Ispringen + Umkreis 3 km (Pforzheim-West/Nord, Ersingen, Nachbar-PLZ nur teilweise) | 75228 (+ 75172, 75177, 75179, 75236) | 18 | 11.759 | 22.294 | 2026-11-25 | `ispringen.geojson` |
 | Waren (Müritz) + Penzlin + Möllenhagen (ganze PLZ inkl. Ortsteile) | 17192, 17217, 17219 | 25 | 18.011 | 21.006 | 2026-11-26 | `moellenhagen_penzlin_waren.geojson` |
 | Aying + Brunnthal + Egmating + Höhenkirchen-Siegertsbrunn (ganze PLZ) | 85635, 85649, 85653, 85658 | 18 | 7.248 | 12.814 | 2026-11-26 | `aying.geojson` |
-| Wiesbaden (Innenstadt-Ring: Mitte, Nordost, Rheingauviertel, Südost, Westend, Klarenthal, Dichterviertel) | 65183, 65185, 65187, 65189, 65193, 65195, 65197 | 49 | 34.243 | 83.058 | 2026-11-26 | `wiesbaden.geojson` |
+| Wiesbaden (Innenstadt-Ring: Mitte, Nordost, Rheingauviertel, Südost, Westend, Klarenthal, Dichterviertel) | 65183, 65185, 65187, 65189, 65193, 65195, 65197 | 50 | 35.421 | 84.965 | 2026-11-26/27 | `wiesbaden.geojson` (27.11.: +65197-25) |
 | Neckarsulm (ganze PLZ inkl. Amorbach, Obereisesheim, Dahenfeld) + Untereisesheim | 74172, 74257 | 20 | 11.663 | 16.210 | 2026-11-26 | `neckarsulm.geojson` |
 | Leipzig (Zentrum, Zentrum-Ost/-Nord/-Süd/-West, Südvorstadt) | 04103, 04105, 04107, 04109, 04275 | 34 | 21.068 | 67.758 | 2026-11-26 | `leipzig.geojson` |
 | Mönchengladbach (Gladbach-Mitte, Eicken/Westend, Ost/Lürrip) | 41061, 41063, 41065 | 23 | 32.313 | 44.186 | 2026-11-26 | `moenchengladbach.geojson` |
+| Wuppertal (Elberfeld: Mitte, Nordstadt, Ostersbaum, Arrenberg/Zoo, Südstadt; Barmen: Mitte, Unterbarmen, Rott, Heckinghausen-West; Ränder 42109/42113/42277 nur teilweise) | 42103, 42105, 42107, 42115, 42117, 42119, 42275, 42281, 42283, 42285, 42287, 42289 (+ 42109, 42113, 42277 teilweise) | 69 | 81.936 | 115.324 | 2026-11-27 | `wuppertal.geojson` |
+| Kassel (Mitte, Vorderer Westen, Wehlheiden/Südstadt, Nord-Holland, Wesertor/Fasanenhof; Ränder 34123/34128/34130 nur teilweise) | 34117, 34119, 34121, 34125, 34127 (+ 34123, 34128, 34130 teilweise) | 42 | 33.019 | 65.607 | 2026-11-27 | `kassel.geojson` |
 
 **Stand:** Rangfolge nach Häufigkeit in `angebote_register.csv` + `anfragen_log.csv`: Berlin, Hamburg, München, Potsdam, Köln, Augsburg, …
 Berlin/Hamburg/München sind zu groß für einen Lauf (Berlin ≈ 190 PLZ). Lauf 24.11.2026: jeweils die innerste Kernstadt (PLZ oben) vollständig.
-Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Lauf 26.11. (2): Neckarsulm, Leipzig (Innenstadt), Mönchengladbach (Gladbach-Mitte). Nächste Läufe: Wiesbaden-Lücke (65187/65197), Wuppertal, Paderborn/Hövelhof, Höchberg/Randersacker, Salzgitter … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
+Lauf 25.11.2026 abends: Potsdam, Köln (Innenstadt), Augsburg (Innenstadt). Lauf 25.11. (2): Düsseldorf, Burgstädt, Ispringen. Lauf 26.11.: Möllenhagen/Penzlin/Waren, Aying/Brunnthal/Egmating/Höhenkirchen, Wiesbaden (Kernstadt ohne 65191 Bierstadt/65199 Dotzheim). Lauf 26.11. (2): Neckarsulm, Leipzig (Innenstadt), Mönchengladbach (Gladbach-Mitte). Lauf 27.11.: Wiesbaden-Lücke (+65197-25), Wuppertal (Elberfeld + Barmen), Kassel (Kernstadt). Nächste Läufe: Paderborn/Hövelhof, Höchberg/Randersacker, Salzgitter … sowie ringweise Ergänzung von Berlin/Hamburg/München/Köln/Augsburg.
 
 ## Abgleich mit Haushalts-Vorrat (`daten/haushalte_plz_vorrat.csv`, Stand 06.11.2026)
 
@@ -101,7 +103,7 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 65189 | Wiesbaden | 7 | 4046 | 3147 | +28.6 % | 11829 | 10037 | +17.9 % ⚠ |
 | 65193 | Wiesbaden | 11 | 3526 | 3526 | +0.0 % | 10188 | 10188 | +0.0 % |
 | 65195 | Wiesbaden | 6 | 5215 | 5065 | +3.0 % | 11673 | 11383 | +2.5 % |
-| 65197 | Wiesbaden | 7 | 8017 | 9447 | -15.1 % | 16339 | 18936 | -13.7 % ⚠ |
+| 65197 | Wiesbaden | 8 | 9195 | 9447 | -2.7 % | 18246 | 18936 | -3.6 % |
 | 74172 | Neckarsulm | 17 | 10036 | 10163 | -1.2 % | 14143 | 14389 | -1.7 % |
 | 74257 | Untereisesheim | 3 | 1627 | 1627 | +0.0 % | 2067 | 2067 | +0.0 % |
 | 04103 | Leipzig | 6 | 5129 | 5037 | +1.8 % | 15788 | 15705 | +0.5 % |
@@ -112,6 +114,29 @@ Eine PLZ gilt als vollständig, wenn zusätzliche Abfragepunkte am Rand keine ne
 | 41061 | Mönchengladbach | 6 | 8823 | 11753 | -24.9 % | 12775 | 16937 | -24.6 % ⚠ |
 | 41063 | Mönchengladbach | 8 | 10078 | 9018 | +11.8 % | 14110 | 12375 | +14.0 % ⚠ |
 | 41065 | Mönchengladbach | 9 | 13412 | 12816 | +4.7 % | 17301 | 16364 | +5.7 % ⚠ |
+| 42103 | Wuppertal | 3 | 3468 | 3649 | -5.0 % | 6214 | 6271 | -0.9 % |
+| 42105 | Wuppertal | 5 | 6352 | 7057 | -10.0 % | 10363 | 11492 | -9.8 % ⚠ |
+| 42107 | Wuppertal | 4 | 5626 | 4740 | +18.7 % | 9940 | 8754 | +13.5 % ⚠ |
+| 42109 | Wuppertal (teilw.) | 3 | 2386 | 6297 | -62.1 % | 3239 | 8220 | -60.6 % ⚠ |
+| 42113 | Wuppertal (teilw.) | 1 | 734 | 4385 | -83.3 % | 943 | 6310 | -85.1 % ⚠ |
+| 42115 | Wuppertal | 8 | 5984 | 6769 | -11.6 % | 7826 | 8640 | -9.4 % ⚠ |
+| 42117 | Wuppertal | 7 | 5816 | 5716 | +1.7 % | 8348 | 8329 | +0.2 % |
+| 42119 | Wuppertal | 6 | 8168 | 8962 | -8.9 % | 11933 | 13216 | -9.7 % ⚠ |
+| 42275 | Wuppertal | 4 | 6758 | 6359 | +6.3 % | 8397 | 8006 | +4.9 % |
+| 42277 | Wuppertal (teilw.) | 4 | 6365 | 11688 | -45.5 % | 7515 | 13608 | -44.8 % ⚠ |
+| 42281 | Wuppertal | 5 | 6460 | 6543 | -1.3 % | 7940 | 8068 | -1.6 % |
+| 42283 | Wuppertal | 4 | 6056 | 7602 | -20.3 % | 8329 | 10296 | -19.1 % ⚠ |
+| 42285 | Wuppertal | 6 | 6710 | 5176 | +29.6 % | 10044 | 8142 | +23.4 % ⚠ |
+| 42287 | Wuppertal | 3 | 3660 | 4930 | -25.8 % | 5232 | 7054 | -25.8 % ⚠ |
+| 42289 | Wuppertal | 6 | 7393 | 9457 | -21.8 % | 9061 | 11642 | -22.2 % ⚠ |
+| 34117 | Kassel | 6 | 3327 | 3694 | -9.9 % | 9341 | 9800 | -4.7 % |
+| 34119 | Kassel | 6 | 4511 | 4725 | -4.5 % | 10113 | 10693 | -5.4 % ⚠ |
+| 34121 | Kassel | 13 | 6263 | 6263 | +0.0 % | 13538 | 13538 | +0.0 % |
+| 34123 | Kassel (teilw.) | 1 | 1113 | 8708 | -87.2 % | 2033 | 13838 | -85.3 % ⚠ |
+| 34125 | Kassel | 7 | 7790 | 9742 | -20.0 % | 13875 | 16189 | -14.3 % ⚠ |
+| 34127 | Kassel | 6 | 7218 | 8543 | -15.5 % | 11713 | 13823 | -15.3 % ⚠ |
+| 34128 | Kassel (teilw.) | 1 | 1152 | 6619 | -82.6 % | 1671 | 10451 | -84.0 % ⚠ |
+| 34130 | Kassel (teilw.) | 2 | 1645 | 2749 | -40.2 % | 3323 | 5614 | -40.8 % ⚠ |
 
 Lauf 25.11. (2): Düsseldorf (9 PLZ) summiert 72.880 HH ges. vs. Vorrat 72.266 (+0,8 %) – PLZ-Abweichungen wieder durch die
 Stützpunkt-Nummerierung. Vorratswerte 09217/75228 aus den Projekt-Nachträgen (19.11./23.11.); 75228-Bezirke reichen in
@@ -129,6 +154,16 @@ nicht gefundenen Adressen (Dotzheimer Str. 150, Hollerbornstr. 10, Graf-von-Gale
 Lauf 26.11. (2): Neckarsulm über beide PLZ -1,5 % (vermutlich fehlt nur Bezirk 74172-01), Leipzig über die 5 PLZ +1,3 %,
 Mönchengladbach über die 3 PLZ -3,3 % (41061 hat nur 6 Bezirke mit eigenem Präfix; Teile von 41061 laufen vermutlich unter 41068/41069,
 die nicht gespeichert sind). Vorratswerte 74172 aus dem Nachtrag 02.11., 74257 aus dem Nachtrag 11.11.
+
+Lauf 27.11.: **Wiesbaden** um 65197-25 (Schelmengraben-Rand, 1.907 HH ges.) ergänzt → 65197 jetzt -3,6 %, die 7 PLZ zusammen 84.965 vs. 87.260
+(-2,6 %). Bezirke 65187-41…45 gibt es nicht: Um Gabelsbornstr. liefert das Portal nur 65187-46…50. Die 65187-Lücke (-4.600 HH ges.) liegt vermutlich in
+den Grenzbezirken 65199-62 (Gräselberg: Am Gräselberg, Kärntner Str., Klagenfurter Ring) und 65203-45 (Waldstr./Erich-Ollenhauer-Str./Biebricher Allee),
+die nach Stützpunkt-Präfix zu Dotzheim/Biebrich zählen – nicht gespeichert (Präfix-Regel wie bisher); bei Bedarf in einem Lauf ergänzen.
+**Wuppertal:** Elberfeld (42103/05/07/15/17/19) zusammen 54.624 vs. Vorrat 56.702 HH ges. (-3,7 %), Barmen (42275/81/83/85/87/89) 49.003 vs. 53.208
+(-7,9 %; Ränder Richtung Heckinghausen/Lichtscheid fehlen noch, 42285 enthält Stützpunkt-Bezirke von 42287). 42103+42105+42107 zusammen exakt wie Vorrat
+(26.517). Abfragepunkte: Herzogstr. 10, Johannes-Rau-Platz 1, Friedrich-Ebert-Str. 150 (42117), Hünefeldstr. 20 (je 2 km); „Kothener Straße 50“ wurde
+nicht gefunden. **Kassel:** 34117+34119+34121 zusammen 32.992 vs. 34.031 (-3,1 %; 34121 exakt), 34125/34127 zu ~85 %. Abfragepunkte: Obere Königsstr. 8,
+Friedrich-Ebert-Str. 100 (34119), Holländische Str. 50 (je 2 km, je ~20 s). Vorratswerte vom 06.11.
 
 **Wichtig (Lauf 25.11.):** Das PLZ-Präfix im Bezirksnamen (z. B. 50677-05) ist die Nummerierung des Zustellstützpunkts und deckt sich
 nicht immer mit der PLZ der Straßen im Bezirk (50677-05 enthält z. B. Severinstr./Chlodwigplatz = 50678). Deshalb die großen Abweichungen
@@ -162,3 +197,9 @@ für Karten, Teilgebiete und Umkreis-Angebote. 86153-99 (Willy-Brandt-Platz) hat
   Adressen nur noch „keine Ergebnisse“. Seite neu laden und Zustellbezirke-Reiter wieder öffnen, dann geht es weiter (vermutlich auch der Grund
   für die Wiesbaden-Lücke). Die Hilfsfunktionen liegen als Code in `localStorage.__hzv` der Portal-Seite → nach dem Neuladen `eval(localStorage.__hzv)`.
 - Hausnummer muss es geben: Übernimmt das Portal die Adresse ohne Nummer ins Feld (z. B. „Lürriper Straße“), wurde sie nicht gefunden → andere Nummer.
+
+## Hinweise zur Abfrage (Lauf 27.11.2026)
+
+- Hilfsfunktionen aus `localStorage.__hzv` (`__Q(street, plz, km)`, `__col()`, `__show(text)`) funktionierten unverändert; `__B` nach dem Neuladen aus
+  `localStorage.__hzvB` wiederherstellen (Duplikate werden übersprungen). Vorbeugend nach 3–4 Abfragen gespeichert und neu geladen – keine Sperre aufgetreten.
+- In Wuppertal sind Bezirke groß (~2.000 HH): 2 km liefert nur ~25–30 Bezirke, deshalb mehrere Mittelpunkte.
