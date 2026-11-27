@@ -714,6 +714,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .totals { margin-top: 8px; padding-top: 6px; border-top: 1px solid #ddd; font-size: 13px; }
   .footer-note { font-size: 11px; color: #999; margin-top: 18px; line-height: 1.5; }
   .plz-label-dim { opacity: 0.45; }
+  .plz-label-opt { font-size: 10px !important; font-weight: normal !important; color: #444 !important; opacity: 0.85; }
   aside { display: block; }
   body.shot aside { display: none; }
   body.shot .leaflet-control-zoom { display: none; }
@@ -812,7 +813,8 @@ const geoLayer = L.geoJSON(geojson, {
     const p = feature.properties;
     const dim = HIGHLIGHT_PLZ && p.key !== HIGHLIGHT_PLZ;
     layer.bindPopup(popupHtml(p));
-    layer.bindTooltip(p.optional && !HIGHLIGHT_PLZ ? p.label + ' (optional)' : p.label, { permanent: true, direction: 'center', className: dim ? 'plz-label plz-label-dim' : 'plz-label' });
+    const OPTL = ["34121-wehlheiden", "34123-bettenhausen", "34123-waldau", "34125-fasanenhof", "34125-wolfsanger-hasenhecke", "34127-rothenditmold", "34128-harleshausen", "34128-kirchditmold-noerdl-teil", "34131-bad-wilhelmshoehe", "34132-oberzwehren", "34134-niederzwehren", "34246-vellmar-obervellmar-niedervellmar", "34225-baunatal-altenbauna", "34225-baunatal-grossenritte-altenritte-rengershausen", "34253-lohfelden-ochshausen-crumbach-vollmarshausen", "34266-niestetal-sandershausen-heiligenrode", "34260-kaufungen-ober-niederkaufungen-papierfabrik", "34233-fuldatal-ihringshausen-simmershausen", "34277-fuldabrueck-bergshausen-dennhausen-dittershausen", "34292-ahnatal-weimar-heckershausen", "34314-espenau-moenchehof-hohenkirchen", "34317-habichtswald-ehlen-doernberg", "34320-soehrewald-wellerode-wattenbach-eiterhagen", "34270-schauenburg-elgershausen-hoof", "34379-calden-kernort", "34355-staufenberg-landwehrhagen"]; const isOpt = p.optional && !HIGHLIGHT_PLZ;
+    layer.bindTooltip(p.label, { permanent: !isOpt || OPTL.includes(p.key), direction: 'center', className: dim ? 'plz-label plz-label-dim' : (isOpt ? 'plz-label plz-label-opt' : 'plz-label') });
     const s = baseStyle(p);
     layer.on('mouseover', function() { this.setStyle({ fillOpacity: Math.min(s.fillOpacity + 0.2, 0.6) }); });
     layer.on('mouseout', function() { this.setStyle({ fillOpacity: s.fillOpacity }); });
