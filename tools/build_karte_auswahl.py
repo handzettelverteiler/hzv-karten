@@ -154,7 +154,7 @@ const all = L.featureGroup().addTo(map);
 DATA.areas.forEach(a => {
   const ll = a.polygons.map(r => r.map(([x, y]) => [y, x]));
   const lyr = L.polygon(ll, sel[a.id] ? ON : OFF).addTo(all);
-  lyr.bindTooltip(a.gebiet + '<span class="pz">' + a.plz + '</span>', {permanent: true, direction: 'center', className: 'ot-label' + (sel[a.id] ? '' : ' off')});
+  lyr.bindTooltip((a.kurz || a.gebiet) + '<span class="pz">' + a.plz + '</span>', {permanent: true, direction: 'center', className: 'ot-label' + (sel[a.id] ? '' : ' off')});
   lyr.on('click', () => toggle(a.id));
   lyr.on('mouseover', () => lyr.setStyle({weight: 2.5}));
   lyr.on('mouseout', () => lyr.setStyle({weight: sel[a.id] ? ON.weight : OFF.weight}));

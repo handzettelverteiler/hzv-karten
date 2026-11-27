@@ -585,6 +585,21 @@ function priceTable() {
     });
   });
 
+  // areas[].abschnitt: Zwischenüberschrift (volle Breite) vor der ersten Zeile eines neuen Abschnitts, z. B. "Stadt Kassel" / "Umkreis Kassel" (Circus Casselly 27.11.2026)
+  if (areas.some((a) => a.abschnitt)) {
+    const totW = colWidths.reduce((x, y) => x + y, 0), mit = []; let last = null;
+    const titel = config.abschnitt_titel || {};
+    areas.forEach((a, i) => {
+      if (a.abschnitt && a.abschnitt !== last) {
+        mit.push(new TableRow({ cantSplit: true, children: [new TableCell({ columnSpan: colWidths.length, width: { size: totW, type: WidthType.DXA },
+          shading: { type: ShadingType.CLEAR, fill: "12463C" }, margins: { top: 60, bottom: 60, left: 100, right: 100 },
+          children: [new Paragraph({ keepNext: true, children: [new TextRun({ text: titel[a.abschnitt] || a.abschnitt, bold: true, color: "FFFFFF", size: 19, font: FONT })] })] })] }));
+        last = a.abschnitt;
+      }
+      mit.push(dataRows[i]);
+    });
+    dataRows.splice(0, dataRows.length, ...mit);
+  }
   const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
   if (LAYOUT === "neu") return priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage });
   const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
