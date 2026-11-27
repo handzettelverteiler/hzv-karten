@@ -538,13 +538,13 @@ function priceTable() {
   // Teilauflage (config areas[].auflage) -> zusätzliche grüne Auflage-Spalte, Preis bezieht sich auf die Auflage
   const hasAuflage = areas.some((a) => a.auflage != null);
   const headerCells = ["PLZ", "Gebiet", "HH bewerbbar", "HH gesamt", "Quote", ...(hasAuflage ? ["Verteilte Flyer"] : []), "Preis"];
-  const colWidths = hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000];
+  const colWidths = config.spaltenbreiten || (hasAuflage ? [1000, 2300, 1550, 1400, 1000, 1250, 1600] : [1200, 2600, 1700, 1500, 1100, 2000]); // config.spaltenbreiten: eigene Breiten (Summe 10100), z. B. breitere Gebietsspalte
   const keyCols = hasAuflage ? [2, 5, 6] : [2, 5];
   const ROW_PAD = areas.length > 24 ? 10 : areas.length > 15 ? 40 : 80; // viele PLZ -> engere Zeilen, damit Seite 5 nicht umbricht
   const LIGHT_ROW = "F7F7F7";
   const BORDER_LIGHT = { style: BorderStyle.SINGLE, size: 2, color: "E0E0E0" };
 
-  const headerRow = new TableRow({
+  const mkHeaderRow = () => new TableRow({
     tableHeader: true,
     children: headerCells.map((t, i) => new TableCell({
       width: { size: colWidths[i], type: WidthType.DXA },
@@ -557,6 +557,7 @@ function priceTable() {
       })],
     })),
   });
+  const headerRow = mkHeaderRow();
 
   const dataRows = areas.map((a, rowIdx) => {
     const vals = [a.plz, a.gebiet, fmtHH(a.hh_bewerbbar), (a.hh_gesamt == null ? "–" : (a.hh_gesamt_ca ? "ca. " : "") + fmtHH(a.hh_gesamt)), (a.quote == null ? "–" : `${a.quote} %`), ...(hasAuflage ? [fmtHH(a.auflage ?? a.hh_bewerbbar)] : []), (a.auflage === 0 && a.preis_optional != null ? `(${fmtEur(a.preis_optional)})` : fmtEur(a.preis_verteilung))]; // areas[].preis_optional: Preis einer optionalen Zeile (auflage 0) grau in Klammern zeigen, zählt nicht zur Summe
@@ -594,6 +595,7 @@ function priceTable() {
         mit.push(new TableRow({ cantSplit: true, children: [new TableCell({ columnSpan: colWidths.length, width: { size: totW, type: WidthType.DXA },
           shading: { type: ShadingType.CLEAR, fill: "12463C" }, margins: { top: 60, bottom: 60, left: 100, right: 100 },
           children: [new Paragraph({ keepNext: true, children: [new TextRun({ text: titel[a.abschnitt] || a.abschnitt, bold: true, color: "FFFFFF", size: 19, font: FONT })] })] })] }));
+        if (last !== null && config.abschnitt_umbruch) globalThis.ABSCHNITT_SPLIT = mit.length - 1; // Index der Zwischenueberschrift des 2. Abschnitts
         last = a.abschnitt;
       }
       mit.push(dataRows[i]);
@@ -601,7 +603,7 @@ function priceTable() {
     dataRows.splice(0, dataRows.length, ...mit);
   }
   const gesamtAuflage = areas.reduce((s, a) => s + (a.auflage ?? a.hh_bewerbbar), 0);
-  if (LAYOUT === "neu") return priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage });
+  if (LAYOUT === "neu") return priceTableNeu({ headerRow, mkHeaderRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage });
   const totalVals = ["Gesamt", "", fmtHH(gesamt.hh_bewerbbar), (gesamt.hh_gesamt ? fmtHH(gesamt.hh_gesamt) : "–"), "", ...(hasAuflage ? [fmtHH(gesamtAuflage)] : []), fmtEur(gesamt.preis)];
   const totalRow = new TableRow({
     children: totalVals.map((v, i) => {
@@ -624,7 +626,7 @@ function priceTable() {
 }
 
 // Layout neu: An-/Abfahrt als eigene Zeile, Summe = Gesamtpreis inkl. Anfahrt (Anfahrt bleibt separat ausgewiesen)
-function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
+function priceTableNeu({ headerRow, mkHeaderRow, dataRows, colWidths, keyCols, hasAuflage, ROW_PAD, BORDER_LIGHT, gesamtAuflage }) {
   const anfahrtLabel = config.anfahrt_label || ((einePLZ || plzSet.length === 1) ? "An-/Abfahrt (einmalig)" : (config.anfahrt_gesamt != null ? "An-/Abfahrt (pauschal)" : `An-/Abfahrt (${new Set(areas.filter((a) => a.auflage !== 0).map((a) => a.plz)).size} PLZ-Regionen × 35 €)`));
   const nLast = colWidths.length - 1;
   const spanW = colWidths.slice(0, nLast).reduce((s, w) => s + w, 0);
@@ -660,7 +662,11 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
       });
     }),
   });
-  return new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows, anfahrtRow, ...zusatzPosten.map((z) => new TableRow({
+  // config.abschnitt_umbruch: zweiter Abschnitt (areas[].abschnitt) als eigene Tabelle auf neuer Seite, Kopfzeile wiederholt (Circus Casselly 27.11.2026)
+  const SPL = (config.abschnitt_umbruch && globalThis.ABSCHNITT_SPLIT > 0 && mkHeaderRow) ? globalThis.ABSCHNITT_SPLIT : 0;
+  const teil1 = SPL ? [new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [headerRow, ...dataRows.slice(0, SPL)] }),
+    new Paragraph({ pageBreakBefore: true, spacing: { after: 120 }, children: [new TextRun({ text: config.abschnitt_fortsetzung || "Preisübersicht (Fortsetzung)", bold: true, color: RED, size: 26, font: FONT })] })] : [];
+  const tab2 = new Table({ width: { size: 10100, type: WidthType.DXA }, columnWidths: colWidths, rows: [SPL ? mkHeaderRow() : headerRow, ...(SPL ? dataRows.slice(SPL) : dataRows), anfahrtRow, ...zusatzPosten.map((z) => new TableRow({
     children: [
       new TableCell({ columnSpan: nLast, width: { size: spanW, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
         margins: { top: ROW_PAD, bottom: ROW_PAD, left: 100, right: 100 }, borders: { bottom: BORDER_LIGHT },
@@ -671,6 +677,7 @@ function priceTableNeu({ headerRow, dataRows, colWidths, keyCols, hasAuflage, RO
         children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: fmtEur(z.preis), size: 19, font: FONT, bold: true, color: "222222" })] })] }),
     ],
   })), totalRow] });
+  return SPL ? [...teil1, tab2] : tab2;
 }
 
 // Hinweis unter der Preistabelle (Stefan, 20.11.2026 – Kunde fragte nach der Differenz HH gesamt / HH bewerbbar).
@@ -740,7 +747,7 @@ const page4Neu = [
     children: [new TextRun({ text: "Preisübersicht", bold: true, color: RED, size: 32, font: FONT })],
   }),
   p(config.preis_intro || `Für die Verteilung wie oben aufgeführt berechnen wir folgende Preise – An-/Abfahrt bereits eingerechnet:`, { after: 200 }),
-  priceTable(),
+  ...[].concat(priceTable()),
   p(config.rundungs_hinweis || "Haushaltszahlen sind auf volle 50 gerundet.", { italics: true, color: GREY, size: 18, after: 60, before: 120 }),
   ...(KW_HINWEIS ? [p(KW_HINWEIS, { italics: true, color: GREY, size: 18, after: 280 })] : []),
   ...(config.rabatt_text ? [p(config.rabatt_text, { bold: true, color: RED, after: 200 })] : []),
